@@ -1,0 +1,523 @@
+{
+  "src/main.ts": {
+    "module": ".",
+    "tags": [
+      "root"
+    ],
+    "imports": [
+      "src/app/shell/+state/state.ts",
+      "src/app/app.component.ts",
+      "src/app/app.routes.ts",
+      "src/app/shared/util-auth/index.ts",
+      "src/app/shared/util-logger/index.ts",
+      "src/app/domains/ticketing/feature-my-tickets/index.ts",
+      "src/app/logger.config.ts"
+    ]
+  },
+  "src/app/shell/+state/state.ts": {
+    "module": ".",
+    "tags": [
+      "root"
+    ],
+    "imports": []
+  },
+  "src/app/app.component.ts": {
+    "module": ".",
+    "tags": [
+      "root"
+    ],
+    "imports": [
+      "src/app/shell/navbar/navbar.component.ts",
+      "src/app/shell/sidebar/sidebar.component.ts"
+    ]
+  },
+  "src/app/shell/navbar/navbar.component.ts": {
+    "module": ".",
+    "tags": [
+      "root"
+    ],
+    "imports": []
+  },
+  "src/app/shell/sidebar/sidebar.component.ts": {
+    "module": ".",
+    "tags": [
+      "root"
+    ],
+    "imports": []
+  },
+  "src/app/app.routes.ts": {
+    "module": ".",
+    "tags": [
+      "root"
+    ],
+    "imports": [
+      "src/app/shared/util-auth/index.ts",
+      "src/app/shell/home/home.component.ts",
+      "src/app/domains/ticketing/feature-booking/index.ts",
+      "src/app/domains/ticketing/feature-next-flight/index.ts",
+      "src/app/domains/checkin/feature-manage/index.ts",
+      "src/app/shell/about/about.component.ts"
+    ]
+  },
+  "src/app/shared/util-auth/index.ts": {
+    "module": "src/app/shared/util-auth",
+    "tags": [
+      "shared",
+      "type:util"
+    ],
+    "imports": [
+      "src/app/shared/util-auth/auth.interceptor.ts",
+      "src/app/shared/util-auth/auth.service.ts"
+    ]
+  },
+  "src/app/shared/util-auth/auth.interceptor.ts": {
+    "module": "src/app/shared/util-auth",
+    "tags": [
+      "shared",
+      "type:util"
+    ],
+    "imports": []
+  },
+  "src/app/shared/util-auth/auth.service.ts": {
+    "module": "src/app/shared/util-auth",
+    "tags": [
+      "shared",
+      "type:util"
+    ],
+    "imports": []
+  },
+  "src/app/shell/home/home.component.ts": {
+    "module": ".",
+    "tags": [
+      "root"
+    ],
+    "imports": [
+      "src/app/shared/util-logger/index.ts"
+    ]
+  },
+  "src/app/shared/util-logger/index.ts": {
+    "module": "src/app/shared/util-logger",
+    "tags": [
+      "shared",
+      "type:util"
+    ],
+    "imports": [
+      "src/app/shared/util-logger/color-config.ts",
+      "src/app/shared/util-logger/color.service.ts",
+      "src/app/shared/util-logger/features.ts",
+      "src/app/shared/util-logger/log-appender.ts",
+      "src/app/shared/util-logger/log-formatter.ts",
+      "src/app/shared/util-logger/log-level.ts",
+      "src/app/shared/util-logger/logger-config.ts",
+      "src/app/shared/util-logger/logger-module.ts",
+      "src/app/shared/util-logger/logger.ts",
+      "src/app/shared/util-logger/providers.ts"
+    ]
+  },
+  "src/app/shared/util-logger/color-config.ts": {
+    "module": "src/app/shared/util-logger",
+    "tags": [
+      "shared",
+      "type:util"
+    ],
+    "imports": []
+  },
+  "src/app/shared/util-logger/color.service.ts": {
+    "module": "src/app/shared/util-logger",
+    "tags": [
+      "shared",
+      "type:util"
+    ],
+    "imports": [
+      "src/app/shared/util-logger/color-config.ts",
+      "src/app/shared/util-logger/log-level.ts"
+    ]
+  },
+  "src/app/shared/util-logger/log-level.ts": {
+    "module": "src/app/shared/util-logger",
+    "tags": [
+      "shared",
+      "type:util"
+    ],
+    "imports": []
+  },
+  "src/app/shared/util-logger/features.ts": {
+    "module": "src/app/shared/util-logger",
+    "tags": [
+      "shared",
+      "type:util"
+    ],
+    "imports": [
+      "src/app/shared/util-logger/color-config.ts",
+      "src/app/shared/util-logger/color.service.ts"
+    ]
+  },
+  "src/app/shared/util-logger/log-appender.ts": {
+    "module": "src/app/shared/util-logger",
+    "tags": [
+      "shared",
+      "type:util"
+    ],
+    "imports": [
+      "src/app/shared/util-logger/color.service.ts",
+      "src/app/shared/util-logger/log-level.ts"
+    ]
+  },
+  "src/app/shared/util-logger/log-formatter.ts": {
+    "module": "src/app/shared/util-logger",
+    "tags": [
+      "shared",
+      "type:util"
+    ],
+    "imports": [
+      "src/app/shared/util-logger/log-level.ts"
+    ]
+  },
+  "src/app/shared/util-logger/logger-config.ts": {
+    "module": "src/app/shared/util-logger",
+    "tags": [
+      "shared",
+      "type:util"
+    ],
+    "imports": [
+      "src/app/shared/util-logger/log-appender.ts",
+      "src/app/shared/util-logger/log-formatter.ts",
+      "src/app/shared/util-logger/log-level.ts"
+    ]
+  },
+  "src/app/shared/util-logger/logger-module.ts": {
+    "module": "src/app/shared/util-logger",
+    "tags": [
+      "shared",
+      "type:util"
+    ],
+    "imports": [
+      "src/app/shared/util-logger/log-appender.ts",
+      "src/app/shared/util-logger/logger-config.ts",
+      "src/app/shared/util-logger/providers.ts"
+    ]
+  },
+  "src/app/shared/util-logger/providers.ts": {
+    "module": "src/app/shared/util-logger",
+    "tags": [
+      "shared",
+      "type:util"
+    ],
+    "imports": [
+      "src/app/shared/util-logger/features.ts",
+      "src/app/shared/util-logger/log-appender.ts",
+      "src/app/shared/util-logger/log-formatter.ts",
+      "src/app/shared/util-logger/logger.ts",
+      "src/app/shared/util-logger/logger-config.ts"
+    ]
+  },
+  "src/app/shared/util-logger/logger.ts": {
+    "module": "src/app/shared/util-logger",
+    "tags": [
+      "shared",
+      "type:util"
+    ],
+    "imports": [
+      "src/app/shared/util-logger/log-appender.ts",
+      "src/app/shared/util-logger/log-formatter.ts",
+      "src/app/shared/util-logger/log-level.ts",
+      "src/app/shared/util-logger/logger-config.ts"
+    ]
+  },
+  "src/app/domains/ticketing/feature-booking/index.ts": {
+    "module": "src/app/domains/ticketing/feature-booking",
+    "tags": [
+      "domain:ticketing",
+      "type:feature"
+    ],
+    "imports": [
+      "src/app/domains/ticketing/feature-booking/flight-booking.routes.ts"
+    ]
+  },
+  "src/app/domains/ticketing/feature-booking/flight-booking.routes.ts": {
+    "module": "src/app/domains/ticketing/feature-booking",
+    "tags": [
+      "domain:ticketing",
+      "type:feature"
+    ],
+    "imports": [
+      "src/app/shared/util-auth/index.ts",
+      "src/app/domains/ticketing/data/index.ts",
+      "src/app/domains/ticketing/feature-booking/flight-booking.component.ts",
+      "src/app/domains/ticketing/feature-booking/flight-edit/flight-edit.component.ts",
+      "src/app/domains/ticketing/feature-booking/flight-search/flight-search.component.ts",
+      "src/app/domains/ticketing/feature-booking/passenger-search/passenger-search.component.ts"
+    ]
+  },
+  "src/app/domains/ticketing/data/index.ts": {
+    "module": "src/app/domains/ticketing/data",
+    "tags": [
+      "domain:ticketing",
+      "type:data"
+    ],
+    "imports": [
+      "src/app/domains/ticketing/data/+state/actions.ts",
+      "src/app/domains/ticketing/data/+state/effects.ts",
+      "src/app/domains/ticketing/data/+state/reducers.ts",
+      "src/app/domains/ticketing/data/+state/selectors.ts",
+      "src/app/domains/ticketing/data/flight.service.ts",
+      "src/app/domains/ticketing/data/flight.ts",
+      "src/app/domains/ticketing/data/passenger.ts"
+    ]
+  },
+  "src/app/domains/ticketing/data/+state/actions.ts": {
+    "module": "src/app/domains/ticketing/data",
+    "tags": [
+      "domain:ticketing",
+      "type:data"
+    ],
+    "imports": [
+      "src/app/domains/ticketing/data/flight.ts"
+    ]
+  },
+  "src/app/domains/ticketing/data/flight.ts": {
+    "module": "src/app/domains/ticketing/data",
+    "tags": [
+      "domain:ticketing",
+      "type:data"
+    ],
+    "imports": []
+  },
+  "src/app/domains/ticketing/data/+state/effects.ts": {
+    "module": "src/app/domains/ticketing/data",
+    "tags": [
+      "domain:ticketing",
+      "type:data"
+    ],
+    "imports": [
+      "src/app/domains/ticketing/data/flight.service.ts",
+      "src/app/domains/ticketing/data/+state/actions.ts"
+    ]
+  },
+  "src/app/domains/ticketing/data/flight.service.ts": {
+    "module": "src/app/domains/ticketing/data",
+    "tags": [
+      "domain:ticketing",
+      "type:data"
+    ],
+    "imports": [
+      "src/app/domains/ticketing/data/flight.ts"
+    ]
+  },
+  "src/app/domains/ticketing/data/+state/reducers.ts": {
+    "module": "src/app/domains/ticketing/data",
+    "tags": [
+      "domain:ticketing",
+      "type:data"
+    ],
+    "imports": [
+      "src/app/domains/ticketing/data/flight.ts",
+      "src/app/domains/ticketing/data/+state/actions.ts"
+    ]
+  },
+  "src/app/domains/ticketing/data/+state/selectors.ts": {
+    "module": "src/app/domains/ticketing/data",
+    "tags": [
+      "domain:ticketing",
+      "type:data"
+    ],
+    "imports": [
+      "src/app/domains/ticketing/data/+state/reducers.ts"
+    ]
+  },
+  "src/app/domains/ticketing/data/passenger.ts": {
+    "module": "src/app/domains/ticketing/data",
+    "tags": [
+      "domain:ticketing",
+      "type:data"
+    ],
+    "imports": []
+  },
+  "src/app/domains/ticketing/feature-booking/flight-booking.component.ts": {
+    "module": "src/app/domains/ticketing/feature-booking",
+    "tags": [
+      "domain:ticketing",
+      "type:feature"
+    ],
+    "imports": [
+      "src/app/shared/util-logger/index.ts"
+    ]
+  },
+  "src/app/domains/ticketing/feature-booking/flight-edit/flight-edit.component.ts": {
+    "module": "src/app/domains/ticketing/feature-booking",
+    "tags": [
+      "domain:ticketing",
+      "type:feature"
+    ],
+    "imports": []
+  },
+  "src/app/domains/ticketing/feature-booking/flight-search/flight-search.component.ts": {
+    "module": "src/app/domains/ticketing/feature-booking",
+    "tags": [
+      "domain:ticketing",
+      "type:feature"
+    ],
+    "imports": [
+      "src/app/domains/ticketing/data/index.ts",
+      "src/app/domains/ticketing/ui-common/index.ts"
+    ]
+  },
+  "src/app/domains/ticketing/ui-common/index.ts": {
+    "module": "src/app/domains/ticketing/ui-common",
+    "tags": [
+      "domain:ticketing",
+      "type:ui"
+    ],
+    "imports": [
+      "src/app/domains/ticketing/ui-common/flight-card/flight-card.component.ts"
+    ]
+  },
+  "src/app/domains/ticketing/ui-common/flight-card/flight-card.component.ts": {
+    "module": "src/app/domains/ticketing/ui-common",
+    "tags": [
+      "domain:ticketing",
+      "type:ui"
+    ],
+    "imports": [
+      "src/app/domains/ticketing/data/index.ts"
+    ]
+  },
+  "src/app/domains/ticketing/feature-booking/passenger-search/passenger-search.component.ts": {
+    "module": "src/app/domains/ticketing/feature-booking",
+    "tags": [
+      "domain:ticketing",
+      "type:feature"
+    ],
+    "imports": [
+      "src/app/domains/ticketing/data/index.ts"
+    ]
+  },
+  "src/app/domains/ticketing/feature-next-flight/index.ts": {
+    "module": "src/app/domains/ticketing/feature-next-flight",
+    "tags": [
+      "domain:ticketing",
+      "type:feature"
+    ],
+    "imports": [
+      "src/app/domains/ticketing/feature-next-flight/next-flight.component.ts"
+    ]
+  },
+  "src/app/domains/ticketing/feature-next-flight/next-flight.component.ts": {
+    "module": "src/app/domains/ticketing/feature-next-flight",
+    "tags": [
+      "domain:ticketing",
+      "type:feature"
+    ],
+    "imports": [
+      "src/app/domains/ticketing/feature-my-tickets/index.ts"
+    ]
+  },
+  "src/app/domains/ticketing/feature-my-tickets/index.ts": {
+    "module": "src/app/domains/ticketing/feature-my-tickets",
+    "tags": [
+      "domain:ticketing",
+      "type:feature"
+    ],
+    "imports": [
+      "src/app/domains/ticketing/feature-my-tickets/my-tickets.component.ts",
+      "src/app/domains/ticketing/feature-my-tickets/ticket.service.ts",
+      "src/app/domains/ticketing/feature-my-tickets/tickets.module.ts"
+    ]
+  },
+  "src/app/domains/ticketing/feature-my-tickets/my-tickets.component.ts": {
+    "module": "src/app/domains/ticketing/feature-my-tickets",
+    "tags": [
+      "domain:ticketing",
+      "type:feature"
+    ],
+    "imports": [
+      "src/app/domains/ticketing/data/index.ts",
+      "src/app/domains/ticketing/feature-my-tickets/ticket.service.ts"
+    ]
+  },
+  "src/app/domains/ticketing/feature-my-tickets/ticket.service.ts": {
+    "module": "src/app/domains/ticketing/feature-my-tickets",
+    "tags": [
+      "domain:ticketing",
+      "type:feature"
+    ],
+    "imports": [
+      "src/app/domains/ticketing/data/index.ts"
+    ]
+  },
+  "src/app/domains/ticketing/feature-my-tickets/tickets.module.ts": {
+    "module": "src/app/domains/ticketing/feature-my-tickets",
+    "tags": [
+      "domain:ticketing",
+      "type:feature"
+    ],
+    "imports": [
+      "src/app/domains/ticketing/feature-my-tickets/my-tickets.component.ts",
+      "src/app/domains/ticketing/feature-my-tickets/ticket.service.ts",
+      "src/app/domains/ticketing/ui-common/index.ts"
+    ]
+  },
+  "src/app/domains/checkin/feature-manage/index.ts": {
+    "module": "src/app/domains/checkin/feature-manage",
+    "tags": [
+      "domain:checkin",
+      "type:feature"
+    ],
+    "imports": [
+      "src/app/domains/checkin/feature-manage/feature-manage.component.ts"
+    ]
+  },
+  "src/app/domains/checkin/feature-manage/feature-manage.component.ts": {
+    "module": "src/app/domains/checkin/feature-manage",
+    "tags": [
+      "domain:checkin",
+      "type:feature"
+    ],
+    "imports": [
+      "src/app/domains/checkin/data/index.ts"
+    ]
+  },
+  "src/app/domains/checkin/data/index.ts": {
+    "module": "src/app/domains/checkin/data",
+    "tags": [
+      "domain:checkin",
+      "type:data"
+    ],
+    "imports": [
+      "src/app/domains/checkin/data/checkin.service.ts"
+    ]
+  },
+  "src/app/domains/checkin/data/checkin.service.ts": {
+    "module": "src/app/domains/checkin/data",
+    "tags": [
+      "domain:checkin",
+      "type:data"
+    ],
+    "imports": []
+  },
+  "src/app/shell/about/about.component.ts": {
+    "module": ".",
+    "tags": [
+      "root"
+    ],
+    "imports": [
+      "src/app/shell/about/lazy/lazy.component.ts"
+    ]
+  },
+  "src/app/shell/about/lazy/lazy.component.ts": {
+    "module": ".",
+    "tags": [
+      "root"
+    ],
+    "imports": []
+  },
+  "src/app/logger.config.ts": {
+    "module": ".",
+    "tags": [
+      "root"
+    ],
+    "imports": [
+      "src/app/shared/util-logger/index.ts"
+    ]
+  }
+}
