@@ -1,15 +1,29 @@
-.svg-container {
-    position: relative;
+.chart-container {
+    width: 50%;
+    height: auto;
+}
+
+@media (max-width: 1024px) {
+    .chart-container {
+        width: 100%;
+    }
+}
+
+svg {
     width: 100%;
-    padding-bottom: 50%; /* Höhe entspricht 50% der Breite, was ein 2:1 Verhältnis ist */
-    height: 0; /* Höhe wird durch Padding bestimmt */
-    overflow: hidden;
+    height: auto;
+}
+
+.tooltip {
+    position: absolute;
+    visibility: hidden;
+    background-color: white;
+    border: 1px solid #ccc;
+    padding: 10px;
+    border-radius: 4px;
+    box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.2);
+    pointer-events: none; /* Verhindert, dass der Tooltip selbst Events empfängt */
+    font-size: 14px;
+    color: #333;
   }
   
-  .svg-content-responsive {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-  }

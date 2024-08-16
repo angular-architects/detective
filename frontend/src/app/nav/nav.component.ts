@@ -9,6 +9,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { Observable } from 'rxjs';
 import { map, shareReplay } from 'rxjs/operators';
 import { CouplingComponent } from "../coupling/coupling.component";
+import { FilterTreeComponent } from "../filter-tree/filter-tree.component";
 
 @Component({
   selector: 'app-nav',
@@ -22,7 +23,8 @@ import { CouplingComponent } from "../coupling/coupling.component";
     MatListModule,
     MatIconModule,
     AsyncPipe,
-    CouplingComponent
+    CouplingComponent,
+    FilterTreeComponent
 ]
 })
 export class NavComponent {
@@ -34,3 +36,4 @@ export class NavComponent {
       shareReplay()
     );
 }
+

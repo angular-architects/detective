@@ -1,7 +1,9 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, inject, OnInit, ViewChild, viewChild } from '@angular/core';
 import * as d3 from 'd3';
 import { CouplingService } from './coupling.service';
 import { MatButtonModule } from '@angular/material/button';
+import { EventService } from '../event.service';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Component({
   selector: 'app-coupling',
@@ -10,7 +12,7 @@ import { MatButtonModule } from '@angular/material/button';
   templateUrl: './coupling.component.html',
   styleUrl: './coupling.component.css',
 })
-export class CouplingComponent implements OnInit {
+export class CouplingComponent {
   private width = 800;
   private height = 800;
   private innerRadius = Math.min(this.width, this.height) * 0.5 - 100;
@@ -18,19 +20,41 @@ export class CouplingComponent implements OnInit {
   private svg: any;
 
   private couplingService = inject(CouplingService);
+  private eventService = inject(EventService);
 
   private matrix: number[][] = [[]];
   private labels: string[] = [];
+  private tooltip: any;
 
-  constructor() {}
+  constructor() {
 
-  ngOnInit(): void {
+      // Tooltip-Element für die Anzeige von Details
+      this.tooltip = d3
+      .select('body')
+      .append('div')
+      .attr('class', 'tooltip')
+      .style('position', 'absolute')
+      .style('visibility', 'hidden')
+      .style('background', '#fff')
+      .style('border', '1px solid #ccc')
+      .style('padding', '10px')
+      .style('border-radius', '4px')
+      .style('z-index', 1)
+      .style('box-shadow', '0px 2px 4px rgba(0, 0, 0, 0.2)');
+
+    this.load();
+    this.eventService.filterChanged.pipe(takeUntilDestroyed()).subscribe(() => {
+      d3.select('.chart-container svg').remove();
+      this.load();
+    });
+  }
+
+  private load() {
     this.couplingService.load().subscribe((r) => {
       this.matrix = r.matrix;
       this.labels = [...this.prepareDimensions(r.dimensions), ''];
       this.createSvg();
       this.createChordDiagram();
-      window.addEventListener('resize', this.resize);
     });
   }
 
@@ -45,15 +69,21 @@ export class CouplingComponent implements OnInit {
   }
 
   private createSvg(): void {
-    const container = document.getElementById('chordDiagram');
-    this.width = container.clientWidth;
-    console.log('w,h', container.clientWidth, container.clientHeight);
+    const container = d3.select('.chart-container');
+
+    // Setze die Breite des SVG auf die Breite des Containers
+    this.width = parseInt(container.style('width'));
+    this.height = this.width * 1; // Höhe basierend auf dem Verhältnis 2:1
+
+    this.innerRadius = Math.min(this.width, this.height) * 0.5 - 100;
+    this.outerRadius = this.innerRadius + 10;
+
+    console.log('w,h', this.width, this.height);
     this.svg = d3
-      .select('#chordDiagram')
+      .select('.chart-container')
       .append('svg')
-      .attr('width', this.width)
-      .attr('height', this.height)
-      .classed('svg-content-responsive', true)
+      .attr('viewBox', `0 0 ${this.width} ${this.height}`)
+      .attr('preserveAspectRatio', 'xMinYMin meet')
       .append('g')
       .attr(
         'transform',
@@ -69,6 +99,11 @@ export class CouplingComponent implements OnInit {
       .innerRadius(this.innerRadius)
       .outerRadius(this.outerRadius);
 
+    const arcHover = d3
+      .arc()
+      .innerRadius(this.innerRadius)
+      .outerRadius(this.outerRadius + 3);
+
     const ribbon = d3
       .ribbonArrow() // Verwende d3.ribbonArrow für Pfeileffekt
       .radius(this.innerRadius - 10); // Passe die Radius-Einstellung an
@@ -80,19 +115,6 @@ export class CouplingComponent implements OnInit {
     //   .range(colors);
 
     const chords = chord(this.matrix);
-
-    // Tooltip-Element für die Anzeige von Details
-    const tooltip = d3
-      .select('body')
-      .append('div')
-      .attr('class', 'tooltip')
-      .style('position', 'absolute')
-      .style('visibility', 'hidden')
-      .style('background', '#fff')
-      .style('border', '1px solid #ccc')
-      .style('padding', '10px')
-      .style('border-radius', '4px')
-      .style('box-shadow', '0px 2px 4px rgba(0, 0, 0, 0.2)');
 
     const group = this.svg
       .append('g')
@@ -109,17 +131,23 @@ export class CouplingComponent implements OnInit {
         console.log('Knoten-Index:', d.index);
       })
       .on('mouseover', (event, d) => {
-        tooltip
+        d3.select(event.currentTarget)
+          .attr('d', arcHover)
+          .style('cursor', 'pointer'); // Zeige einen Zeiger an
+
+        this.tooltip
           .style('visibility', 'visible')
-          .text(`Knoten: ${this.labels[d.index]}`);
+          .text(`${this.labels[d.index]}`);
       })
       .on('mousemove', (event) => {
-        tooltip
+        this.tooltip
           .style('top', event.pageY - 10 + 'px')
           .style('left', event.pageX + 10 + 'px');
       })
-      .on('mouseout', () => {
-        tooltip.style('visibility', 'hidden');
+      .on('mouseout', (event) => {
+        d3.select(event.currentTarget).attr('d', arc);
+
+        this.tooltip.style('visibility', 'hidden');
       });
 
     group
@@ -127,7 +155,8 @@ export class CouplingComponent implements OnInit {
       .each((d) => {
         d.angle = (d.startAngle + d.endAngle) / 2;
       })
-      .attr('dy', '.35em')
+      .style('font-size', '16px')
+      // .attr('dy', '.35em')
       .attr(
         'transform',
         (d) => `
@@ -137,33 +166,18 @@ export class CouplingComponent implements OnInit {
       `
       )
       .attr('text-anchor', (d) => (d.angle > Math.PI ? 'end' : null))
-      .text((d, i) => this.labels[i]);
-
-    //     group.append("text")
-    // .each(d => { d.angle = (d.startAngle + d.endAngle) / 2; })
-    // .attr("dy", ".35em")
-    // .attr("x", d => Math.cos(d.angle) * (this.outerRadius + 20))
-    // .attr("y", d => Math.sin(d.angle) * (this.outerRadius + 20))
-    // .attr("text-anchor", d => d.angle > Math.PI / 2 && d.angle < 3 * Math.PI / 2 ? "end" : "start")
-    // .style("font-size", "12px")
-    // .text((d, i) => this.labels[i]);
-
-    // group.append("text")
-    // .each(d => { d.angle = (d.startAngle + d.endAngle) / 2; })
-    // .attr("dy", ".35em")
-    // .attr("transform", d => {
-    //   // Berechne die x- und y-Positionen der Beschriftung
-    //   const x = Math.cos(d.angle) * (this.outerRadius + 10);
-    //   const y = Math.sin(d.angle) * (this.outerRadius + 10);
-    //   return `translate(${x}, ${y})`; // Keine Rotation, nur Translation
-    // })
-    // .attr("text-anchor", d => {
-    //   // Setze den Textanker je nach Position im Kreis
-    //   return d.angle > Math.PI ? "end" : "start";
-    // })
-    // .style("alignment-baseline", "middle") // Mittige Ausrichtung der Texte
-    // .style("font-size", "12px")
-    // .text((d, i) => this.labels[i]);
+      .text((d, i) => this.labels[i])
+      .on('mouseover', function (event, d) {
+        d3.select(event.currentTarget)
+          .style('cursor', 'pointer')
+          .style('font-weight', 'bold'); // Klasse für Hover-Effekt hinzufügen
+      })
+      .on('mouseout', function (event, d) {
+        d3.select(event.currentTarget).style('font-weight', 'normal'); // Klasse für Hover-Effekt hinzufügen
+      })
+      .on('click', function (event, d) {
+        console.log('Sie haben auf ' + d.index + ' geklickt!');
+      });
 
     // Zeichne die Bänder (ribbons) mit Pfeileffekt
     this.svg
@@ -191,16 +205,16 @@ export class CouplingComponent implements OnInit {
           .style('stroke-width', '3px') // Vergrößere die Linienbreite
           .style('cursor', 'pointer'); // Zeige einen Zeiger an
 
-        tooltip
+        this.tooltip
           .style('visibility', 'visible')
           .text(
-            `From: ${this.labels[d.source.index]}, To: ${
+            `${this.labels[d.source.index]} -> ${
               this.labels[d.target.index]
             }, Amount: ${this.matrix[d.source.index][d.target.index]}`
           );
       })
       .on('mousemove', (event) => {
-        tooltip
+        this.tooltip
           .style('top', event.pageY - 10 + 'px')
           .style('left', event.pageX + 10 + 'px');
       })
@@ -208,9 +222,10 @@ export class CouplingComponent implements OnInit {
         d3.select(event.currentTarget)
           .style('fill-opacity', 0.67) // Setze die Deckkraft zurück
           .style('stroke-width', '1px'); // Setze die Linienbreite zurück
-        tooltip.style('visibility', 'hidden');
+        this.tooltip.style('visibility', 'hidden');
       });
 
+    // responsivefy(this.svg);
     // Gewichtsbeschriftungen an den Kanten (manuell Zentroid berechnet)
     // this.svg
     //   .append('g')
@@ -249,13 +264,4 @@ export class CouplingComponent implements OnInit {
   private hideContextMenu(): void {
     d3.select('#context-menu').style('display', 'none');
   }
-
-  private resize = () => {
-    // Entferne das bestehende SVG
-    d3.select('#chordDiagram').select('svg').remove();
-
-    // Erstelle das SVG und das Diagramm neu
-    this.createSvg();
-    this.createChordDiagram();
-  };
 }

@@ -3,11 +3,9 @@
       [attr.role]="(isHandset$ | async) ? 'dialog' : 'navigation'"
       [mode]="(isHandset$ | async) ? 'over' : 'side'"
       [opened]="(isHandset$ | async) === false">
-    <mat-toolbar color="secondary">Menu</mat-toolbar>
+    <mat-toolbar color="secondary">Filter</mat-toolbar>
     <mat-nav-list>
-      <a mat-list-item href="#">Link 1</a>
-      <a mat-list-item href="#">Link 2</a>
-      <a mat-list-item href="#">Link 3</a>
+     <app-filter-tree></app-filter-tree>
     </mat-nav-list>
   </mat-sidenav>
   <mat-sidenav-content>
@@ -21,11 +19,13 @@
           <mat-icon aria-label="Side nav toggle icon">menu</mat-icon>
         </button>
       }
-      <span>frontend</span>
+      <span>Detective</span>
     </mat-toolbar>
     <!-- Add Content Here -->
+    <div class="container">
 
     <app-coupling></app-coupling>
+  </div>
 
   </mat-sidenav-content>
 </mat-sidenav-container>

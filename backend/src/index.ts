@@ -7,6 +7,7 @@ import { calcCoupling } from './services/coupling';
 import { cwd } from 'process';
 import { parseOptions } from './options/parse-options';
 import { validateOptions } from './options/validate-options';
+import { getFolders } from './services/folders';
 
 
 const options = parseOptions(process.argv.slice(2));
@@ -17,6 +18,8 @@ if (!validateOptions(options)) {
 
 const app = express();
 
+app.use(express.json());
+
 // Route für /api/config - Liefert eine statische JSON-Datei
 app.get('/api/config', (req, res) => {
   res.sendFile(path.join(cwd(), options.config));
@@ -25,13 +28,23 @@ app.get('/api/config', (req, res) => {
 app.post('/api/config', (req, res) => {
     const newConfig = req.body;
     const configPath = path.join(cwd(), options.config);
-  
+
     fs.writeFile(configPath, JSON.stringify(newConfig, null, 2), 'utf8', (error) => {
       if (error) {
         return res.status(500).json({ error });
       }
       res.json({});
     });
+  });
+
+  app.get('/api/folders', (req, res) => {
+    try {
+      const result = getFolders();
+      res.json(result)
+    }
+    catch(e) {
+      res.status(500).json(e);
+    } 
   });
 
 app.get('/api/coupling', (req, res) => {
