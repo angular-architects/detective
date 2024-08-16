@@ -1,0 +1,15 @@
+.svg-container {
+    position: relative;
+    width: 100%;
+    padding-bottom: 50%; /* Höhe entspricht 50% der Breite, was ein 2:1 Verhältnis ist */
+    height: 0; /* Höhe wird durch Padding bestimmt */
+    overflow: hidden;
+  }
+  
+  .svg-content-responsive {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+  }
