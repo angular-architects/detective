@@ -89,6 +89,13 @@ export class CouplingComponent {
         'transform',
         'translate(' + this.width / 2 + ',' + this.height / 2 + ')'
       );
+
+    this.svg.attr('opacity', 0) // Startzustand: Bänder sind nicht sichtbar
+    .transition()
+    .duration(1000)
+    .delay((d, i) => i * 100)
+    .attr('opacity', 1);
+      
   }
 
   private createChordDiagram(): void {
@@ -123,11 +130,22 @@ export class CouplingComponent {
       .enter()
       .append('g');
 
-    group
+
+      group
       .append('path')
       .style('fill', (d, i) => colors[d.index]) // Wendet die Farbskala an
-      .attr('d', arc)
-      .on('click', (event, d) => {
+      .transition() // Füge eine Transition direkt nach dem Append hinzu
+      .duration(1000) // Dauer der Transition
+      .attrTween('d', function(d) {
+        const i = d3.interpolate(d.startAngle, d.endAngle);
+        return function(t) {
+          d.endAngle = i(t);
+          return arc(d);
+        };
+      });
+    
+
+      group.on('click', (event, d) => {
         console.log('Knoten-Index:', d.index);
       })
       .on('mouseover', (event, d) => {
@@ -149,6 +167,17 @@ export class CouplingComponent {
 
         this.tooltip.style('visibility', 'hidden');
       });
+
+
+
+      // group
+
+      // .transition()
+      // .duration(1000)
+      // .attrTween('d', d => {
+      //   const interpolate = d3.interpolate(d.startAngle, d.endAngle);
+      //   return t => arc({ ...d, endAngle: interpolate(t) });
+      // })
 
     group
       .append('text')
@@ -179,51 +208,119 @@ export class CouplingComponent {
         console.log('Sie haben auf ' + d.index + ' geklickt!');
       });
 
-    // Zeichne die Bänder (ribbons) mit Pfeileffekt
-    this.svg
-      .append('g')
-      .attr('fill-opacity', 0.67)
-      .selectAll('path')
-      .data(chords)
-      .enter()
-      .append('path')
-      .attr('d', ribbon)
-      .attr('fill', (d) => colors[d.target.index])
-      // .style("stroke", d => d3.rgb(color(this.labels[d.target.index])).darker())
-      .on('click', (event, d) => {
-        console.log(
-          'Quelle-Index:',
-          d.source.index,
-          'Ziel-Index:',
-          d.target.index
-        );
-        this.showContextMenu(event, d);
-      })
-      .on('mouseover', (event, d) => {
-        d3.select(event.currentTarget)
-          .style('fill-opacity', 1) // Erhöhe die Deckkraft
-          .style('stroke-width', '3px') // Vergrößere die Linienbreite
-          .style('cursor', 'pointer'); // Zeige einen Zeiger an
+   
 
-        this.tooltip
-          .style('visibility', 'visible')
-          .text(
-            `${this.labels[d.source.index]} -> ${
-              this.labels[d.target.index]
-            }, Amount: ${this.matrix[d.source.index][d.target.index]}`
-          );
-      })
-      .on('mousemove', (event) => {
-        this.tooltip
-          .style('top', event.pageY - 10 + 'px')
-          .style('left', event.pageX + 10 + 'px');
-      })
-      .on('mouseout', (event) => {
-        d3.select(event.currentTarget)
-          .style('fill-opacity', 0.67) // Setze die Deckkraft zurück
-          .style('stroke-width', '1px'); // Setze die Linienbreite zurück
-        this.tooltip.style('visibility', 'hidden');
-      });
+    // Zeichne die Bänder (ribbons) mit Pfeileffekt
+
+    const r = this.svg
+  .append('g')
+  .attr('fill-opacity', 0.67)
+  .selectAll('path')
+  .data(chords)
+  .enter()
+  .append('path');
+
+  r.attr('d', d => {
+    // Startzustand: Kanten werden in einem schmalen Bereich gerendert
+    const sourceCopy = { ...d.source };
+    const targetCopy = { ...d.target };
+    sourceCopy.endAngle = sourceCopy.startAngle;
+    targetCopy.endAngle = targetCopy.startAngle;
+    return ribbon({ source: sourceCopy, target: targetCopy });
+  })
+  .attr('fill', (d) => colors[d.target.index])
+  .transition() // Füge die Transition hinzu
+  .duration(1000) // Dauer der Transition
+  .attrTween('d', function(d) {
+    // Animations-Interpolationsfunktion für das Ribbon
+    const interpolateSource = d3.interpolate(d.source.startAngle, d.source.endAngle);
+    const interpolateTarget = d3.interpolate(d.target.startAngle, d.target.endAngle);
+    return function(t) {
+      d.source.endAngle = interpolateSource(t);
+      d.target.endAngle = interpolateTarget(t);
+      return ribbon(d);
+    };
+  });
+
+  r.on('click', (event, d) => {
+    console.log(
+      'Quelle-Index:',
+      d.source.index,
+      'Ziel-Index:',
+      d.target.index
+    );
+    this.showContextMenu(event, d);
+  })
+  .on('mouseover', (event, d) => {
+    d3.select(event.currentTarget)
+      .style('fill-opacity', 1) // Erhöhe die Deckkraft
+      .style('stroke-width', '3px') // Vergrößere die Linienbreite
+      .style('cursor', 'pointer');
+
+    this.tooltip
+      .style('visibility', 'visible')
+      .text(
+        `${this.labels[d.source.index]} -> ${
+          this.labels[d.target.index]
+        }, Amount: ${this.matrix[d.source.index][d.target.index]}`
+      );
+  })
+  .on('mousemove', (event) => {
+    this.tooltip
+      .style('top', event.pageY - 10 + 'px')
+      .style('left', event.pageX + 10 + 'px');
+  })
+  .on('mouseout', (event) => {
+    d3.select(event.currentTarget)
+      .style('fill-opacity', 0.67)
+      .style('stroke-width', '1px');
+    this.tooltip.style('visibility', 'hidden');
+  });
+
+    // this.svg
+    //   .append('g')
+    //   .attr('fill-opacity', 0.67)
+    //   .selectAll('path')
+    //   .data(chords)
+    //   .enter()
+    //   .append('path')
+    //   .attr('d', ribbon)
+    //   .attr('fill', (d) => colors[d.target.index])
+    //   // .style("stroke", d => d3.rgb(color(this.labels[d.target.index])).darker())
+    //   .on('click', (event, d) => {
+    //     console.log(
+    //       'Quelle-Index:',
+    //       d.source.index,
+    //       'Ziel-Index:',
+    //       d.target.index
+    //     );
+    //     this.showContextMenu(event, d);
+    //   })
+    //   .on('mouseover', (event, d) => {
+    //     d3.select(event.currentTarget)
+    //       .style('fill-opacity', 1) // Erhöhe die Deckkraft
+    //       .style('stroke-width', '3px') // Vergrößere die Linienbreite
+    //       .style('cursor', 'pointer'); // Zeige einen Zeiger an
+
+    //     this.tooltip
+    //       .style('visibility', 'visible')
+    //       .text(
+    //         `${this.labels[d.source.index]} -> ${
+    //           this.labels[d.target.index]
+    //         }, Amount: ${this.matrix[d.source.index][d.target.index]}`
+    //       );
+    //   })
+    //   .on('mousemove', (event) => {
+    //     this.tooltip
+    //       .style('top', event.pageY - 10 + 'px')
+    //       .style('left', event.pageX + 10 + 'px');
+    //   })
+    //   .on('mouseout', (event) => {
+    //     d3.select(event.currentTarget)
+    //       .style('fill-opacity', 0.67) // Setze die Deckkraft zurück
+    //       .style('stroke-width', '1px'); // Setze die Linienbreite zurück
+    //     this.tooltip.style('visibility', 'hidden');
+    //   });
 
     // responsivefy(this.svg);
     // Gewichtsbeschriftungen an den Kanten (manuell Zentroid berechnet)

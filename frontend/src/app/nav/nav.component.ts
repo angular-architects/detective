@@ -10,6 +10,7 @@ import { Observable } from 'rxjs';
 import { map, shareReplay } from 'rxjs/operators';
 import { CouplingComponent } from "../coupling/coupling.component";
 import { FilterTreeComponent } from "../filter-tree/filter-tree.component";
+import { GraphComponent } from "../coupling/graph/graph.component";
 
 @Component({
   selector: 'app-nav',
@@ -24,7 +25,8 @@ import { FilterTreeComponent } from "../filter-tree/filter-tree.component";
     MatIconModule,
     AsyncPipe,
     CouplingComponent,
-    FilterTreeComponent
+    FilterTreeComponent,
+    GraphComponent
 ]
 })
 export class NavComponent {

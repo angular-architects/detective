@@ -55,6 +55,8 @@ export class FilterTreeComponent implements OnInit {
       this.selected.clear();
       this.config.scopes.forEach((scope) => this.selected.add(scope));
       this.expandChecked(result.folders);
+      (document.activeElement as any).blur();
+
     });
   }
 
