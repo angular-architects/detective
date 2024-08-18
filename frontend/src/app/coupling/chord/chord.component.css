@@ -27,3 +27,18 @@ svg {
     color: #333;
   }
   
+
+  .custom-list-item {
+    display: flex;
+    align-items: center;
+  }
+  
+  .custom-list-item .title {
+    margin: 0;
+    padding-right: 10px; /* Optional: Abstand zwischen Titel und Linie */
+  }
+  
+  .custom-list-item .line {
+    margin: 0;
+  }
+  

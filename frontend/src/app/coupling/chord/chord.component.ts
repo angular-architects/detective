@@ -3,11 +3,19 @@ import * as d3 from 'd3';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { CouplingService } from '../coupling.service';
 import { EventService } from '../../event.service';
+import { MatListModule } from '@angular/material/list';
+
+type NodeDetails = {
+  title: string;
+  incoming: number;
+  outgoing: number;
+  cohesion: number;
+};
 
 @Component({
   selector: 'app-chord',
   standalone: true,
-  imports: [],
+  imports: [MatListModule],
   templateUrl: './chord.component.html',
   styleUrl: './chord.component.css',
 })
@@ -24,6 +32,8 @@ export class ChordComponent {
   private matrix: number[][] = [[]];
   private labels: string[] = [];
   private tooltip: any;
+
+  nodeDetails?: NodeDetails;
 
   constructor() {
     // Tooltip-Element für die Anzeige von Details
@@ -54,6 +64,15 @@ export class ChordComponent {
       this.createSvg();
       this.createChordDiagram();
     });
+  }
+
+  private showNodeDetails(nodeIndex: number) {
+    this.nodeDetails = {
+      title: this.labels[nodeIndex],
+      cohesion: 0,
+      outgoing: sumRow(this.matrix, nodeIndex),
+      incoming: sumCol(this.matrix, nodeIndex),
+    };
   }
 
   prepareDimensions(dimensions: string[]): string[] {
@@ -182,52 +201,11 @@ export class ChordComponent {
 
         // Verberge das Tooltip
         d3.select('.tooltip').style('visibility', 'hidden');
+      })
+      .on('click', (event, d) => {
+        this.showNodeDetails(d.index);
+        console.log('Sie haben auf ' + d.index + ' geklickt!');
       });
-
-    // group
-    // .append('path')
-    // .style('fill', (d, i) => colors[d.index]) // Wendet die Farbskala an
-    // .transition() // Füge eine Transition direkt nach dem Append hinzu
-    // .duration(1000) // Dauer der Transition
-    // .attrTween('d', function(d) {
-    //   const i = d3.interpolate(d.startAngle, d.endAngle);
-    //   return function(t) {
-    //     d.endAngle = i(t);
-    //     return arc(d);
-    //   };
-    // });
-
-    // group.on('click', (event, d) => {
-    //   console.log('Knoten-Index:', d.index);
-    // })
-    // .on('mouseover', (event, d) => {
-    //   d3.select(event.currentTarget)
-    //     .attr('d', arcHover)
-    //     .style('cursor', 'pointer'); // Zeige einen Zeiger an
-
-    //   this.tooltip
-    //     .style('visibility', 'visible')
-    //     .text(`${this.labels[d.index]}`);
-    // })
-    // .on('mousemove', (event) => {
-    //   this.tooltip
-    //     .style('top', event.pageY - 10 + 'px')
-    //     .style('left', event.pageX + 10 + 'px');
-    // })
-    // .on('mouseout', (event) => {
-    //   d3.select(event.currentTarget).attr('d', arc);
-
-    //   this.tooltip.style('visibility', 'hidden');
-    // });
-
-    // group
-
-    // .transition()
-    // .duration(1000)
-    // .attrTween('d', d => {
-    //   const interpolate = d3.interpolate(d.startAngle, d.endAngle);
-    //   return t => arc({ ...d, endAngle: interpolate(t) });
-    // })
 
     group
       .append('text')
@@ -254,7 +232,8 @@ export class ChordComponent {
       .on('mouseout', function (event, d) {
         d3.select(event.currentTarget).style('font-weight', 'normal'); // Klasse für Hover-Effekt hinzufügen
       })
-      .on('click', function (event, d) {
+      .on('click', (event, d) => {
+        this.showNodeDetails(d.index);
         console.log('Sie haben auf ' + d.index + ' geklickt!');
       });
 
@@ -303,6 +282,11 @@ export class ChordComponent {
         'Ziel-Index:',
         d.target.index
       );
+
+      if (d.source.index === d.target.index) {
+        this.showNodeDetails(d.source.index);
+      }
+
       this.showContextMenu(event, d);
     })
       .on('mouseover', (event, d) => {
@@ -330,74 +314,6 @@ export class ChordComponent {
           .style('stroke-width', '1px');
         this.tooltip.style('visibility', 'hidden');
       });
-
-    // this.svg
-    //   .append('g')
-    //   .attr('fill-opacity', 0.67)
-    //   .selectAll('path')
-    //   .data(chords)
-    //   .enter()
-    //   .append('path')
-    //   .attr('d', ribbon)
-    //   .attr('fill', (d) => colors[d.target.index])
-    //   // .style("stroke", d => d3.rgb(color(this.labels[d.target.index])).darker())
-    //   .on('click', (event, d) => {
-    //     console.log(
-    //       'Quelle-Index:',
-    //       d.source.index,
-    //       'Ziel-Index:',
-    //       d.target.index
-    //     );
-    //     this.showContextMenu(event, d);
-    //   })
-    //   .on('mouseover', (event, d) => {
-    //     d3.select(event.currentTarget)
-    //       .style('fill-opacity', 1) // Erhöhe die Deckkraft
-    //       .style('stroke-width', '3px') // Vergrößere die Linienbreite
-    //       .style('cursor', 'pointer'); // Zeige einen Zeiger an
-
-    //     this.tooltip
-    //       .style('visibility', 'visible')
-    //       .text(
-    //         `${this.labels[d.source.index]} -> ${
-    //           this.labels[d.target.index]
-    //         }, Amount: ${this.matrix[d.source.index][d.target.index]}`
-    //       );
-    //   })
-    //   .on('mousemove', (event) => {
-    //     this.tooltip
-    //       .style('top', event.pageY - 10 + 'px')
-    //       .style('left', event.pageX + 10 + 'px');
-    //   })
-    //   .on('mouseout', (event) => {
-    //     d3.select(event.currentTarget)
-    //       .style('fill-opacity', 0.67) // Setze die Deckkraft zurück
-    //       .style('stroke-width', '1px'); // Setze die Linienbreite zurück
-    //     this.tooltip.style('visibility', 'hidden');
-    //   });
-
-    // responsivefy(this.svg);
-    // Gewichtsbeschriftungen an den Kanten (manuell Zentroid berechnet)
-    // this.svg
-    //   .append('g')
-    //   .selectAll('text')
-    //   .data(chords)
-    //   .enter()
-    //   .append('text')
-    //   .attr(
-    //     'x',
-    //     (d) =>
-    //       ((d.source.endAngle + d.source.startAngle) / 2) * this.innerRadius
-    //   )
-    //   .attr(
-    //     'y',
-    //     (d) =>
-    //       ((d.target.endAngle + d.target.startAngle) / 2) * this.innerRadius
-    //   )
-    //   .attr('dy', '.35em')
-    //   .attr('text-anchor', 'middle')
-    //   .style('fill', 'black')
-    //   .text((d) => this.matrix[d.source.index][d.target.index]);
   }
 
   private showContextMenu(event: any, d: any): void {
@@ -415,4 +331,24 @@ export class ChordComponent {
   private hideContextMenu(): void {
     d3.select('#context-menu').style('display', 'none');
   }
+}
+
+function sumRow(matrix: number[][], nodeIndex: number): number {
+  let sum = 0;
+  for (let i = 0; i < matrix.length; i++) {
+    if (i !== nodeIndex) {
+      sum += matrix[nodeIndex][i];
+    }
+  }
+  return sum;
+}
+
+function sumCol(matrix: number[][], nodeIndex: number): number {
+  let sum = 0;
+  for (let i = 0; i < matrix.length; i++) {
+    if (i !== nodeIndex) {
+      sum += matrix[i][nodeIndex];
+    }
+  }
+  return sum;
 }

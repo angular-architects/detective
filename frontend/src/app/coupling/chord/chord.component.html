@@ -1,7 +1,28 @@
 <h1>Coupling</h1>
 
 <div style="float: left;" class="chart-container"></div>
-<div style="float: left;">asdfasd</div>
+
+@if(nodeDetails) {
+<div style="float: left; margin-left:40px" >
+  <mat-list>
+    <mat-list-item>
+      <h2>{{nodeDetails.title}}</h2>
+    </mat-list-item>
+    <mat-list-item>
+      <span matListItemTitle>Incoming Dependencies</span>
+      <span matListItemLine>{{nodeDetails.incoming}} Modules</span>
+    </mat-list-item>
+    <mat-list-item>
+      <span matListItemTitle>Outgoing Dependencies</span>
+      <span matListItemLine>{{nodeDetails.outgoing}} Modules</span>
+    </mat-list-item>
+    <mat-list-item>
+      <span matListItemTitle>Graph Cohesion</span>
+      <span matListItemLine>{{nodeDetails.cohesion}}%</span>
+    </mat-list-item>
+  </mat-list>
+</div>
+}
 <!-- <div id="context-menu" class="context-menu">
     <ul>
       <li >Option 1</li>
