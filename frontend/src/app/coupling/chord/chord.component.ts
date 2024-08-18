@@ -1,18 +1,17 @@
 import { Component, inject, OnInit, ViewChild, viewChild } from '@angular/core';
 import * as d3 from 'd3';
-import { CouplingService } from './coupling.service';
-import { MatButtonModule } from '@angular/material/button';
-import { EventService } from '../event.service';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { CouplingService } from '../coupling.service';
+import { EventService } from '../../event.service';
 
 @Component({
-  selector: 'app-coupling',
+  selector: 'app-chord',
   standalone: true,
   imports: [],
-  templateUrl: './coupling.component.html',
-  styleUrl: './coupling.component.css',
+  templateUrl: './chord.component.html',
+  styleUrl: './chord.component.css',
 })
-export class CouplingComponent {
+export class ChordComponent {
   private width = 800;
   private height = 800;
   private innerRadius = Math.min(this.width, this.height) * 0.5 - 100;
@@ -27,9 +26,8 @@ export class CouplingComponent {
   private tooltip: any;
 
   constructor() {
-
-      // Tooltip-Element für die Anzeige von Details
-      this.tooltip = d3
+    // Tooltip-Element für die Anzeige von Details
+    this.tooltip = d3
       .select('body')
       .append('div')
       .attr('class', 'tooltip')
@@ -78,7 +76,6 @@ export class CouplingComponent {
     this.innerRadius = Math.min(this.width, this.height) * 0.5 - 100;
     this.outerRadius = this.innerRadius + 10;
 
-    console.log('w,h', this.width, this.height);
     this.svg = d3
       .select('.chart-container')
       .append('svg')
@@ -90,12 +87,12 @@ export class CouplingComponent {
         'translate(' + this.width / 2 + ',' + this.height / 2 + ')'
       );
 
-    this.svg.attr('opacity', 0) // Startzustand: Bänder sind nicht sichtbar
-    .transition()
-    .duration(1000)
-    .delay((d, i) => i * 100)
-    .attr('opacity', 1);
-      
+    this.svg
+      .attr('opacity', 0) // Startzustand: Bänder sind nicht sichtbar
+      .transition()
+      .duration(1000)
+      .delay((d, i) => i * 100)
+      .attr('opacity', 1);
   }
 
   private createChordDiagram(): void {
@@ -130,30 +127,41 @@ export class CouplingComponent {
       .enter()
       .append('g');
 
-
-      group
+    // Füge den Pfad hinzu und animiere ihn
+    group
       .append('path')
-      .style('fill', (d, i) => colors[d.index]) // Wendet die Farbskala an
-      .transition() // Füge eine Transition direkt nach dem Append hinzu
-      .duration(1000) // Dauer der Transition
-      .attrTween('d', function(d) {
-        const i = d3.interpolate(d.startAngle, d.endAngle);
-        return function(t) {
-          d.endAngle = i(t);
-          return arc(d);
+      .style('fill', (d, i) => colors[d.index])
+      .each(function (d) {
+        // Speichere den ursprünglichen Endwinkel, bevor die Transition beginnt
+        this._current = d;
+      })
+      .transition()
+      .duration(1000)
+      .attrTween('d', function (d) {
+        const interpolate = d3.interpolate(d.startAngle, d.endAngle);
+        const current = this._current; // Aktueller Zustand
+        return function (t) {
+          current.endAngle = interpolate(t);
+          return arc(current); // Rückgabe des aktuellen Pfades
         };
       });
-    
 
-      group.on('click', (event, d) => {
-        console.log('Knoten-Index:', d.index);
-      })
+    // Füge die Maus-Events hinzu
+    group
       .on('mouseover', (event, d) => {
+        // Erstelle eine neue Transition, um die Größe des Arcs zu verändern
         d3.select(event.currentTarget)
-          .attr('d', arcHover)
-          .style('cursor', 'pointer'); // Zeige einen Zeiger an
+          .select('path') // Selektiere den aktuellen Pfad
+          .transition()
+          .duration(200)
+          .attr('d', function (d) {
+            // Berechne den neuen Arc-Pfad für den Hover-Zustand
+            return arcHover(d as any);
+          })
+          .style('cursor', 'pointer');
 
-        this.tooltip
+        // Zeige das Tooltip an
+        d3.select('.tooltip')
           .style('visibility', 'visible')
           .text(`${this.labels[d.index]}`);
       })
@@ -162,22 +170,64 @@ export class CouplingComponent {
           .style('top', event.pageY - 10 + 'px')
           .style('left', event.pageX + 10 + 'px');
       })
-      .on('mouseout', (event) => {
-        d3.select(event.currentTarget).attr('d', arc);
+      .on('mouseout', function (event, d) {
+        // Setze den ursprünglichen Arc-Pfad zurück, wenn die Maus das Element verlässt
+        d3.select(this)
+          .select('path')
+          .transition()
+          .duration(200)
+          .attr('d', function (d) {
+            return arc(d as any);
+          });
 
-        this.tooltip.style('visibility', 'hidden');
+        // Verberge das Tooltip
+        d3.select('.tooltip').style('visibility', 'hidden');
       });
 
+    // group
+    // .append('path')
+    // .style('fill', (d, i) => colors[d.index]) // Wendet die Farbskala an
+    // .transition() // Füge eine Transition direkt nach dem Append hinzu
+    // .duration(1000) // Dauer der Transition
+    // .attrTween('d', function(d) {
+    //   const i = d3.interpolate(d.startAngle, d.endAngle);
+    //   return function(t) {
+    //     d.endAngle = i(t);
+    //     return arc(d);
+    //   };
+    // });
 
+    // group.on('click', (event, d) => {
+    //   console.log('Knoten-Index:', d.index);
+    // })
+    // .on('mouseover', (event, d) => {
+    //   d3.select(event.currentTarget)
+    //     .attr('d', arcHover)
+    //     .style('cursor', 'pointer'); // Zeige einen Zeiger an
 
-      // group
+    //   this.tooltip
+    //     .style('visibility', 'visible')
+    //     .text(`${this.labels[d.index]}`);
+    // })
+    // .on('mousemove', (event) => {
+    //   this.tooltip
+    //     .style('top', event.pageY - 10 + 'px')
+    //     .style('left', event.pageX + 10 + 'px');
+    // })
+    // .on('mouseout', (event) => {
+    //   d3.select(event.currentTarget).attr('d', arc);
 
-      // .transition()
-      // .duration(1000)
-      // .attrTween('d', d => {
-      //   const interpolate = d3.interpolate(d.startAngle, d.endAngle);
-      //   return t => arc({ ...d, endAngle: interpolate(t) });
-      // })
+    //   this.tooltip.style('visibility', 'hidden');
+    // });
+
+    // group
+
+    // .transition()
+    // .duration(1000)
+    // .attrTween('d', d => {
+    //   const interpolate = d3.interpolate(d.startAngle, d.endAngle);
+    //   return t => arc({ ...d, endAngle: interpolate(t) });
+    // })
 
     group
       .append('text')
@@ -208,74 +258,78 @@ export class CouplingComponent {
         console.log('Sie haben auf ' + d.index + ' geklickt!');
       });
 
-   
-
     // Zeichne die Bänder (ribbons) mit Pfeileffekt
 
     const r = this.svg
-  .append('g')
-  .attr('fill-opacity', 0.67)
-  .selectAll('path')
-  .data(chords)
-  .enter()
-  .append('path');
+      .append('g')
+      .attr('fill-opacity', 0.67)
+      .selectAll('path')
+      .data(chords)
+      .enter()
+      .append('path');
 
-  r.attr('d', d => {
-    // Startzustand: Kanten werden in einem schmalen Bereich gerendert
-    const sourceCopy = { ...d.source };
-    const targetCopy = { ...d.target };
-    sourceCopy.endAngle = sourceCopy.startAngle;
-    targetCopy.endAngle = targetCopy.startAngle;
-    return ribbon({ source: sourceCopy, target: targetCopy });
-  })
-  .attr('fill', (d) => colors[d.target.index])
-  .transition() // Füge die Transition hinzu
-  .duration(1000) // Dauer der Transition
-  .attrTween('d', function(d) {
-    // Animations-Interpolationsfunktion für das Ribbon
-    const interpolateSource = d3.interpolate(d.source.startAngle, d.source.endAngle);
-    const interpolateTarget = d3.interpolate(d.target.startAngle, d.target.endAngle);
-    return function(t) {
-      d.source.endAngle = interpolateSource(t);
-      d.target.endAngle = interpolateTarget(t);
-      return ribbon(d);
-    };
-  });
+    r.attr('d', (d) => {
+      // Startzustand: Kanten werden in einem schmalen Bereich gerendert
+      const sourceCopy = { ...d.source };
+      const targetCopy = { ...d.target };
+      sourceCopy.endAngle = sourceCopy.startAngle;
+      targetCopy.endAngle = targetCopy.startAngle;
+      return ribbon({ source: sourceCopy, target: targetCopy });
+    })
+      .attr('fill', (d) => colors[d.target.index])
+      .transition() // Füge die Transition hinzu
+      .duration(1000) // Dauer der Transition
+      .attrTween('d', function (d) {
+        // Animations-Interpolationsfunktion für das Ribbon
+        const interpolateSource = d3.interpolate(
+          d.source.startAngle,
+          d.source.endAngle
+        );
+        const interpolateTarget = d3.interpolate(
+          d.target.startAngle,
+          d.target.endAngle
+        );
+        return function (t) {
+          d.source.endAngle = interpolateSource(t);
+          d.target.endAngle = interpolateTarget(t);
+          return ribbon(d);
+        };
+      });
 
-  r.on('click', (event, d) => {
-    console.log(
-      'Quelle-Index:',
-      d.source.index,
-      'Ziel-Index:',
-      d.target.index
-    );
-    this.showContextMenu(event, d);
-  })
-  .on('mouseover', (event, d) => {
-    d3.select(event.currentTarget)
-      .style('fill-opacity', 1) // Erhöhe die Deckkraft
-      .style('stroke-width', '3px') // Vergrößere die Linienbreite
-      .style('cursor', 'pointer');
-
-    this.tooltip
-      .style('visibility', 'visible')
-      .text(
-        `${this.labels[d.source.index]} -> ${
-          this.labels[d.target.index]
-        }, Amount: ${this.matrix[d.source.index][d.target.index]}`
+    r.on('click', (event, d) => {
+      console.log(
+        'Quelle-Index:',
+        d.source.index,
+        'Ziel-Index:',
+        d.target.index
       );
-  })
-  .on('mousemove', (event) => {
-    this.tooltip
-      .style('top', event.pageY - 10 + 'px')
-      .style('left', event.pageX + 10 + 'px');
-  })
-  .on('mouseout', (event) => {
-    d3.select(event.currentTarget)
-      .style('fill-opacity', 0.67)
-      .style('stroke-width', '1px');
-    this.tooltip.style('visibility', 'hidden');
-  });
+      this.showContextMenu(event, d);
+    })
+      .on('mouseover', (event, d) => {
+        d3.select(event.currentTarget)
+          .style('fill-opacity', 1) // Erhöhe die Deckkraft
+          .style('stroke-width', '3px') // Vergrößere die Linienbreite
+          .style('cursor', 'pointer');
+
+        this.tooltip
+          .style('visibility', 'visible')
+          .text(
+            `${this.labels[d.source.index]} -> ${
+              this.labels[d.target.index]
+            }, Amount: ${this.matrix[d.source.index][d.target.index]}`
+          );
+      })
+      .on('mousemove', (event) => {
+        this.tooltip
+          .style('top', event.pageY - 10 + 'px')
+          .style('left', event.pageX + 10 + 'px');
+      })
+      .on('mouseout', (event) => {
+        d3.select(event.currentTarget)
+          .style('fill-opacity', 0.67)
+          .style('stroke-width', '1px');
+        this.tooltip.style('visibility', 'hidden');
+      });
 
     // this.svg
     //   .append('g')

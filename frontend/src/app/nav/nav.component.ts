@@ -8,9 +8,9 @@ import { MatListModule } from '@angular/material/list';
 import { MatIconModule } from '@angular/material/icon';
 import { Observable } from 'rxjs';
 import { map, shareReplay } from 'rxjs/operators';
-import { CouplingComponent } from "../coupling/coupling.component";
 import { FilterTreeComponent } from "../filter-tree/filter-tree.component";
 import { GraphComponent } from "../coupling/graph/graph.component";
+import { ChordComponent } from '../coupling/chord/chord.component';
 
 @Component({
   selector: 'app-nav',
@@ -24,9 +24,9 @@ import { GraphComponent } from "../coupling/graph/graph.component";
     MatListModule,
     MatIconModule,
     AsyncPipe,
-    CouplingComponent,
+    ChordComponent,
     FilterTreeComponent,
-    GraphComponent
+    GraphComponent,
 ]
 })
 export class NavComponent {
