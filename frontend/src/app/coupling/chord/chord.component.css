@@ -1,7 +1,20 @@
 .chart-container {
     width: 50%;
     height: auto;
+    float: left;
+    margin: 0px 50px;
 }
+
+.details-pane {
+  float: left; 
+  margin-left: 40px;
+  margin-top: 40px;
+}
+
+.chart-container text {
+  font-size: 12px; /* Feste Schriftgröße */
+}
+
 
 @media (max-width: 1024px) {
     .chart-container {

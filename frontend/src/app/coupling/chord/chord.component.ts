@@ -1,16 +1,24 @@
-import { Component, inject, OnInit, ViewChild, viewChild } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import * as d3 from 'd3';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { CouplingService } from '../coupling.service';
 import { EventService } from '../../event.service';
 import { MatListModule } from '@angular/material/list';
+import { ModuleService } from '../module.service';
 
 type NodeDetails = {
   title: string;
   incoming: number;
   outgoing: number;
   cohesion: number;
+  fileCount: number;
 };
+
+type EdgeDetails = {
+  from: string;
+  to: string;
+  depCount: number;
+}
 
 @Component({
   selector: 'app-chord',
@@ -28,12 +36,16 @@ export class ChordComponent {
 
   private couplingService = inject(CouplingService);
   private eventService = inject(EventService);
+  private moduleService = inject(ModuleService);
 
   private matrix: number[][] = [[]];
   private labels: string[] = [];
   private tooltip: any;
 
   nodeDetails?: NodeDetails;
+  edgeDetails?: EdgeDetails;
+  cohesion: number[];
+  fileCount: number[];
 
   constructor() {
     // Tooltip-Element für die Anzeige von Details
@@ -52,6 +64,8 @@ export class ChordComponent {
 
     this.load();
     this.eventService.filterChanged.pipe(takeUntilDestroyed()).subscribe(() => {
+      this.nodeDetails = null;
+      this.edgeDetails = null;
       d3.select('.chart-container svg').remove();
       this.load();
     });
@@ -61,17 +75,31 @@ export class ChordComponent {
     this.couplingService.load().subscribe((r) => {
       this.matrix = r.matrix;
       this.labels = [...this.prepareDimensions(r.dimensions), ''];
+      this.cohesion = r.cohesion;
+      this.fileCount = r.fileCount;
+
       this.createSvg();
       this.createChordDiagram();
     });
   }
 
-  private showNodeDetails(nodeIndex: number) {
+  private showNodeDetails(nodeIndex: number): void {
+    this.edgeDetails = null;
     this.nodeDetails = {
       title: this.labels[nodeIndex],
-      cohesion: 0,
+      cohesion: this.cohesion[nodeIndex],
+      fileCount: this.fileCount[nodeIndex],
       outgoing: sumRow(this.matrix, nodeIndex),
       incoming: sumCol(this.matrix, nodeIndex),
+    };
+  }
+
+  private showEdgeDetails(from: number, to: number): void {
+    this.nodeDetails = null;
+    this.edgeDetails = {
+      from: this.labels[from],
+      to: this.labels[to],
+      depCount: this.matrix[from][to]
     };
   }
 
@@ -212,7 +240,7 @@ export class ChordComponent {
       .each((d) => {
         d.angle = (d.startAngle + d.endAngle) / 2;
       })
-      .style('font-size', '16px')
+      .style('font-size', '12px')
       // .attr('dy', '.35em')
       .attr(
         'transform',
@@ -286,6 +314,9 @@ export class ChordComponent {
       if (d.source.index === d.target.index) {
         this.showNodeDetails(d.source.index);
       }
+      else {
+        this.showEdgeDetails(d.source.index, d.target.index);
+      }
 
       this.showContextMenu(event, d);
     })
@@ -298,9 +329,9 @@ export class ChordComponent {
         this.tooltip
           .style('visibility', 'visible')
           .text(
-            `${this.labels[d.source.index]} -> ${
+            `${this.labels[d.source.index]} → ${
               this.labels[d.target.index]
-            }, Amount: ${this.matrix[d.source.index][d.target.index]}`
+            }, ${this.matrix[d.source.index][d.target.index]} connections`
           );
       })
       .on('mousemove', (event) => {

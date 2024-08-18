@@ -11,6 +11,7 @@ import { map, shareReplay } from 'rxjs/operators';
 import { FilterTreeComponent } from "../filter-tree/filter-tree.component";
 import { GraphComponent } from "../coupling/graph/graph.component";
 import { ChordComponent } from '../coupling/chord/chord.component';
+import { RouterModule, RouterOutlet } from '@angular/router';
 
 @Component({
   selector: 'app-nav',
@@ -27,6 +28,7 @@ import { ChordComponent } from '../coupling/chord/chord.component';
     ChordComponent,
     FilterTreeComponent,
     GraphComponent,
+    RouterModule
 ]
 })
 export class NavComponent {

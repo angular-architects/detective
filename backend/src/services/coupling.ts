@@ -1,17 +1,20 @@
-import path from "path";
-import fs from "fs";
 import { Config } from "../model/config";
 import { Deps } from "../model/deps";
 import { Options } from "../options/options";
-import { cwd } from "process";
+import { loadConfig } from "../infrastructure/config";
+import { loadDeps } from "../infrastructure/deps";
+import { calcModuleInfo, ModuleInfo } from "./module-info";
+import { toPercent } from "../utils/round";
 
+// TODO: Restructure fileCount and cohesion into dimensions node
 export type CouplingResult = {
   dimensions: string[];
+  fileCount: number[];
+  cohesion: number[];
   matrix: number[][];
 };
 
 export function calcCoupling(options: Options): CouplingResult {
-  
   const config = loadConfig(options);
   const deps = loadDeps(options);
 
@@ -35,47 +38,44 @@ export function calcCoupling(options: Options): CouplingResult {
     }
   }
 
+  // TODO: Improve performance by combinding this with matrix calculation
+  const moduleInfo = calcModuleInfo(options);
+  const cohesion = calcCohesion(moduleInfo, matrix);
+
   return {
     dimensions: config.scopes,
+    fileCount: moduleInfo.fileCount,
+    cohesion,
     matrix,
   };
 }
 
-function calcCell(
-  files: string[],
-  deps: Deps,
-  row: string,
-  col: string
-) {
+function calcCohesion(moduleInfo: ModuleInfo, matrix: number[][]) {
+  return moduleInfo.fileCount.map((count, index) => {
+    const edges = matrix[index][index];
+    const maxEdges = count * (count - 1);
+    return toPercent(edges / maxEdges, 2);
+  });
+}
+
+function calcCell(files: string[], deps: Deps, row: string, col: string) {
   let count = 0;
   for (const file of files) {
     if (file.startsWith(row)) {
-        count += sumUpImports(deps, file, col);
+      count += sumUpImports(deps, file, col);
     }
   }
   return count;
 }
 
 function sumUpImports(deps: Deps, file: string, col: string) {
-    let count = 0;
-    for (const importPath of deps[file].imports) {
-        if (importPath.startsWith(col)) {
-            count++;
-        }
+  let count = 0;
+  for (const importPath of deps[file].imports) {
+    if (importPath.startsWith(col)) {
+      count++;
     }
-    return count;
-}
-
-function loadDeps(options: Options) {
-  const depsPath = path.join(cwd(), options.sheriffDump);
-  const deps = JSON.parse(fs.readFileSync(depsPath, "utf-8")) as Deps;
-  return deps;
-}
-
-function loadConfig(options: Options) {
-  const configPath = path.join(cwd(), options.config);
-  const config = JSON.parse(fs.readFileSync(configPath, "utf-8")) as Config;
-  return config;
+  }
+  return count;
 }
 
 function getEmptyMatrix(size: number): number[][] {

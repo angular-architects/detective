@@ -1,28 +1,42 @@
-<h1>Coupling</h1>
+<div class="chart-container"></div>
 
-<div style="float: left;" class="chart-container"></div>
-
+<div class="details-pane">
 @if(nodeDetails) {
-<div style="float: left; margin-left:40px" >
   <mat-list>
     <mat-list-item>
-      <h2>{{nodeDetails.title}}</h2>
+      <h2>{{ nodeDetails.title }}</h2>
+    </mat-list-item>
+    <mat-list-item>
+      <span matListItemTitle>Size</span>
+      <span matListItemLine>{{ nodeDetails.fileCount }} Source Files</span>
     </mat-list-item>
     <mat-list-item>
       <span matListItemTitle>Incoming Dependencies</span>
-      <span matListItemLine>{{nodeDetails.incoming}} Modules</span>
+      <span matListItemLine>{{ nodeDetails.incoming }} Modules</span>
     </mat-list-item>
     <mat-list-item>
       <span matListItemTitle>Outgoing Dependencies</span>
-      <span matListItemLine>{{nodeDetails.outgoing}} Modules</span>
+      <span matListItemLine>{{ nodeDetails.outgoing }} Modules</span>
     </mat-list-item>
     <mat-list-item>
       <span matListItemTitle>Graph Cohesion</span>
-      <span matListItemLine>{{nodeDetails.cohesion}}%</span>
+      <span matListItemLine>{{ nodeDetails.cohesion }}%</span>
     </mat-list-item>
   </mat-list>
-</div>
+} @else if (edgeDetails) {
+  <mat-list>
+    <mat-list-item>
+      <h2>{{ edgeDetails.from }} &rarr; {{ edgeDetails.to }}</h2>
+    </mat-list-item>
+    <mat-list-item>
+      <span matListItemTitle>Dependencies</span>
+      <span matListItemLine>{{ edgeDetails.depCount }} connections</span>
+    </mat-list-item>
+  </mat-list>
 }
+</div>
+
+
 <!-- <div id="context-menu" class="context-menu">
     <ul>
       <li >Option 1</li>

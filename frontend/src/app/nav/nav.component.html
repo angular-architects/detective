@@ -19,13 +19,15 @@
           <mat-icon aria-label="Side nav toggle icon">menu</mat-icon>
         </button>
       }
-      <span>Detective</span>
+
+      <button mat-button style="font-size:18px" routerLink="/home" routerLinkActive="active"><mat-icon>search</mat-icon> Detective</button>
+      <button mat-button routerLink="/graph" routerLinkActive="active">Graph</button>
+
     </mat-toolbar>
     <!-- Add Content Here -->
     <div class="container">
 
-    <app-chord></app-chord>
-     <!-- <app-graph></app-graph> -->
+   <router-outlet></router-outlet>
   </div>
 
   </mat-sidenav-content>

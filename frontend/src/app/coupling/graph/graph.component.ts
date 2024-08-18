@@ -160,7 +160,7 @@ export class GraphComponent {
       .on("mouseover", function (event, d) {
         d3.select(this).attr("stroke", "orange"); // Kante hervorheben
         tooltip.transition().duration(200).style("opacity", 0.9);
-        tooltip.html(`Gewicht: ${d.weight}`)
+        tooltip.html(`${d.weight} connections`)
           .style("left", `${event.pageX}px`)
           .style("top", `${event.pageY - 28}px`);
       })
@@ -199,6 +199,7 @@ export class GraphComponent {
       .enter().append("text")
       .attr("dy", -15)
       .attr("dx", 15)
+      .style('font-size', '12px')
       .text(d => d.label);
 
     svg.attr("transform", "scale(1.5)"); // Vergrößert die Ansicht um 20%
