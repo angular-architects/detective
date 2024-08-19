@@ -1,9 +1,7 @@
 {
   "scopes": [
-    "src/app/shared",
-    "src/app/domains/ticketing",
     "src/app/domains/checkin",
-    "src/app/domains",
-    "src/app"
+    "src/app/domains/ticketing",
+    "src/app/shared"
   ]
 }

@@ -53,7 +53,7 @@ export function calcCoupling(options: Options): CouplingResult {
 function calcCohesion(moduleInfo: ModuleInfo, matrix: number[][]) {
   return moduleInfo.fileCount.map((count, index) => {
     const edges = matrix[index][index];
-    const maxEdges = count * (count - 1);
+    const maxEdges = (count * (count - 1)) / 2;
     return toPercent(edges / maxEdges, 2);
   });
 }
