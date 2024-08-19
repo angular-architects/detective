@@ -1,16 +1,9 @@
 {
   "scopes": [
     "src/app/shared",
+    "src/app/domains/ticketing",
     "src/app/domains/checkin",
-    "src/app/domains/ticketing/data",
-    "src/app/domains/ticketing/feature-booking",
-    "src/app/domains/ticketing/feature-my-tickets",
-    "src/app/domains/ticketing/feature-next-flight",
-    "src/app/domains/ticketing/ui-common",
-    "src/app/domains/checkin/data",
-    "src/app/domains/checkin/feature-manage",
-    "src/app/shared/util-auth",
-    "src/app/shared/util-common",
-    "src/app/shared/util-logger"
+    "src/app/domains",
+    "src/app"
   ]
 }

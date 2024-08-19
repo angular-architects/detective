@@ -25,3 +25,9 @@ svg {
     pointer-events: none;
     opacity: 0;
 }
+
+#network {
+    height: 100%;
+    margin: auto;
+    cursor: pointer;
+}

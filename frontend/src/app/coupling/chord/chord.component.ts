@@ -36,7 +36,6 @@ export class ChordComponent {
 
   private couplingService = inject(CouplingService);
   private eventService = inject(EventService);
-  private moduleService = inject(ModuleService);
 
   private matrix: number[][] = [[]];
   private labels: string[] = [];
