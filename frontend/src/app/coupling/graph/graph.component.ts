@@ -4,6 +4,7 @@ import { CouplingService } from '../coupling.service';
 import { EventService } from '../../event.service';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import * as cola from 'webcola';
+import { MatButtonModule } from '@angular/material/button';
 
 interface Node {
   id: number;
@@ -23,7 +24,7 @@ interface Link {
 @Component({
   selector: 'app-graph',
   standalone: true,
-  imports: [],
+  imports: [MatButtonModule],
   templateUrl: './graph.component.html',
   styleUrl: './graph.component.css',
 })
@@ -33,6 +34,10 @@ export class GraphComponent {
 
   private matrix: number[][] = [[]];
   private labels: string[] = [];
+  private scopes: string[] = [];
+  private groups: string[] = [];
+
+  showGroups = false;
 
   private load() {
     this.couplingService.load().subscribe((r) => {
@@ -40,9 +45,24 @@ export class GraphComponent {
 
       this.clearSelfLinks();
 
+      this.scopes = r.dimensions;
       this.labels = [...this.prepareDimensions(r.dimensions)];
       this.render();
     });
+  }
+
+  addGroups(): void {
+    this.groups = this.scopes;
+    this.showGroups = true;
+    d3.select('#network svg').remove();
+    this.render();
+  }
+
+  removeGroups(): void {
+    this.groups = [];
+    this.showGroups = false;
+    d3.select('#network svg').remove();
+    this.render();
   }
 
   private clearSelfLinks() {
@@ -77,6 +97,7 @@ export class GraphComponent {
     const nodes: Node[] = nodeLabels.map((label, index) => ({
       id: index,
       label,
+      scope: this.scopes[index],
       group: nodeGroups[index],
       connections: 0, // Initialisierung
     }));
@@ -95,7 +116,7 @@ export class GraphComponent {
     });
 
     // Farben basierend auf Gruppen definieren
-    const svg = innerRender(nodes, links, dragstarted, dragged, dragended);
+    const svg = innerRender(nodes, links, this.groups, this.showGroups);
 
     // Anpassung bei Größenänderung
     window.addEventListener('resize', () => {
@@ -105,24 +126,6 @@ export class GraphComponent {
       // simulation.force('center', d3.forceCenter(width / 2, height / 2));
       // simulation.alpha(1).restart();
     });
-
-    // Dragging-Funktionen
-    function dragstarted(event: any, d: any) {
-      // if (!event.active) colaSimulation.alphaTarget(0.3).restart();
-      d.fx = d.x;
-      d.fy = d.y;
-    }
-
-    function dragged(event: any, d: any) {
-      d.fx = event.x;
-      d.fy = event.y;
-    }
-
-    function dragended(event: any, d: any) {
-      // if (!event.active) simulation.alphaTarget(0);
-      d.fx = null;
-      d.fy = null;
-    }
   }
 }
 function _innerRender(
@@ -280,8 +283,10 @@ function _innerRender(
   return svg;
 }
 
-function innerRender(nodes, links, dragstarted, dragged, dragended) {
+function innerRender(nodes, links, groupDefs: string[], showGroups: boolean) {
   const color = d3.scaleOrdinal(d3.schemeCategory10);
+
+  console.log('groupDefs', groupDefs);
 
   const container = d3.select('#network');
 
@@ -332,8 +337,6 @@ function innerRender(nodes, links, dragstarted, dragged, dragended) {
     .attr('d', 'M0,-5L10,0L0,5')
     .attr('fill', 'orange');
 
-  const constraints = [];
-
   var colaSimulation = cola
     .d3adaptor(d3)
     .linkDistance(120)
@@ -341,10 +344,9 @@ function innerRender(nodes, links, dragstarted, dragged, dragended) {
     .avoidOverlaps(true)
     .size([width, height]);
 
-  colaSimulation.nodes(nodes).links(links).flowLayout('y', 80);
 
   // Start Cola-Simulation, dann explizit alle Ticks ausführen, um die Endpositionen zu berechnen
-  colaSimulation.nodes(nodes).links(links).start();
+  // colaSimulation.nodes(nodes).links(links).start();
 
   // for (let i = 0; i < 1000; i++) {  // Genügend Ticks, um die Simulation zur Ruhe zu bringen
   //   (colaSimulation as any).tick();
@@ -355,7 +357,9 @@ function innerRender(nodes, links, dragstarted, dragged, dragended) {
   const g = svg.append('g');
 
   // Knoten nach Gruppe gruppieren
-  const groups = d3.groups(nodes, (d: any) => d.group);
+  const groups = d3.groups(nodes, (d: any) =>
+    groupDefs.find((g) => d.scope.startsWith(g))
+  );
 
   const groupContainers = g
     .selectAll('.group-container')
@@ -363,6 +367,9 @@ function innerRender(nodes, links, dragstarted, dragged, dragended) {
     .enter()
     .append('g')
     .attr('class', 'group-container');
+
+    colaSimulation.nodes(nodes).links(links).flowLayout('y', 80).start();
+
 
   const link = g
     .append('g')
@@ -397,14 +404,14 @@ function innerRender(nodes, links, dragstarted, dragged, dragended) {
     .selectAll('g')
     .data(nodes)
     .enter()
-    .append('g')
-    .call(
-      d3
-        .drag()
-        .on('start', dragstarted)
-        .on('drag', dragged)
-        .on('end', dragended)
-    );
+    .append('g');
+  // .call(
+  //   d3
+  //     .drag()
+  //     .on('start', dragstarted)
+  //     .on('drag', dragged)
+  //     .on('end', dragended)
+  // );
 
   node
     .append('rect')
@@ -452,36 +459,40 @@ function innerRender(nodes, links, dragstarted, dragged, dragended) {
       tooltip.transition().duration(500).style('opacity', 0);
     });
 
-  // Umrahmende Rechtecke und Beschriftungen hinzufügen
-  groupContainers.each(function ([group, nodes]) {
-    const groupContainer = d3.select(this);
+  if (showGroups) {
+    // Umrahmende Rechtecke und Beschriftungen hinzufügen
+    groupContainers.each(function ([group, nodes]) {
+      const groupContainer = d3.select(this);
 
-    // Berechne die Bounding-Box unter Berücksichtigung der Knotenbreiten
-    const minX = d3.min(nodes, (d) => d.x - d.label.length * 4) - 20;
-    const maxX = d3.max(nodes, (d) => d.x + d.label.length * 4) + 20;
-    const minY = d3.min(nodes, (d) => d.y - 15) - 20;
-    const maxY = d3.max(nodes, (d) => d.y + 15) + 20;
+      const shortGroupName = group?.split('/').at(-1);
 
-    // Rechteck für die Gruppe hinzufügen
-    groupContainer
-      .append('rect')
-      .attr('x', minX)
-      .attr('y', minY)
-      .attr('width', maxX - minX)
-      .attr('height', maxY - minY)
-      .attr('fill', 'none')
-      .attr('stroke', 'silver')
-      .attr('stroke-width', 1);
+      // Berechne die Bounding-Box unter Berücksichtigung der Knotenbreiten
+      const minX = d3.min(nodes, (d) => d.x - d.label.length * 4) - 20;
+      const maxX = d3.max(nodes, (d) => d.x + d.label.length * 4) + 20;
+      const minY = d3.min(nodes, (d) => d.y - 15) - 20;
+      const maxY = d3.max(nodes, (d) => d.y + 15) + 20;
 
-    // Gruppennummer als Beschriftung hinzufügen
-    groupContainer
-      .append('text')
-      .attr('x', minX + 5)
-      .attr('y', minY + 15)
-      .text(`Group ${group}`)
-      .style('font-size', '9px')
-      .style('fill', 'black');
-  });
+      // Rechteck für die Gruppe hinzufügen
+      groupContainer
+        .append('rect')
+        .attr('x', minX)
+        .attr('y', minY)
+        .attr('width', maxX - minX)
+        .attr('height', maxY - minY)
+        .attr('fill', 'none')
+        .attr('stroke', 'silver')
+        .attr('stroke-width', 1);
+
+      // Gruppennummer als Beschriftung hinzufügen
+      groupContainer
+        .append('text')
+        .attr('x', minX + 5)
+        .attr('y', minY + 15)
+        .text(`${shortGroupName}`)
+        .style('font-size', '9px')
+        .style('fill', 'black');
+    });
+  }
 
   colaSimulation.on('tick', () => {
     nodes.forEach((nodeA, i) => {
@@ -512,27 +523,29 @@ function innerRender(nodes, links, dragstarted, dragged, dragended) {
 
     node.attr('transform', (d: any) => `translate(${d.x},${d.y})`);
 
-    // Aktualisiere die Position der umschließenden Rechtecke bei jedem Ticker-Ereignis
-    groupContainers.each(function ([group, nodes]) {
-      const groupContainer = d3.select(this);
+    if (showGroups) {
+      // Aktualisiere die Position der umschließenden Rechtecke bei jedem Ticker-Ereignis
+      groupContainers.each(function ([group, nodes]) {
+        const groupContainer = d3.select(this);
 
-      const minX = d3.min(nodes, (d) => d.x - d.label.length * 4) - 20;
-      const maxX = d3.max(nodes, (d) => d.x + d.label.length * 4) + 20;
-      const minY = d3.min(nodes, (d) => d.y - 15) - 20;
-      const maxY = d3.max(nodes, (d) => d.y + 15) + 20;
+        const minX = d3.min(nodes, (d) => d.x - d.label.length * 4) - 20;
+        const maxX = d3.max(nodes, (d) => d.x + d.label.length * 4) + 20;
+        const minY = d3.min(nodes, (d) => d.y - 15) - 20;
+        const maxY = d3.max(nodes, (d) => d.y + 15) + 20;
 
-      groupContainer
-        .select('rect')
-        .attr('x', minX)
-        .attr('y', minY)
-        .attr('width', maxX - minX)
-        .attr('height', maxY - minY);
+        groupContainer
+          .select('rect')
+          .attr('x', minX)
+          .attr('y', minY)
+          .attr('width', maxX - minX)
+          .attr('height', maxY - minY);
 
-      groupContainer
-        .select('text')
-        .attr('x', minX + 5)
-        .attr('y', minY + 15);
-    });
+        groupContainer
+          .select('text')
+          .attr('x', minX + 5)
+          .attr('y', minY + 15);
+      });
+    }
   });
 
   return svg;

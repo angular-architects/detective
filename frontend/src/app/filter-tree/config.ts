@@ -1,4 +1,5 @@
 export type Config = {
+    groups?: string[];
     scopes: string[];
 };
 
