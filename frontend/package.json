@@ -20,6 +20,7 @@
     "@angular/platform-browser": "^18.2.0",
     "@angular/platform-browser-dynamic": "^18.2.0",
     "@angular/router": "^18.2.0",
+    "chart.js": "^4.4.4",
     "cytoscape": "^3.30.2",
     "cytoscape-cola": "^2.5.1",
     "cytoscape-qtip": "^2.8.0",

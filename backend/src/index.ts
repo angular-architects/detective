@@ -9,12 +9,15 @@ import { parseOptions } from "./options/parse-options";
 import { validateOptions } from "./options/validate-options";
 import { getFolders } from "./services/folders";
 import { calcModuleInfo } from "./services/module-info";
+import { calcTeamAlignment } from "./services/team-alignment";
 
 const options = parseOptions(process.argv.slice(2));
 if (!validateOptions(options)) {
   console.log("Usage: forensic [sheriff-dump] [--port port] [--config path]");
   process.exit(1);
 }
+
+process.chdir('/Users/manfredsteyer/projects/public/standalone-example-cli');
 
 const app = express();
 
@@ -64,6 +67,17 @@ app.get("/api/folders", (req, res) => {
 app.get("/api/coupling", (req, res) => {
   try {
     const result = calcCoupling(options);
+    res.json(result);
+  } catch (e) {
+    res.status(500).json(e);
+  }
+});
+
+app.get("/api/team-alignment", async (req, res) => {
+  const byUser = Boolean(req.query.byUser);
+
+  try {
+    const result = await calcTeamAlignment(byUser, options);
     res.json(result);
   } catch (e) {
     res.status(500).json(e);

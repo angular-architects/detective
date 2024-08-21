@@ -9,11 +9,9 @@ import cytoscape, {
   NodeDefinition,
 } from 'cytoscape';
 import cola from 'cytoscape-cola';
-import { MatButtonModule } from '@angular/material/button';
 import qtip from 'cytoscape-qtip';
 import 'qtip2/dist/jquery.qtip.min.css'; // qTip2 CSS importieren
 import {
-  MatCheckbox,
   MatCheckboxChange,
   MatCheckboxModule,
 } from '@angular/material/checkbox';

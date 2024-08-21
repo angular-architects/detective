@@ -18,5 +18,13 @@
     "src/app/shared",
     "src/app",
     "src"
-  ]
+  ],
+  "teams": {
+    "alpha": [
+      "Manfred Steyer"
+    ],
+    "beta": [
+      "Hugo"
+    ]
+  }
 }

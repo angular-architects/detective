@@ -63,16 +63,17 @@ export class FilterTreeComponent implements OnInit {
   }
 
   expandChecked(folders: Folder[]): boolean {
+    let open = false;
     for (let folder of folders) {
       if (this.selected.has(folder.path)) {
-        return true;
+        open = true;
       }
       if (folder.folders && this.expandChecked(folder.folders)) {
         this.tree.expand(folder);
-        return true;
+        open = true;
       }
     }
-    return false;
+    return open;
   }
 
   isChecked(folder: Folder): boolean {

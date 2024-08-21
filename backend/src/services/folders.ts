@@ -9,7 +9,7 @@ export type Folder = {
 
 const exclude = new Set(['node_modules', 'dist'])
 
-export function getFolders(parent = '/Users/manfredsteyer/projects/public/standalone-example-cli', base = parent): Folder[] {
+export function getFolders(parent = '.', base = parent): Folder[] {
 
     const folders = fs.readdirSync(parent)
         .map(entry => ({
@@ -21,9 +21,7 @@ export function getFolders(parent = '/Users/manfredsteyer/projects/public/standa
                 && fs.lstatSync(folder.path).isDirectory()
                 && !exclude.has(folder.name)
         )
-        .map(entry => ({...entry, path: entry.path.substring(base.length+1), folders: getFolders(entry.path, base)}))
+        .map(entry => ({...entry, path: entry.path, folders: getFolders(entry.path, base)}))
  
     return folders;
 }
-
-// console.log('folders', JSON.stringify(getFolders(), null, 2));

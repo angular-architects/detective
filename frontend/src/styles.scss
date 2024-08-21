@@ -4,3 +4,62 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif;}
 .container {
     padding:15px;
 }
+
+.ta-diagram {
+    width:100%;
+    float: left;
+    padding: 10px;
+}
+
+/* Standard: 4 Container pro Zeile */
+.ta-container {
+    width: 25%;
+    float: left;
+}
+
+/* 3 Container pro Zeile bei mittleren Bildschirmen */
+@media (max-width: 1200px) {
+    .ta-container {
+        width: 33.33%;
+    }
+}
+
+/* 2 Container pro Zeile bei kleineren Bildschirmen */
+@media (max-width: 768px) {
+    .ta-container {
+        width: 50%;
+    }
+}
+
+/* 1 Container pro Zeile bei sehr kleinen Bildschirmen */
+@media (max-width: 480px) {
+    .ta-container {
+        width: 100%;
+    }
+}
+
+#legend {
+    display: flex;
+    flex-wrap: wrap;
+    list-style: none;
+    padding: 10px;
+    margin: 20px 50px;
+    justify-content: center; /* Zentriert die Legende */
+
+}
+
+#legend li {
+    display: flex;
+    align-items: center;
+    margin-right: 15px; /* Abstand zwischen den Legendeneinträgen */
+    margin-bottom: 5px; /* Abstand, falls umgebrochen wird */
+    font-family: Arial, sans-serif;
+    font-size: 14px;
+}
+
+.legend-color {
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    margin-right: 5px; /* Abstand zwischen Farbe und Text */
+}

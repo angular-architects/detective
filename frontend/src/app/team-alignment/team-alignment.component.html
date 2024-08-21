@@ -1,0 +1,7 @@
+<ul id="legend">
+@for(team of teams; track team) {
+    <li><span class="legend-color" [style.backgroundColor]="colors[$index]"></span>{{team}}</li>
+}
+</ul>
+
+<div id="placeholder"></div>
