@@ -8,6 +8,7 @@ import { toPercent } from "../utils/round";
 
 // TODO: Restructure fileCount and cohesion into dimensions node
 export type CouplingResult = {
+  groups: string[];
   dimensions: string[];
   fileCount: number[];
   cohesion: number[];
@@ -43,6 +44,7 @@ export function calcCoupling(options: Options): CouplingResult {
   const cohesion = calcCohesion(moduleInfo, matrix);
 
   return {
+    groups: config.groups,
     dimensions: config.scopes,
     fileCount: moduleInfo.fileCount,
     cohesion,

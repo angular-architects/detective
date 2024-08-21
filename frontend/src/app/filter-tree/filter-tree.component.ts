@@ -42,6 +42,7 @@ export class FilterTreeComponent implements OnInit {
   selected = new Set<string>();
 
   config = initConfig;
+  folders: Folder[] = [];
 
   ngOnInit(): void {
     const folders$ = this.folderService.load();
@@ -52,6 +53,7 @@ export class FilterTreeComponent implements OnInit {
     }).subscribe((result) => {
       this.dataSource.data = result.folders;
       this.config = result.config;
+      this.folders = result.folders;
       this.selected.clear();
       this.config.scopes.forEach((scope) => this.selected.add(scope));
       this.expandChecked(result.folders);
@@ -87,10 +89,53 @@ export class FilterTreeComponent implements OnInit {
       this.selected.delete(folder.path);
     }
 
+    this.deselectParents(folder);
+    this.deselectSubtree(folder.folders);
+
     this.config.scopes = [...this.selected];
+    this.config.groups = this.findParents();
+
     this.configService.save(this.config).subscribe(() => {
       this.eventService.filterChanged.next();
     });
+  }
+
+  private deselectParents(folder: Folder) {
+    const segments = folder.path.split('/');
+    while (segments.length > 0) {
+      segments.pop();
+      this.selected.delete(segments.join('/'));
+    }
+  }
+
+  deselectSubtree(folders: Folder[]) {
+    for(const folder of folders) {
+      this.selected.delete(folder.path);
+      this.deselectSubtree(folder.folders || []);
+    }
+  }
+
+  findParents(): string[] {
+    const parents: string[] = [];
+    this._findParents(this.folders, parents);
+    return parents;
+  }
+
+  _findParents(folders = this.folders, parents: string[] ): boolean {
+    let selected = false;
+    for (const folder of folders) {
+      if (this.selected.has(folder.path)) {
+        selected = true;
+      }
+      else {
+        const selectedBelow = this._findParents(folder.folders || [], parents);
+        if (selectedBelow) {
+          parents.push(folder.path);
+          selected = true;
+        }
+      }
+    }
+    return selected;
   }
 
   hasChild = (_: number, node: Folder) =>

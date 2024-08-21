@@ -5,20 +5,35 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import cytoscape, {
   Core,
   EdgeDefinition,
-  ElementDefinition,
   LayoutOptions,
   NodeDefinition,
 } from 'cytoscape';
 import cola from 'cytoscape-cola';
 import { MatButtonModule } from '@angular/material/button';
-import { zoom } from 'd3';
 import qtip from 'cytoscape-qtip';
 import 'qtip2/dist/jquery.qtip.min.css'; // qTip2 CSS importieren
+import {
+  MatCheckbox,
+  MatCheckboxChange,
+  MatCheckboxModule,
+} from '@angular/material/checkbox';
+import { FormsModule } from '@angular/forms';
+
+interface CustomNodeDefinition extends NodeDefinition {
+  data: {
+    id: string;
+    label: string;
+    parent?: string;
+    tooltip: string;
+    dimension: string;
+  };
+  classes?: string;
+}
 
 @Component({
   selector: 'app-graph',
   standalone: true,
-  imports: [MatButtonModule],
+  imports: [MatCheckboxModule, FormsModule],
   templateUrl: './graph.component.html',
   styleUrl: './graph.component.css',
 })
@@ -28,10 +43,24 @@ export class GraphComponent implements OnInit {
 
   private matrix: number[][] = [[]];
   private labels: string[] = [];
-  // private groups: string[] = [];
+  private groups: string[] = [];
+
+  groupByFolder = false;
+  fileCount: number[];
+  cohesion: number[];
+
+  constructor() {
+    this.eventService.filterChanged.pipe(takeUntilDestroyed()).subscribe(() => {
+      this.load();
+    });
+  }
 
   ngOnInit(): void {
     this.load();
+  }
+
+  groupByFolderChanged(event: MatCheckboxChange): void {
+    this.draw();
   }
 
   private load() {
@@ -39,36 +68,103 @@ export class GraphComponent implements OnInit {
       this.matrix = r.matrix;
       this.clearSelfLinks();
 
+      this.fileCount = r.fileCount;
+      this.cohesion = r.cohesion;
+
       this.labels = r.dimensions;
+      this.groups = r.groups;
 
-      const nodes = this.labels.map((label, idx) => ({
-        data: {
-          id: '' + idx,
-          label: label.split('/').at(-1),
-          tooltip: label,
-        },
-      }));
+      this.draw();
+    });
+  }
 
-      console.log('nodex', nodes);
+  private draw() {
+    const groups: CustomNodeDefinition[] = this.groupByFolder
+      ? this.createGroups()
+      : [];
+    const nodes: CustomNodeDefinition[] = this.createNodes(groups);
+    const edges = this.createEdges();
 
-      const edges = [];
-      for (let i = 0; i < this.matrix.length; i++) {
-        for (let j = 0; j < this.matrix.length; j++) {
-          if (this.matrix[i][j] > 0) {
-            edges.push({
-              data: {
-                source: '' + i,
-                target: '' + j,
-                weight: this.matrix[i][j],
-                tooltip: `${this.labels[i]} → ${this.labels[i]}`,
-              },
-            });
-          }
+    drawGraph([...groups, ...nodes], edges);
+  }
+
+  private createEdges() {
+    const edges = [];
+    for (let i = 0; i < this.matrix.length; i++) {
+      for (let j = 0; j < this.matrix.length; j++) {
+        if (this.matrix[i][j] > 0) {
+          edges.push({
+            data: {
+              source: '' + i,
+              target: '' + j,
+              weight: this.matrix[i][j],
+              tooltip: `${this.labels[i].split('/').at(-1)} → ${this.labels[j].split('/').at(-1)}<br><br>${this.matrix[i][j]} connections`,
+            },
+          });
         }
       }
+    }
+    return edges;
+  }
 
-      draw(nodes, edges);
-    });
+  private createNodes(groups: CustomNodeDefinition[]) {
+    const nodes: CustomNodeDefinition[] = [];
+
+    for (let i = 0; i < this.labels.length; i++) {
+      const label = this.labels[i];
+
+      const node: CustomNodeDefinition = {
+        data: {
+          id: '' + i,
+          label: label.split('/').at(-1),
+          tooltip: `${label}
+<br><br>${this.fileCount[i]} source files
+<br>Cohesion: ${this.cohesion[i]}%
+<br>Outgoing Deps: ${sumRow(this.matrix, i)}
+<br>Incoming Deps: ${sumCol(this.matrix, i)}
+`,
+          dimension: label,
+        },
+      };
+
+      let parent = findParent(groups, label);
+
+      if (parent) {
+        node.data.parent = parent.data.id;
+      }
+
+      nodes.push(node);
+    }
+    return nodes;
+  }
+
+  private createGroups() {
+    const groups: CustomNodeDefinition[] = [];
+
+    this.groups.sort();
+
+    for (let i = 0; i < this.groups.length; i++) {
+      const label = this.groups[i];
+
+      const node: CustomNodeDefinition = {
+        data: {
+          id: 'G' + i,
+          label: label.split('/').at(-1),
+          tooltip: label,
+          dimension: label,
+        },
+        classes: 'group',
+      };
+
+      let parent = findParent(groups, label);
+
+      if (parent) {
+        node.data.parent = parent.data.id;
+      }
+
+      groups.push(node);
+    }
+    return groups;
   }
 
   private clearSelfLinks() {
@@ -82,6 +178,22 @@ export class GraphComponent implements OnInit {
   }
 }
 
+function findParent(groups: CustomNodeDefinition[], label: string) {
+  let parent = null;
+  const candParents = groups.filter((cp) =>
+    label.startsWith(cp.data.dimension)
+  );
+  console.log('candParents', candParents);
+  if (candParents.length > 0) {
+    parent = candParents.reduce(
+      (prev, curr) =>
+        curr.data.dimension.length > prev.data.dimension.length ? curr : prev,
+      candParents[0]
+    );
+  }
+  return parent;
+}
+
 function getMinMaxWeight(cy: cytoscape.Core): [number, number] {
   const edges = cy.edges();
   const min = edges.min((e) => e.data('weight'));
@@ -89,14 +201,7 @@ function getMinMaxWeight(cy: cytoscape.Core): [number, number] {
   return [min.value, max.value];
 }
 
-// Typdefinitionen für Nodes und Edges anpassen, um erweiterte Daten zuzulassen
-interface NodeData {
-  id: string;
-  label: string;
-  parent?: string; // Optional, da nicht alle Knoten ein Elternteil haben
-}
-
-function draw(nodes: NodeDefinition[], edges: EdgeDefinition[]) {
+function drawGraph(nodes: NodeDefinition[], edges: EdgeDefinition[]) {
   cytoscape.use(cola);
   cytoscape.use(qtip);
 
@@ -107,8 +212,9 @@ function draw(nodes: NodeDefinition[], edges: EdgeDefinition[]) {
     layout: {
       name: 'cola',
       padding: 10,
-      nodeSpacing: 50,
+      nodeSpacing: 30,
       avoidOverlap: true,
+      flow: { axis: 'x', minSeparation: 20 },
       fit: false,
       animate: false,
     } as LayoutOptions,
@@ -165,28 +271,28 @@ function draw(nodes: NodeDefinition[], edges: EdgeDefinition[]) {
     elements: {
       nodes,
       edges,
-      // nodes: [
-      //     { data: { id: 'a', label: 'Node-A-123-456-789-100', tooltip: 'AAAA' } },
-      //     { data: { id: 'b', label: 'Node B', tooltip: 'BBBB' } },
-      //     { data: { id: 'group1', label: 'Group 1' }, classes: 'group' }, // Gruppe
-      //     { data: { id: 'd', label: 'Node D', parent: 'group1' } }, // Knoten in Gruppe
-      //     { data: { id: 'e', label: 'Node E', parent: 'group1' } }, // Knoten in Gruppe
-      //     { data: { id: 'group2', label: 'Group 2' }, classes: 'group' }, // Gruppe
-      //     { data: { id: 'g', label: 'Node G', parent: 'group2' } }, // Knoten in Gruppe
-      //     { data: { id: 'h', label: 'Node H', parent: 'group2' } },  // Knoten in Gruppe
-      //     { data: { id: 'group2-1', label: 'Group 2.1', parent:'group2' }, classes: 'group' }, // Gruppe
-      //     { data: { id: 'j', label: 'Node J', parent: 'group2-1' } },  // Knoten in Gruppe
-      //     { data: { id: 'k', label: 'Node K', parent: 'group2-1' } }  // Knoten in Gruppe
-      //   ] as NodeDefinition[],
-      // edges: [
-      //     { data: { source: 'a', target: 'b', weight: 5, tooltip: '' } },
-      //     { data: { source: 'b', target: 'd', weight: 1 } },
-      //     { data: { source: 'd', target: 'e', weight: 2 } },
-      //     { data: { source: 'e', target: 'a', weight: 2 } },
-      //     { data: { source: 'j', target: 'k', weight: 4 } },
-      //     { data: { source: 'a', target: 'j', weight: 12 } },
-      //     { data: { source: 'g', target: 'h', weight: 2 } },
-      // ] as EdgeDefinition[]
+      //   nodes: [
+      //       { data: { id: 'a', label: 'Node-A-123-456-789-100', tooltip: 'AAAA' } },
+      //       { data: { id: 'b', label: 'Node B', tooltip: 'BBBB' } },
+      //       { data: { id: 'group1', label: 'Group 1' }, classes: 'group' }, // Gruppe
+      //       { data: { id: 'd', label: 'Node D', parent: 'group1' } }, // Knoten in Gruppe
+      //       { data: { id: 'e', label: 'Node E', parent: 'group1' } }, // Knoten in Gruppe
+      //       { data: { id: 'group2', label: 'Group 2' }, classes: 'group' }, // Gruppe
+      //       { data: { id: 'g', label: 'Node G', parent: 'group2' } }, // Knoten in Gruppe
+      //       { data: { id: 'h', label: 'Node H', parent: 'group2' } },  // Knoten in Gruppe
+      //       { data: { id: 'group2-1', label: 'Group 2.1', parent:'group2' }, classes: 'group' }, // Gruppe
+      //       { data: { id: 'j', label: 'Node J', parent: 'group2-1' } },  // Knoten in Gruppe
+      //       { data: { id: 'k', label: 'Node K', parent: 'group2-1' } }  // Knoten in Gruppe
+      //     ] as NodeDefinition[],
+      //   edges: [
+      //       { data: { source: 'a', target: 'b', weight: 5, tooltip: '' } },
+      //       { data: { source: 'b', target: 'd', weight: 1 } },
+      //       { data: { source: 'd', target: 'e', weight: 2 } },
+      //       { data: { source: 'e', target: 'a', weight: 2 } },
+      //       { data: { source: 'j', target: 'k', weight: 4 } },
+      //       { data: { source: 'a', target: 'j', weight: 12 } },
+      //       { data: { source: 'g', target: 'h', weight: 2 } },
+      //   ] as EdgeDefinition[]
     },
 
     wheelSensitivity: 0.2,
@@ -211,17 +317,33 @@ function draw(nodes: NodeDefinition[], edges: EdgeDefinition[]) {
       .selector('edge')
       .style({
         width: function (edge) {
-          console.log('weight', edge.data('weight'));
-          console.log('border1', border1);
-          console.log('border2', border2);
-
-          //return edge.data('weight') > avgWeight ? '2px' : '1px';
           if (edge.data('weight') <= border1) return '1px';
           if (edge.data('weight') >= border2) return '3px';
           return '2px';
         },
       })
       .update();
+
+    var minY = Infinity;
+
+    var minY = Infinity;
+
+    // Durchlaufen Sie alle Knoten und Compound Nodes (Gruppen)
+    cy.nodes().forEach(function (node) {
+      var position = node.boundingBox({
+        includeNodes: true,
+        includeEdges: false,
+        includeLabels: false,
+      });
+
+      // Überprüfen Sie die obere Grenze (y1) der Bounding-Box
+      if (position.y1 < minY) {
+        minY = position.y1;
+      }
+    });
+
+    // Den Graphen nach oben verschieben, sodass der obere Rand sichtbar ist
+    cy.pan({ x: 0, y: -minY + 20 }); // Verschiebt den Graphen nach oben, +20 Pixel für zusätzlichen Puffer
   });
 
   cy.nodes().forEach((node: any) => {
@@ -283,4 +405,24 @@ function draw(nodes: NodeDefinition[], edges: EdgeDefinition[]) {
   //     console.log(`Clicked on node with id: ${node.id()}`);
   //     alert(`You clicked on ${node.data('label')}`);
   // });
+}
+
+function sumRow(matrix: number[][], nodeIndex: number): number {
+  let sum = 0;
+  for (let i = 0; i < matrix.length; i++) {
+    if (i !== nodeIndex) {
+      sum += matrix[nodeIndex][i];
+    }
+  }
+  return sum;
+}
+
+function sumCol(matrix: number[][], nodeIndex: number): number {
+  let sum = 0;
+  for (let i = 0; i < matrix.length; i++) {
+    if (i !== nodeIndex) {
+      sum += matrix[i][nodeIndex];
+    }
+  }
+  return sum;
 }

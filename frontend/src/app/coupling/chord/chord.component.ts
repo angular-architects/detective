@@ -4,7 +4,6 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { CouplingService } from '../coupling.service';
 import { EventService } from '../../event.service';
 import { MatListModule } from '@angular/material/list';
-import { ModuleService } from '../module.service';
 
 type NodeDetails = {
   title: string;

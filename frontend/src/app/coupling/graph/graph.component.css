@@ -13,6 +13,9 @@ svg {
     height: 100%;
 }
 
+.qtip-bootstrap {
+    max-width: 700px; 
+}
 
 .tooltip {
     position: absolute;
@@ -24,6 +27,8 @@ svg {
     border-radius: 8px;
     pointer-events: none;
     opacity: 0;
+    width: auto;
+    max-width: 700px; 
 }
 
 #network {

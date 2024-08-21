@@ -3,4 +3,5 @@ export type CouplingResult = {
   fileCount: number[];
   cohesion: number[];
   matrix: number[][];
+  groups: string[];
 };
