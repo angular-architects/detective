@@ -1,15 +1,13 @@
 "use strict";
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.calcCoupling = calcCoupling;
-var path_1 = __importDefault(require("path"));
-var fs_1 = __importDefault(require("fs"));
-function calcCoupling() {
-    var basePath = process.cwd();
-    var config = loadConfig(basePath);
-    var deps = loadDeps(basePath);
+var config_1 = require("../infrastructure/config");
+var deps_1 = require("../infrastructure/deps");
+var module_info_1 = require("./module-info");
+var round_1 = require("../utils/round");
+function calcCoupling(options) {
+    var config = (0, config_1.loadConfig)(options);
+    var deps = (0, deps_1.loadDeps)(options);
     var files = Object.keys(deps);
     var scopeMap = calcScopeMap(config);
     var matrixSize = config.scopes.length;
@@ -27,10 +25,23 @@ function calcCoupling() {
             matrix[i][j] = count;
         }
     }
+    // TODO: Improve performance by combinding this with matrix calculation
+    var moduleInfo = (0, module_info_1.calcModuleInfo)(options);
+    var cohesion = calcCohesion(moduleInfo, matrix);
     return {
+        groups: config.groups,
         dimensions: config.scopes,
+        fileCount: moduleInfo.fileCount,
+        cohesion: cohesion,
         matrix: matrix,
     };
+}
+function calcCohesion(moduleInfo, matrix) {
+    return moduleInfo.fileCount.map(function (count, index) {
+        var edges = matrix[index][index];
+        var maxEdges = (count * (count - 1)) / 2;
+        return (0, round_1.toPercent)(edges / maxEdges, 2);
+    });
 }
 function calcCell(files, deps, row, col) {
     var count = 0;
@@ -51,16 +62,6 @@ function sumUpImports(deps, file, col) {
         }
     }
     return count;
-}
-function loadDeps(basePath) {
-    var depsPath = path_1.default.join(basePath, "data", "deps.json");
-    var deps = JSON.parse(fs_1.default.readFileSync(depsPath, "utf-8"));
-    return deps;
-}
-function loadConfig(basePath) {
-    var configPath = path_1.default.join(basePath, "data", "config.json");
-    var config = JSON.parse(fs_1.default.readFileSync(configPath, "utf-8"));
-    return config;
 }
 function getEmptyMatrix(size) {
     return Array.from({ length: size }, function () { return new Array(size).fill(0); });

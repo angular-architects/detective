@@ -7,6 +7,10 @@
       <h2>{{ nodeDetails.title }}</h2>
     </mat-list-item>
     <mat-list-item>
+      <span matListItemTitle>Path</span>
+      <span matListItemLine>{{ nodeDetails.path }}</span>
+    </mat-list-item>
+    <mat-list-item>
       <span matListItemTitle>Size</span>
       <span matListItemLine>{{ nodeDetails.fileCount }} Source Files</span>
     </mat-list-item>
@@ -27,6 +31,14 @@
   <mat-list>
     <mat-list-item>
       <h2>{{ edgeDetails.from }} &rarr; {{ edgeDetails.to }}</h2>
+    </mat-list-item>
+    <mat-list-item>
+      <span matListItemTitle>Source</span>
+      <span matListItemLine>{{ edgeDetails.fromPath }}</span>
+    </mat-list-item>
+    <mat-list-item>
+      <span matListItemTitle>Destination</span>
+      <span matListItemLine>{{ edgeDetails.toPath }}</span>
     </mat-list-item>
     <mat-list-item>
       <span matListItemTitle>Dependencies</span>

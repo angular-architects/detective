@@ -1,0 +1,18 @@
+{
+  "scopes": [
+    "src/infrastructure",
+    "src/model",
+    "src/options"
+  ],
+  "groups": [
+    "src"
+  ],
+  "teams": {
+    "alpha": [
+      "Manfred Steyer"
+    ],
+    "beta": [
+      "Hugo"
+    ]
+  }
+}

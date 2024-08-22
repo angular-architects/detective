@@ -1,9 +1,9 @@
 {
-  "name": "backend",
-  "version": "1.0.0",
+  "name": "detective",
+  "version": "0.0.1",
   "main": "dist/index.js",
   "bin": {
-    "forensic": "./dist/index.js"
+    "detective": "./dist/index.js"
   },
   "scripts": {
     "build": "tsc",

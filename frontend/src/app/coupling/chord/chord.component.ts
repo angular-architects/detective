@@ -7,6 +7,7 @@ import { MatListModule } from '@angular/material/list';
 
 type NodeDetails = {
   title: string;
+  path: string;
   incoming: number;
   outgoing: number;
   cohesion: number;
@@ -16,6 +17,8 @@ type NodeDetails = {
 type EdgeDetails = {
   from: string;
   to: string;
+  fromPath: string;
+  toPath: string;
   depCount: number;
 }
 
@@ -38,6 +41,7 @@ export class ChordComponent {
 
   private matrix: number[][] = [[]];
   private labels: string[] = [];
+  private dimensions: string[] = [];
   private tooltip: any;
 
   nodeDetails?: NodeDetails;
@@ -73,6 +77,7 @@ export class ChordComponent {
     this.couplingService.load().subscribe((r) => {
       this.matrix = r.matrix;
       this.labels = [...this.prepareDimensions(r.dimensions), ''];
+      this.dimensions = r.dimensions;
       this.cohesion = r.cohesion;
       this.fileCount = r.fileCount;
 
@@ -85,6 +90,7 @@ export class ChordComponent {
     this.edgeDetails = null;
     this.nodeDetails = {
       title: this.labels[nodeIndex],
+      path: this.dimensions[nodeIndex],
       cohesion: this.cohesion[nodeIndex],
       fileCount: this.fileCount[nodeIndex],
       outgoing: sumRow(this.matrix, nodeIndex),
@@ -97,6 +103,8 @@ export class ChordComponent {
     this.edgeDetails = {
       from: this.labels[from],
       to: this.labels[to],
+      fromPath: this.dimensions[from],
+      toPath: this.dimensions[to],
       depCount: this.matrix[from][to]
     };
   }
@@ -208,7 +216,7 @@ export class ChordComponent {
         // Zeige das Tooltip an
         d3.select('.tooltip')
           .style('visibility', 'visible')
-          .text(`${this.labels[d.index]}`);
+          .text(`${this.dimensions[d.index]}`);
       })
       .on('mousemove', (event) => {
         this.tooltip

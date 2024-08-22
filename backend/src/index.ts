@@ -10,14 +10,21 @@ import { validateOptions } from "./options/validate-options";
 import { getFolders } from "./services/folders";
 import { calcModuleInfo } from "./services/module-info";
 import { calcTeamAlignment } from "./services/team-alignment";
+import { openSync } from './utils/open';
+import { ensureConfig } from "./infrastructure/config";
 
 const options = parseOptions(process.argv.slice(2));
+
+if (options.path) {
+  process.chdir(options.path);
+}
+
 if (!validateOptions(options)) {
   console.log("Usage: forensic [sheriff-dump] [--port port] [--config path]");
   process.exit(1);
 }
 
-process.chdir('/Users/manfredsteyer/projects/public/standalone-example-cli');
+ensureConfig(options);
 
 const app = express();
 
@@ -80,17 +87,19 @@ app.get("/api/team-alignment", async (req, res) => {
     const result = await calcTeamAlignment(byUser, options);
     res.json(result);
   } catch (e) {
+    console.log('error', e);
     res.status(500).json(e);
   }
 });
 
-// Route für / - Liefert eine index.html-Datei
-app.get("/", (req, res) => {
-  console.log("index");
+app.use(express.static(path.join(__dirname, '..', 'public')));
+
+app.get("*", (req, res) => {
   res.sendFile(path.join(__dirname, "..", "public", "index.html"));
 });
 
-// Server starten
 app.listen(options.port, () => {
-  console.log(`Forensic runs at http://localhost:${options.port}`);
+  const url = `http://localhost:${options.port}`;
+  console.log(`Detective runs at ${url}`);
+  openSync(url);
 });

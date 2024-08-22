@@ -76,7 +76,7 @@ function draw(
   for (const moduleName of moduleNames) {
     const module = result.modules[moduleName];
 
-    const label = moduleName.split('/').at(-1);
+    const label = lastSegments(moduleName, 3);
 
     const container = document.createElement('div');
     container.classList.add('ta-container');
@@ -113,18 +113,19 @@ function draw(
             display: true,
             text: label,
             font: {
-              size: 18, // Schriftgröße des Titels festlegen
+              size: 16, // Schriftgröße des Titels festlegen
             },
           },
           tooltip: {
             callbacks: {
+              title: () => moduleName,
               label: function (context) {
                 let label = ' ' + context.label || '';
                 if (label) {
                   label += ': ';
                 }
                 if (context.raw !== null) {
-                  label += Math.round(((context.raw as any) / sum) * 100) + '%';
+                  label += (((context.raw as any) / sum) * 100).toFixed(2) + '%';
                 }
                 return label;
               },
@@ -137,4 +138,13 @@ function draw(
     charts.push(chart);
   }
   return charts;
+}
+
+function lastSegments(moduleName: string, segments: number) {
+  let moduleNameParts = moduleName.split('/');
+  if (moduleNameParts.length > segments) {
+    moduleNameParts = moduleNameParts.slice(moduleNameParts.length - segments);
+  }
+  const label = moduleNameParts.join('/');
+  return label;
 }

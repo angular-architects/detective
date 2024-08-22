@@ -10,7 +10,7 @@ import cytoscape, {
 } from 'cytoscape';
 import cola from 'cytoscape-cola';
 import qtip from 'cytoscape-qtip';
-import 'qtip2/dist/jquery.qtip.min.css'; // qTip2 CSS importieren
+
 import {
   MatCheckboxChange,
   MatCheckboxModule,
