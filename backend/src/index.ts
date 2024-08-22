@@ -12,6 +12,7 @@ import { calcModuleInfo } from "./services/module-info";
 import { calcTeamAlignment } from "./services/team-alignment";
 import { openSync } from './utils/open';
 import { ensureConfig } from "./infrastructure/config";
+import { findHotspots, HotspotCriteria } from "./services/hotspot";
 
 const options = parseOptions(process.argv.slice(2));
 
@@ -85,6 +86,18 @@ app.get("/api/team-alignment", async (req, res) => {
 
   try {
     const result = await calcTeamAlignment(byUser, options);
+    res.json(result);
+  } catch (e) {
+    console.log('error', e);
+    res.status(500).json(e);
+  }
+});
+
+app.get("/api/hotspots", async (req, res) => {
+  // const byUser = Boolean(req.query.byUser);
+
+  try {
+    const result = await findHotspots(options);
     res.json(result);
   } catch (e) {
     console.log('error', e);

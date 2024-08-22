@@ -7,7 +7,7 @@ export type Folder = {
     folders: Folder[];
 };
 
-const exclude = new Set(['node_modules', 'dist'])
+const exclude = new Set(['node_modules', 'dist', '.git'])
 
 export function getFolders(parent = '.', base = parent): Folder[] {
 

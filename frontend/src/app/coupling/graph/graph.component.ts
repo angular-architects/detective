@@ -83,7 +83,7 @@ export class GraphComponent implements OnInit {
     const nodes: CustomNodeDefinition[] = this.createNodes(groups);
     const edges = this.createEdges();
 
-    drawGraph([...groups, ...nodes], edges);
+    drawGraph([...groups, ...nodes], edges, this.groupByFolder);
   }
 
   private createEdges() {
@@ -199,9 +199,11 @@ function getMinMaxWeight(cy: cytoscape.Core): [number, number] {
   return [min.value, max.value];
 }
 
-function drawGraph(nodes: NodeDefinition[], edges: EdgeDefinition[]) {
+function drawGraph(nodes: NodeDefinition[], edges: EdgeDefinition[], showGroups = false) {
   cytoscape.use(cola);
   cytoscape.use(qtip);
+
+  const axis = showGroups ? 'y' : 'x';
 
   // Erstelle eine Instanz von Cytoscape
   const cy: Core = cytoscape({
@@ -209,10 +211,10 @@ function drawGraph(nodes: NodeDefinition[], edges: EdgeDefinition[]) {
 
     layout: {
       name: 'cola',
-      padding: 10,
-      nodeSpacing: 30,
+      padding: 30,
+      nodeSpacing: 50,
       avoidOverlap: true,
-      flow: { axis: 'x', minSeparation: 20 },
+      flow: { axis, minSeparation: 50 },
       fit: false,
       animate: false,
     } as LayoutOptions,

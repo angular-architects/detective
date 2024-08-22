@@ -25,24 +25,23 @@ export async function calcTeamAlignment(
   const userToTeam = initUserToTeam(teams);
   const result = initResult(modules, Object.keys(teams));
 
-  const usersWithoutTeam = new Set<string>();
+  const users = new Set<string>();
 
+  let count = 0;
   await parseGitLog((entry) => {
     let userName = entry.header.userName;
 
-    // TODO: Remove this!!
-    // if (Math.random() < 0.3) {
-    //   if (Math.random() < 0.5) {
-    //     userName = 'John Doe';
-    //   }
-    //   else {
-    //     userName = 'Jane Doe';
-    //   }
-    // }
-
-    if (!userToTeam[userName]) {
-      usersWithoutTeam.add(userName);
+    if (options.demoMode) {
+      count++;
+      if (count % 4 === 2) {
+        userName = 'John Doe';
+      }
+      else if (count % 4 == 3) {
+        userName = 'Jane Doe';
+      }
     }
+
+    users.add(userName);
     
     let key = calcKey(byUser, userName, userToTeam);
     
@@ -57,7 +56,11 @@ export async function calcTeamAlignment(
     }
   });
 
-  console.log('usersWithoutTeam', usersWithoutTeam);
+  console.log('users', Array.from(users));
+
+  if (byUser) {
+    result.teams = Array.from(users);
+  }
 
   return result;
 }

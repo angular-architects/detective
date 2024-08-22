@@ -51,7 +51,7 @@ var git_parser_1 = require("../utils/git-parser");
 var UNKNOWN_TEAM = 'unknown';
 function calcTeamAlignment() {
     return __awaiter(this, arguments, void 0, function (byUser, options) {
-        var config, modules, teams, userToTeam, result, usersWithoutTeam;
+        var config, modules, teams, userToTeam, result, usersWithoutTeam, count;
         if (byUser === void 0) { byUser = false; }
         return __generator(this, function (_a) {
             switch (_a.label) {
@@ -62,17 +62,18 @@ function calcTeamAlignment() {
                     userToTeam = initUserToTeam(teams);
                     result = initResult(modules, Object.keys(teams));
                     usersWithoutTeam = new Set();
+                    count = 0;
                     return [4 /*yield*/, (0, git_parser_1.parseGitLog)(function (entry) {
                             var userName = entry.header.userName;
-                            // TODO: Remove this!!
-                            // if (Math.random() < 0.3) {
-                            //   if (Math.random() < 0.5) {
-                            //     userName = 'John Doe';
-                            //   }
-                            //   else {
-                            //     userName = 'Jane Doe';
-                            //   }
-                            // }
+                            if (options.demoMode) {
+                                count++;
+                                if (count % 4 === 2) {
+                                    userName = 'John Doe';
+                                }
+                                else if (count % 4 == 3) {
+                                    userName = 'Jane Doe';
+                                }
+                            }
                             if (!userToTeam[userName]) {
                                 usersWithoutTeam.add(userName);
                             }

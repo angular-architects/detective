@@ -28,6 +28,9 @@ function parseOptions(args) {
             else if (arg === '--path') {
                 state = 'path';
             }
+            else if (arg === '--demo') {
+                parsed.demoMode = true;
+            }
             else if (!parsed.sheriffDump) {
                 parsed.sheriffDump = arg;
             }
