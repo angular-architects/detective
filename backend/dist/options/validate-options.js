@@ -7,9 +7,6 @@ exports.validateOptions = validateOptions;
 var fs_1 = __importDefault(require("fs"));
 function validateOptions(options) {
     try {
-        if (!fs_1.default.existsSync(options.config)) {
-            fs_1.default.writeFileSync(options.config, "{}", "utf-8");
-        }
         if (!fs_1.default.existsSync(options.sheriffDump)) {
             console.error("Sheriff export does not exist: ", options.sheriffDump);
             return false;

@@ -51,7 +51,7 @@ var git_parser_1 = require("../utils/git-parser");
 var UNKNOWN_TEAM = 'unknown';
 function calcTeamAlignment() {
     return __awaiter(this, arguments, void 0, function (byUser, options) {
-        var config, modules, teams, userToTeam, result;
+        var config, modules, teams, userToTeam, result, usersWithoutTeam;
         if (byUser === void 0) { byUser = false; }
         return __generator(this, function (_a) {
             switch (_a.label) {
@@ -61,11 +61,20 @@ function calcTeamAlignment() {
                     teams = config.teams || {};
                     userToTeam = initUserToTeam(teams);
                     result = initResult(modules, Object.keys(teams));
+                    usersWithoutTeam = new Set();
                     return [4 /*yield*/, (0, git_parser_1.parseGitLog)(function (entry) {
                             var userName = entry.header.userName;
                             // TODO: Remove this!!
-                            if (Math.random() < 0.2) {
-                                userName = 'Hugo';
+                            // if (Math.random() < 0.3) {
+                            //   if (Math.random() < 0.5) {
+                            //     userName = 'John Doe';
+                            //   }
+                            //   else {
+                            //     userName = 'Jane Doe';
+                            //   }
+                            // }
+                            if (!userToTeam[userName]) {
+                                usersWithoutTeam.add(userName);
                             }
                             var key = calcKey(byUser, userName, userToTeam);
                             for (var _i = 0, _a = entry.body; _i < _a.length; _i++) {
@@ -82,6 +91,7 @@ function calcTeamAlignment() {
                         })];
                 case 1:
                     _a.sent();
+                    console.log('usersWithoutTeam', usersWithoutTeam);
                     return [2 /*return*/, result];
             }
         });
