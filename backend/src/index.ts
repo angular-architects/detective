@@ -13,6 +13,7 @@ import { calcTeamAlignment } from "./services/team-alignment";
 import { openSync } from './utils/open';
 import { ensureConfig } from "./infrastructure/config";
 import { aggregateHotspots, findHotspotFiles, HotspotCriteria } from "./services/hotspot";
+import { calcChangeCoupling } from "./services/change-coupling";
 
 const options = parseOptions(process.argv.slice(2));
 
@@ -54,7 +55,6 @@ app.post("/api/config", (req, res) => {
 });
 
 app.get("/api/modules", (req, res) => {
-
   try {
     const result = calcModuleInfo(options);
     res.json(result);
@@ -77,6 +77,16 @@ app.get("/api/coupling", (req, res) => {
     const result = calcCoupling(options);
     res.json(result);
   } catch (e) {
+    res.status(500).json(e);
+  }
+});
+
+app.get("/api/change-coupling", async (req, res) => {
+  try {
+    const result = await calcChangeCoupling(options);
+    res.json(result);
+  } catch (e) {
+    console.log('error', e);
     res.status(500).json(e);
   }
 });

@@ -5,6 +5,7 @@ import { loadConfig } from "../infrastructure/config";
 import { loadDeps } from "../infrastructure/deps";
 import { calcModuleInfo, ModuleInfo } from "./module-info";
 import { toPercent } from "../utils/round";
+import { getEmptyMatrix } from "../utils/matrix";
 
 // TODO: Restructure fileCount and cohesion into dimensions node
 export type CouplingResult = {
@@ -78,10 +79,6 @@ function sumUpImports(deps: Deps, file: string, col: string) {
     }
   }
   return count;
-}
-
-function getEmptyMatrix(size: number): number[][] {
-  return Array.from({ length: size }, () => new Array(size).fill(0));
 }
 
 function calcScopeMap(config: Config) {
