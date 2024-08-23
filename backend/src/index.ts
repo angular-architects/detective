@@ -12,7 +12,7 @@ import { calcModuleInfo } from "./services/module-info";
 import { calcTeamAlignment } from "./services/team-alignment";
 import { openSync } from './utils/open';
 import { ensureConfig } from "./infrastructure/config";
-import { findHotspotFiles, HotspotCriteria } from "./services/hotspot";
+import { aggregateHotspots, findHotspotFiles, HotspotCriteria } from "./services/hotspot";
 
 const options = parseOptions(process.argv.slice(2));
 
@@ -93,11 +93,27 @@ app.get("/api/team-alignment", async (req, res) => {
   }
 });
 
-app.get("/api/hotspots", async (req, res) => {
+app.get("/api/hotspots/aggregated", async (req, res) => {
   const minScore = Number(req.query.minScore) || -1;
+  const criteria = { minScore, module: '' };
 
   try {
-    const result = await findHotspotFiles({minScore: minScore}, options);
+    const result = await aggregateHotspots(criteria, options);
+    res.json(result);
+  } catch (e) {
+    console.log('error', e);
+    res.status(500).json(e);
+  }
+});
+
+app.get("/api/hotspots", async (req, res) => {
+  const minScore = Number(req.query.minScore) || -1;
+  const module = req.query.module ? String(req.query.module) : '';
+
+  const criteria = { minScore, module };
+
+  try {
+    const result = await findHotspotFiles(criteria, options);
     res.json(result);
   } catch (e) {
     console.log('error', e);
