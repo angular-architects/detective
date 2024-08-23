@@ -8,14 +8,22 @@ import cytoscape, {
   LayoutOptions,
   NodeDefinition,
 } from 'cytoscape';
+
 import cola from 'cytoscape-cola';
 import qtip from 'cytoscape-qtip';
+import dagre from 'cytoscape-dagre';
 
 import {
   MatCheckboxChange,
   MatCheckboxModule,
 } from '@angular/material/checkbox';
 import { FormsModule } from '@angular/forms';
+
+
+cytoscape.use(dagre);
+cytoscape.use(cola);
+cytoscape.use(qtip);
+
 
 interface CustomNodeDefinition extends NodeDefinition {
   data: {
@@ -200,26 +208,22 @@ function getMinMaxWeight(cy: cytoscape.Core): [number, number] {
 }
 
 function drawGraph(nodes: NodeDefinition[], edges: EdgeDefinition[], showGroups = false) {
-  cytoscape.use(cola);
-  cytoscape.use(qtip);
 
   console.log('showGrups', showGroups);
-  const axis = showGroups ? 'xy' : 'y';
+  // const axis = showGroups ? 'xy' : 'x';
 
   // Erstelle eine Instanz von Cytoscape
   const cy: Core = cytoscape({
     container: document.getElementById('cy'), // Hier muss das HTML-Element angegeben werden, in dem der Graph dargestellt wird.
 
     layout: {
-      name: 'cola',
+      name:  'dagre',
       padding: 30,
-      nodeSpacing: 50,
+      nodeSpacing: 40,
       avoidOverlap: true,
-      flow: { axis, minSeparation: 50 },
+      flow: { axis: 'x', minSeparation: 50 },
       fit: false,
       animate: false,
-
-     
     } as LayoutOptions,
 
     style: [
@@ -305,7 +309,13 @@ function drawGraph(nodes: NodeDefinition[], edges: EdgeDefinition[], showGroups 
     userPanningEnabled: true,
   } as any);
 
+
+
+
+
   cy.ready(() => {
+
+
     cy.nodes().forEach((node) => {
       const label = node.data('label');
       node.style('width', `${label.length * 10}px`); // Breite basierend auf der Beschriftung
@@ -327,26 +337,26 @@ function drawGraph(nodes: NodeDefinition[], edges: EdgeDefinition[], showGroups 
       })
       .update();
 
-    var minY = Infinity;
+    // var minY = Infinity;
 
-    var minY = Infinity;
+    // var minY = Infinity;
 
-    // Durchlaufen Sie alle Knoten und Compound Nodes (Gruppen)
-    cy.nodes().forEach(function (node) {
-      var position = node.boundingBox({
-        includeNodes: true,
-        includeEdges: false,
-        includeLabels: false,
-      });
+    // // Durchlaufen Sie alle Knoten und Compound Nodes (Gruppen)
+    // cy.nodes().forEach(function (node) {
+    //   var position = node.boundingBox({
+    //     includeNodes: true,
+    //     includeEdges: false,
+    //     includeLabels: false,
+    //   });
 
-      // Überprüfen Sie die obere Grenze (y1) der Bounding-Box
-      if (position.y1 < minY) {
-        minY = position.y1;
-      }
-    });
+    //   // Überprüfen Sie die obere Grenze (y1) der Bounding-Box
+    //   if (position.y1 < minY) {
+    //     minY = position.y1;
+    //   }
+    // });
 
-    // Den Graphen nach oben verschieben, sodass der obere Rand sichtbar ist
-    cy.pan({ x: 0, y: -minY + 20 }); // Verschiebt den Graphen nach oben, +20 Pixel für zusätzlichen Puffer
+    // // Den Graphen nach oben verschieben, sodass der obere Rand sichtbar ist
+    // cy.pan({ x: 0, y: -minY + 20 }); // Verschiebt den Graphen nach oben, +20 Pixel für zusätzlichen Puffer
   });
 
   cy.nodes().forEach((node: any) => {
@@ -401,13 +411,33 @@ function drawGraph(nodes: NodeDefinition[], edges: EdgeDefinition[], showGroups 
         event: 'mouseout',
       },
     });
+
   });
 
-  //   cy.on('click', 'node', (event) => {
-  //     const node = event.target;
-  //     console.log(`Clicked on node with id: ${node.id()}`);
-  //     alert(`You clicked on ${node.data('label')}`);
-  // });
+  centerAllNodes(cy);
+
+}
+
+
+function centerAllNodes(cy) {
+  // Berechne die Bounding Box des gesamten Graphen
+  const boundingBox = cy.elements().boundingBox();
+
+  // Berechne die Mitte des Containers
+  const container = cy.container();
+  const containerCenterX = container.clientWidth / 2;
+  const containerCenterY = container.clientHeight / 2;
+
+  // Berechne die Mitte des gesamten Graphen
+  const graphCenterX = (boundingBox.x1 + boundingBox.x2) / 2;
+  const graphCenterY = (boundingBox.y1 + boundingBox.y2) / 2;
+
+  // Berechne die Verschiebung in X- und Y-Richtung
+  const shiftX = containerCenterX - graphCenterX;
+  const shiftY = containerCenterY - graphCenterY;
+
+  // Verwende cy.panBy, um den Graphen nach links/rechts und oben/unten zu verschieben
+  cy.panBy({ x: shiftX, y: shiftY - 200 });
 }
 
 function sumRow(matrix: number[][], nodeIndex: number): number {
@@ -429,3 +459,5 @@ function sumCol(matrix: number[][], nodeIndex: number): number {
   }
   return sum;
 }
+
+
