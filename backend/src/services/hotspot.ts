@@ -1,8 +1,8 @@
 import path from "path";
 import { Options } from "../options/options";
 import { parseGitLog } from "../utils/git-parser";
-import { calculateComplexity } from 'cyclomatic-complexity/bin/src/complexity';
 import * as fs from 'fs';
+import { calcComplexity } from "../utils/complexity";
 
 // tuple to reduce payload size
 export type Hotspot = [
@@ -24,18 +24,18 @@ export type HotspotCriteria = {
 export async function findHotspots(options: Options): Promise<HotspotResult> {
   const result: HotspotResult = { hotspots: {} };
 
-
   await parseGitLog((entry) => {
     for (const change of entry.body) {
       let hotspot: Hotspot;
       if (!result.hotspots[change.path]) {
 
-        // console.log('path', change.path);
-        // const filePath = path.join(options.path, change.path);
-        // if (fs.existsSync(filePath)) {
-        // }
+        let cc = -1;
+        const filePath = path.join(options.path, change.path);
+        if (filePath.endsWith('.ts') && fs.existsSync(filePath)) {
+          cc = calcComplexity(filePath);
+        }
 
-        hotspot = [0, 0, 0];
+        hotspot = [0, 0, cc];
         result.hotspots[change.path] = hotspot;
       } else {
         hotspot = result.hotspots[change.path];

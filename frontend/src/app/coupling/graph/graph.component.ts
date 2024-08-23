@@ -203,7 +203,8 @@ function drawGraph(nodes: NodeDefinition[], edges: EdgeDefinition[], showGroups 
   cytoscape.use(cola);
   cytoscape.use(qtip);
 
-  const axis = showGroups ? 'y' : 'x';
+  console.log('showGrups', showGroups);
+  const axis = showGroups ? 'xy' : 'y';
 
   // Erstelle eine Instanz von Cytoscape
   const cy: Core = cytoscape({
@@ -217,6 +218,8 @@ function drawGraph(nodes: NodeDefinition[], edges: EdgeDefinition[], showGroups 
       flow: { axis, minSeparation: 50 },
       fit: false,
       animate: false,
+
+     
     } as LayoutOptions,
 
     style: [
