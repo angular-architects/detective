@@ -43,3 +43,14 @@ svg {
     height: 100vh;
     display: block;
 }
+
+.filter {
+    display: flex; 
+    align-items: baseline; 
+    max-width: 350px;
+    padding-top:20px;
+}
+
+.mr30 {
+    margin-right: 30px;
+}

@@ -13,17 +13,26 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
-import { debounceTime } from 'rxjs';
+import { combineLatest, debounceTime, map, startWith } from 'rxjs';
+import { EventService } from '../event.service';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Component({
   selector: 'app-hotspot',
   standalone: true,
-  imports: [MatTableModule, MatSortModule, MatFormFieldModule, MatInputModule, ReactiveFormsModule],
+  imports: [
+    MatTableModule,
+    MatSortModule,
+    MatFormFieldModule,
+    MatInputModule,
+    ReactiveFormsModule,
+  ],
   templateUrl: './hotspot.component.html',
   styleUrl: './hotspot.component.css',
 })
-export class HotspotComponent implements OnInit {
-  hotspotService = inject(HotspotService);
+export class HotspotComponent {
+  private hotspotService = inject(HotspotService);
+  private eventService = inject(EventService);
 
   minScoreControl = new FormControl(10);
 
@@ -38,14 +47,19 @@ export class HotspotComponent implements OnInit {
 
   selectedModule = '';
 
-  ngOnInit(): void {
-    this.loadAggregated();
-    this.minScoreControl.valueChanges.pipe(debounceTime(300)).subscribe(() => {
+  constructor() {
+    combineLatest([
+      this.eventService.filterChanged.pipe(startWith(null)),
+      this.minScoreControl.valueChanges.pipe(startWith(this.minScoreControl.value), debounceTime(300)),
+    ])
+    .pipe(takeUntilDestroyed())
+    .subscribe(() => {
+      console.log('changed')
       this.loadAggregated();
       if (this.selectedModule) {
         this.loadHotspots();
       }
-    })
+    });
   }
 
   selectRow(row: AggregatedHotspot, index: number) {
@@ -70,17 +84,25 @@ export class HotspotComponent implements OnInit {
   }
 
   private loadAggregated() {
-    this.hotspotService.loadAggregated(this.minScoreControl.value).subscribe((aggregatedResult) => {
-      this.aggregatedResult = aggregatedResult;
-      this.dataSource.data = this.formatAggregated(aggregatedResult.aggregated);
-    });
+    this.hotspotService
+      .loadAggregated(this.minScoreControl.value)
+      .subscribe((aggregatedResult) => {
+        this.aggregatedResult = aggregatedResult;
+        this.dataSource.data = this.formatAggregated(
+          aggregatedResult.aggregated
+        );
+      });
   }
 
   private loadHotspots() {
-    this.hotspotService.load(this.minScoreControl.value, this.selectedModule).subscribe((hotspotResult) => {
-      this.hotspotResult = hotspotResult;
-      this.detailDataSource.data = this.formatHotspots(hotspotResult.hotspots);
-    });
+    this.hotspotService
+      .load(this.minScoreControl.value, this.selectedModule)
+      .subscribe((hotspotResult) => {
+        this.hotspotResult = hotspotResult;
+        this.detailDataSource.data = this.formatHotspots(
+          hotspotResult.hotspots
+        );
+      });
   }
 }
 

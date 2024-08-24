@@ -1,4 +1,4 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, inject, Input, OnInit } from '@angular/core';
 import { CouplingService } from '../coupling.service';
 import { EventService } from '../../event.service';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
@@ -17,13 +17,15 @@ import {
   MatCheckboxChange,
   MatCheckboxModule,
 } from '@angular/material/checkbox';
-import { FormsModule } from '@angular/forms';
-
+import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { GraphType } from './graph-type';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { merge } from 'rxjs';
 
 cytoscape.use(dagre);
 cytoscape.use(cola);
 cytoscape.use(qtip);
-
 
 interface CustomNodeDefinition extends NodeDefinition {
   data: {
@@ -39,7 +41,13 @@ interface CustomNodeDefinition extends NodeDefinition {
 @Component({
   selector: 'app-graph',
   standalone: true,
-  imports: [MatCheckboxModule, FormsModule],
+  imports: [
+    MatCheckboxModule,
+    FormsModule,
+    MatFormFieldModule,
+    MatInputModule,
+    ReactiveFormsModule,
+  ],
   templateUrl: './graph.component.html',
   styleUrl: './graph.component.css',
 })
@@ -51,14 +59,24 @@ export class GraphComponent implements OnInit {
   private labels: string[] = [];
   private groups: string[] = [];
 
+  minConnectionsControl = new FormControl(0);
+
   groupByFolder = false;
   fileCount: number[];
   cohesion: number[];
 
+  @Input()
+  type: GraphType = 'structure';
+
   constructor() {
-    this.eventService.filterChanged.pipe(takeUntilDestroyed()).subscribe(() => {
-      this.load();
-    });
+    merge(
+      this.minConnectionsControl.valueChanges,
+      this.eventService.filterChanged
+    )
+      .pipe(takeUntilDestroyed())
+      .subscribe(() => {
+        this.load();
+      });
   }
 
   ngOnInit(): void {
@@ -70,7 +88,7 @@ export class GraphComponent implements OnInit {
   }
 
   private load() {
-    this.couplingService.load().subscribe((r) => {
+    this.couplingService.load(this.type).subscribe((r) => {
       this.matrix = r.matrix;
       this.clearSelfLinks();
 
@@ -91,20 +109,24 @@ export class GraphComponent implements OnInit {
     const nodes: CustomNodeDefinition[] = this.createNodes(groups);
     const edges = this.createEdges();
 
-    drawGraph([...groups, ...nodes], edges, this.groupByFolder);
+    const directed = this.type === 'structure';
+
+    drawGraph([...groups, ...nodes], edges, this.groupByFolder, directed);
   }
 
   private createEdges() {
     const edges = [];
     for (let i = 0; i < this.matrix.length; i++) {
       for (let j = 0; j < this.matrix.length; j++) {
-        if (this.matrix[i][j] > 0) {
+        if (this.matrix[i][j] > this.minConnectionsControl.value) {
           edges.push({
             data: {
               source: '' + i,
               target: '' + j,
               weight: this.matrix[i][j],
-              tooltip: `${this.labels[i].split('/').at(-1)} → ${this.labels[j].split('/').at(-1)}<br><br>${this.matrix[i][j]} connections`,
+              tooltip: `${this.labels[i].split('/').at(-1)} → ${this.labels[j]
+                .split('/')
+                .at(-1)}<br><br>${this.matrix[i][j]} connections`,
             },
           });
         }
@@ -123,9 +145,15 @@ export class GraphComponent implements OnInit {
         data: {
           id: '' + i,
           label: label.split('/').at(-1),
-          tooltip: `${label}
+          tooltip:
+            this.type === 'structure'
+              ? `${label}
 <br><br>${this.fileCount[i]} source files
 <br>Cohesion: ${this.cohesion[i]}%
+<br>Outgoing Deps: ${sumRow(this.matrix, i)}
+<br>Incoming Deps: ${sumCol(this.matrix, i)}
+`
+              : `${label}
 <br>Outgoing Deps: ${sumRow(this.matrix, i)}
 <br>Incoming Deps: ${sumCol(this.matrix, i)}
 `,
@@ -207,8 +235,12 @@ function getMinMaxWeight(cy: cytoscape.Core): [number, number] {
   return [min.value, max.value];
 }
 
-function drawGraph(nodes: NodeDefinition[], edges: EdgeDefinition[], showGroups = false) {
-
+function drawGraph(
+  nodes: NodeDefinition[],
+  edges: EdgeDefinition[],
+  showGroups = false,
+  directed = true
+) {
   console.log('showGrups', showGroups);
   // const axis = showGroups ? 'xy' : 'x';
 
@@ -217,9 +249,10 @@ function drawGraph(nodes: NodeDefinition[], edges: EdgeDefinition[], showGroups 
     container: document.getElementById('cy'), // Hier muss das HTML-Element angegeben werden, in dem der Graph dargestellt wird.
 
     layout: {
-      name:  'dagre',
+      name: 'dagre',
       padding: 30,
       nodeSpacing: 40,
+      nodeSep: 80,
       avoidOverlap: true,
       flow: { axis: 'x', minSeparation: 50 },
       fit: false,
@@ -253,7 +286,7 @@ function drawGraph(nodes: NodeDefinition[], edges: EdgeDefinition[], showGroups 
           width: 1,
           'line-color': '#1e272e',
           'target-arrow-color': '#1e272e',
-          'target-arrow-shape': 'triangle',
+          'target-arrow-shape': directed ? 'triangle' : 'none',
           'curve-style': 'bezier',
         },
       },
@@ -309,13 +342,7 @@ function drawGraph(nodes: NodeDefinition[], edges: EdgeDefinition[], showGroups 
     userPanningEnabled: true,
   } as any);
 
-
-
-
-
   cy.ready(() => {
-
-
     cy.nodes().forEach((node) => {
       const label = node.data('label');
       node.style('width', `${label.length * 10}px`); // Breite basierend auf der Beschriftung
@@ -411,13 +438,10 @@ function drawGraph(nodes: NodeDefinition[], edges: EdgeDefinition[], showGroups 
         event: 'mouseout',
       },
     });
-
   });
 
   centerAllNodes(cy);
-
 }
-
 
 function centerAllNodes(cy) {
   // Berechne die Bounding Box des gesamten Graphen
@@ -459,5 +483,3 @@ function sumCol(matrix: number[][], nodeIndex: number): number {
   }
   return sum;
 }
-
-

@@ -6,6 +6,10 @@ import { getEmptyMatrix } from "../utils/matrix";
 export type ChangeCouplingResult = {
     matrix: number[][];
     dimensions: string[];
+    groups: string[];
+    
+    fileCount: number[];
+    cohesion: number[];
 }
 
 export async function calcChangeCoupling(options: Options): Promise<ChangeCouplingResult> {
@@ -29,7 +33,11 @@ export async function calcChangeCoupling(options: Options): Promise<ChangeCoupli
 
     return {
         matrix,
-        dimensions: modules
+        dimensions: modules,
+        groups: config.groups,
+
+        fileCount: new Array(matrix.length).fill(-1),
+        cohesion: new Array(matrix.length).fill(-1),
     }
 }
 
@@ -37,7 +45,7 @@ function addToMatrix(touchedModules: Set<number>, matrix: number[][]) {
     const touchedArray = Array.from(touchedModules);
     for (const module1 of touchedArray) {
         for (const module2 of touchedArray) {
-            if (module1 !== module2) {
+            if (module1 < module2) {
                 matrix[module1][module2]++;
             }
         }
