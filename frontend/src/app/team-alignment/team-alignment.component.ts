@@ -6,6 +6,7 @@ import { DoughnutController } from 'chart.js';
 import * as d3 from 'd3';
 import { EventService } from '../event.service';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { lastSegments } from '../utils/segments';
 
 Chart.register(ArcElement, Tooltip, Legend, Title, DoughnutController);
 
@@ -138,13 +139,4 @@ function draw(
     charts.push(chart);
   }
   return charts;
-}
-
-function lastSegments(moduleName: string, segments: number) {
-  let moduleNameParts = moduleName.split('/');
-  if (moduleNameParts.length > segments) {
-    moduleNameParts = moduleNameParts.slice(moduleNameParts.length - segments);
-  }
-  const label = moduleNameParts.join('/');
-  return label;
 }

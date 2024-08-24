@@ -54,7 +54,7 @@ export async function findHotspotFiles(criteria: HotspotCriteria, options: Optio
     }
   }
 
-  filtered.sort((a, b) => a.score - b.score);
+  filtered.sort((a, b) => b.score - a.score);
 
   return { hotspots: filtered };
 }
@@ -74,7 +74,7 @@ export async function aggregateHotspots(criteria: HotspotCriteria, options: Opti
     result.push({ module, count });
   }
 
-  result.sort((a, b) => a.count - b.count);
+  result.sort((a, b) => b.count - a.count);
   return { aggregated: result };
 }
 

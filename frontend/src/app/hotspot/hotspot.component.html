@@ -1,0 +1,65 @@
+<div class="p10">
+  <mat-form-field>
+    <mat-label>Min. Hotspot Score</mat-label>
+    <input matInput type="number" [formControl]="minScoreControl" min="0" step="1">
+  </mat-form-field>
+</div>
+
+<div class="aggregated">
+  <div class="p10">
+    <table mat-table [dataSource]="dataSource" class="mat-elevation-z8">
+      <ng-container matColumnDef="module">
+        <th mat-header-cell *matHeaderCellDef>Module</th>
+        <td mat-cell *matCellDef="let element">{{ element.module }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="count">
+        <th mat-header-cell *matHeaderCellDef>Count</th>
+        <td mat-cell *matCellDef="let element">{{ element.count }}</td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="columnsToDisplay"></tr>
+      <tr
+        mat-row
+        *matRowDef="let row; columns: columnsToDisplay; let i = index"
+        (click)="selectRow(row, i)"
+        [class.selected]="selectedRow === row"
+      ></tr>
+    </table>
+  </div>
+</div>
+
+@if(hotspotResult?.hotspots.length > 0) {
+<div class="detail">
+  <div class="p10">
+    <table mat-table [dataSource]="detailDataSource" class="mat-elevation-z8">
+      <ng-container matColumnDef="fileName">
+        <th mat-header-cell *matHeaderCellDef>Module</th>
+        <td mat-cell *matCellDef="let element">{{ element.fileName }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="commits">
+        <th mat-header-cell *matHeaderCellDef>Commits</th>
+        <td mat-cell *matCellDef="let element">{{ element.commits }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="complexity">
+        <th mat-header-cell *matHeaderCellDef>Complexity</th>
+        <td mat-cell *matCellDef="let element">{{ element.complexity }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="score">
+        <th mat-header-cell *matHeaderCellDef>Score</th>
+        <td mat-cell *matCellDef="let element">{{ element.score }}</td>
+      </ng-container>
+
+
+      <tr mat-header-row *matHeaderRowDef="detailColumns"></tr>
+      <tr
+        mat-row
+        *matRowDef="let row; columns: detailColumns"
+      ></tr>
+    </table>
+  </div>
+</div>
+}

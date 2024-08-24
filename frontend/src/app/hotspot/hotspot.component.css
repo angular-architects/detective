@@ -1,0 +1,41 @@
+/* Standardbreite für kleinere Bildschirme (z.B. Mobilgeräte) */
+.aggregated {
+  width: 100%;
+}
+
+.detail {
+  width: 100%;
+}
+
+.p10 {
+    padding: 10px
+}
+
+/* Anpassung für größere Bildschirme (z.B. Laptops) */
+@media (min-width: 1024px) {
+  .aggregated {
+    width: 30%;
+    float: left;
+  }
+
+  .detail {
+    width: 70%;
+    float: right;
+  }
+}
+
+.selected {
+  background-color: rgba(
+    63,
+    81,
+    181,
+    0.1
+  ) !important; /* Ein leicht transparentes Blau */
+  color: #3f51b5 !important; /* Das gleiche Blau wie in der Leiste */
+  font-weight: bold; /* Betont den Text */
+  border-left: 4px solid #3f51b5; /* Optional: ein markanter blauer Rand auf der linken Seite */
+}
+
+.aggregated td {
+  cursor: pointer !important;
+}
