@@ -461,7 +461,7 @@ function centerAllNodes(cy) {
   const shiftY = containerCenterY - graphCenterY;
 
   // Verwende cy.panBy, um den Graphen nach links/rechts und oben/unten zu verschieben
-  cy.panBy({ x: shiftX, y: shiftY - 200 });
+  cy.panBy({ x: shiftX, y: Math.max(0, shiftY - 200) });
 }
 
 function sumRow(matrix: number[][], nodeIndex: number): number {
