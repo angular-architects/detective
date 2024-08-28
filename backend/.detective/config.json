@@ -1,12 +1,7 @@
 {
   "scopes": [
-    "src/infrastructure",
-    "src/model",
-    "src/options"
   ],
-  "groups": [
-    "src"
-  ],
+  "groups": [],
   "teams": {
     "alpha": [
       "Manfred Steyer"
