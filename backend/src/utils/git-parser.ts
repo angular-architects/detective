@@ -1,4 +1,5 @@
 import { getGitLog } from "../infrastructure/git";
+import * as path from 'path';
 
 type State = "header" | "body";
 
@@ -34,6 +35,8 @@ export async function parseGitLog(callback: ParserCallback) {
   let header = initHeader;
   let body: LogBodyEntry[] = [];
 
+  const renameMap = new Map<string, string>();
+
   let state: State = "header";
 
   while (pos < log.length) {
@@ -53,25 +56,47 @@ export async function parseGitLog(callback: ParserCallback) {
         header = parseHeader(line);
       }
       else {
-        const bodyEntry = parseBodyEntry(line);
+        const bodyEntry = parseBodyEntry(line, renameMap);
         body.push(bodyEntry);
       }
     }
   }
 }
 
-function parseBodyEntry(line: string): LogBodyEntry {
+function parseBodyEntry(line: string, renameMap: Map<string, string>): LogBodyEntry {
   const parts = line.split("\t");
   const linesAdded = parseInt(parts[0]);
   const linesRemoved = parseInt(parts[1]);
-  const path = parts[2];
+  let filePath = parts[2];
 
+  filePath = handleRenames(filePath, renameMap);
+  
   const bodyEntry: LogBodyEntry = {
     linesAdded: linesAdded || 0,
     linesRemoved: linesRemoved || 0,
-    path: path || '',
+    path: filePath || '',
   };
   return bodyEntry;
+}
+
+function handleRenames(filePath: string, renameMap: Map<string, string>) {
+  const result = filePath.match(/(.*?)\{(.*?) \=\> (.*?)\}(.*)/);
+
+  if (result) {
+    const start = result[1];
+    const before = result[2];
+    const after = result[3];
+    const end = result[4];
+
+    const from = path.join(start, before, end);
+    const to = path.join(start, after, end);
+
+    renameMap.set(from, renameMap.get(to) || to);
+    filePath = to;
+  }
+
+  filePath = renameMap.get(filePath) || filePath;
+  return filePath;
 }
 
 function parseHeader(line: string): LogHeader {

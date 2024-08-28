@@ -1,18 +1,18 @@
 #!/usr/bin/env node
 
-import express, { Request, Response } from "express";
+import express from "express";
 import path from "path";
 import fs from "fs";
 import { calcCoupling } from "./services/coupling";
 import { cwd } from "process";
 import { parseOptions } from "./options/parse-options";
 import { validateOptions } from "./options/validate-options";
-import { getFolders, inferFolders } from "./services/folders";
+import { inferFolders } from "./services/folders";
 import { calcModuleInfo } from "./services/module-info";
 import { calcTeamAlignment } from "./services/team-alignment";
 import { openSync } from './utils/open';
 import { ensureConfig } from "./infrastructure/config";
-import { aggregateHotspots, findHotspotFiles, HotspotCriteria } from "./services/hotspot";
+import { aggregateHotspots, findHotspotFiles } from "./services/hotspot";
 import { calcChangeCoupling } from "./services/change-coupling";
 
 const options = parseOptions(process.argv.slice(2));
@@ -64,17 +64,6 @@ app.get("/api/modules", (req, res) => {
 });
 
 app.get("/api/folders", (req, res) => {
-  try {
-    // const result = getFolders();
-    const result = inferFolders(options);
-    console.log('result', result);
-    res.json(result);
-  } catch (e) {
-    res.status(500).json(e);
-  }
-});
-
-app.get("/api/folders2", (req, res) => {
   try {
     const result = inferFolders(options);
     res.json(result);
