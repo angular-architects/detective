@@ -246,7 +246,7 @@ export class ChordComponent {
       .each((d) => {
         d.angle = (d.startAngle + d.endAngle) / 2;
       })
-      .style('font-size', '12px')
+      .style('font-size', '16px')
       // .attr('dy', '.35em')
       .attr(
         'transform',
@@ -311,7 +311,7 @@ export class ChordComponent {
 
     r.on('click', (event, d) => {
       console.log(
-        'Quelle-Index:',
+        'Source-Index:',
         d.source.index,
         'Ziel-Index:',
         d.target.index

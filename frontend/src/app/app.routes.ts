@@ -17,7 +17,10 @@ export const routes: Routes = [
     },
     {
         path: 'graph',
-        component: GraphComponent
+        component: GraphComponent,
+        data: {
+            type: 'structure'
+        } as GraphTypeData
     },
     {
         path: 'team-alignment',

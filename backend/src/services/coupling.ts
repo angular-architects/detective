@@ -4,10 +4,11 @@ import { Options } from "../options/options";
 import { loadConfig } from "../infrastructure/config";
 import { loadDeps } from "../infrastructure/deps";
 import { calcModuleInfo, ModuleInfo } from "./module-info";
-import { toPercent } from "../utils/round";
+import { toPercent } from "../utils/to-percent";
 import { getEmptyMatrix } from "../utils/matrix";
+import { normalizeFolder } from "../utils/normalize-folder";
 
-// TODO: Restructure fileCount and cohesion into dimensions node
+// TODO: Restructure fileCount and cohesion into dimensions node?
 export type CouplingResult = {
   groups: string[];
   dimensions: string[];
@@ -21,12 +22,15 @@ export function calcCoupling(options: Options): CouplingResult {
   const deps = loadDeps(options);
 
   const files = Object.keys(deps);
-  const scopeMap = calcScopeMap(config);
-  const matrixSize = config.scopes.length;
+  const modules = config.scopes.map(m => normalizeFolder(m));
+
+  const scopeMap = calcScopeMap(modules);
+  const matrixSize = modules.length;
   const matrix: number[][] = getEmptyMatrix(matrixSize);
 
-  for (const row of config.scopes) {
-    for (const col of config.scopes) {
+
+  for (const row of modules) {
+    for (const col of modules) {
       const count = calcCell(files, deps, row, col);
 
       const i = scopeMap.get(row);
@@ -57,7 +61,7 @@ function calcCohesion(moduleInfo: ModuleInfo, matrix: number[][]) {
   return moduleInfo.fileCount.map((count, index) => {
     const edges = matrix[index][index];
     const maxEdges = (count * (count - 1)) / 2;
-    return toPercent(edges / maxEdges, 2);
+    return toPercent(edges / maxEdges);
   });
 }
 
@@ -81,10 +85,10 @@ function sumUpImports(deps: Deps, file: string, col: string) {
   return count;
 }
 
-function calcScopeMap(config: Config) {
+function calcScopeMap(modules: string[]) {
   const scopeMap = new Map<string, number>();
-  for (let i = 0; i < config.scopes.length; i++) {
-    scopeMap.set(config.scopes[i], i);
+  for (let i = 0; i < modules.length; i++) {
+    scopeMap.set(modules[i], i);
   }
   return scopeMap;
 }

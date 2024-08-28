@@ -98,8 +98,20 @@ export class GraphComponent implements OnInit {
       this.labels = r.dimensions;
       this.groups = r.groups;
 
+      this.groups = this.findGroups(this.labels);
+      
       this.draw();
     });
+  }
+
+  findGroups(labels: string[]): string[] {
+    const groups = new Set<string>();
+    for (const label of labels) {
+      const parts = label.split('/');
+      const group = parts.slice(0, parts.length-1).join('/');
+      groups.add(group);
+    }
+    return Array.from(groups)
   }
 
   private draw() {

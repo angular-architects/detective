@@ -77,6 +77,7 @@ app.get("/api/coupling", (req, res) => {
     const result = calcCoupling(options);
     res.json(result);
   } catch (e) {
+    console.log('error', e);
     res.status(500).json(e);
   }
 });

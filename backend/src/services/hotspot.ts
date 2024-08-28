@@ -4,6 +4,7 @@ import { parseGitLog } from "../utils/git-parser";
 import * as fs from 'fs';
 import { calcComplexity } from "../utils/complexity";
 import { loadConfig } from "../infrastructure/config";
+import { normalizeFolder, toDisplayFolder } from "../utils/normalize-folder";
 
 export type Hotspot = {
   commits: number,
@@ -43,7 +44,7 @@ export type AggregatedHotspotsResult = {
 }
 
 export async function findHotspotFiles(criteria: HotspotCriteria, options: Options): Promise<HotspotResult> {
-  const hotspots: Record<string, Hotspot> = await _findHotspots(criteria, options);
+  const hotspots: Record<string, Hotspot> = await analyzeLogs(criteria, options);
 
   const filtered: FlatHotspot[] = []; 
   for (const fileName of Object.keys(hotspots)) {
@@ -63,22 +64,24 @@ export async function aggregateHotspots(criteria: HotspotCriteria, options: Opti
   const hotspots = (await findHotspotFiles(criteria, options)).hotspots;
   const config = loadConfig(options);
 
+  const modules = config.scopes.map(m => normalizeFolder(m));
+
   const result: AggregatedHotspot[] = []; 
-  for (const module of config.scopes) {
+  for (const module of modules) {
     let count = 0;
     for (const hotspot of hotspots) {
       if (hotspot.fileName.startsWith(module) && hotspot.score >= criteria.minScore) {
         count++;
       }
     }
-    result.push({ module, count });
+    result.push({ module: toDisplayFolder(module), count });
   }
 
   result.sort((a, b) => b.count - a.count);
   return { aggregated: result };
 }
 
-async function _findHotspots(criteria: HotspotCriteria, options: Options) {
+async function analyzeLogs(criteria: HotspotCriteria, options: Options) {
   const hotspots: Record<string, Hotspot> = {};
 
   await parseGitLog((entry) => {
@@ -115,4 +118,3 @@ async function _findHotspots(criteria: HotspotCriteria, options: Options) {
   });
   return hotspots;
 }
-

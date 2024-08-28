@@ -2,6 +2,7 @@ import { loadConfig } from "../infrastructure/config";
 import { Options } from "../options/options";
 import { parseGitLog } from "../utils/git-parser";
 import { getEmptyMatrix } from "../utils/matrix";
+import { normalizeFolder } from "../utils/normalize-folder";
 
 export type ChangeCouplingResult = {
     matrix: number[][];
@@ -14,7 +15,9 @@ export type ChangeCouplingResult = {
 
 export async function calcChangeCoupling(options: Options): Promise<ChangeCouplingResult> {
     const config = loadConfig(options);
-    const modules = config.scopes;
+
+    const displayModules = config.scopes;
+    const modules = displayModules.map(m => normalizeFolder(m));
 
     const matrix = getEmptyMatrix(modules.length);
 
@@ -33,7 +36,7 @@ export async function calcChangeCoupling(options: Options): Promise<ChangeCoupli
 
     return {
         matrix,
-        dimensions: modules,
+        dimensions: displayModules,
         groups: config.groups,
 
         fileCount: new Array(matrix.length).fill(-1),
