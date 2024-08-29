@@ -14,6 +14,7 @@ import { aggregateHotspots, findHotspotFiles } from "./services/hotspot";
 import { calcChangeCoupling } from "./services/change-coupling";
 import { getEntryGlobs, inferDeps } from "./infrastructure/deps";
 import { isRepo } from "./infrastructure/git";
+import { openSync } from "./utils/open";
 
 const options = parseOptions(process.argv.slice(2));
 
@@ -147,5 +148,5 @@ app.get("*", (req, res) => {
 app.listen(options.port, () => {
   const url = `http://localhost:${options.port}`;
   console.log(`Detective runs at ${url}`);
-  // openSync(url);
+  openSync(url);
 });

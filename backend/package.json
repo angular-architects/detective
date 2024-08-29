@@ -15,7 +15,7 @@
   "license": "MIT",
   "description": "",
   "dependencies": {
-    "@softarc/sheriff-core": "^0.17.0-internal.2",
+    "@softarc/sheriff-core": "^0.16.4",
     "express": "^4.19.2",
     "fast-glob": "^3.3.2"
   },

@@ -1,9 +1,10 @@
 import { Options } from "../options/options";
 import { Deps } from "../model/deps";
 import fs from "fs";
-import { createDump } from '@softarc/sheriff-core';
+import { getProjectData } from '@softarc/sheriff-core';
 import { globSync } from 'fast-glob';
 import { loadConfig } from "./config";
+import { cwd } from "process";
 
 const DEFAULT_ENTRIES = [
   'src/main.ts',
@@ -41,10 +42,10 @@ export function inferDeps(options: Options): boolean {
     return false;
   }
 
-  console.log('e', entries);
-  
+  const dir = cwd();
+
   deps = entries
-    .map(e => createDump(e))
+    .map(e => getProjectData(e, dir))
     .reduce((acc, curr) => ({...acc, ...curr}));
 
   return true;
