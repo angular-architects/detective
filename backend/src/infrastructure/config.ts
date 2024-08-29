@@ -4,11 +4,15 @@ import { Config } from "../model/config";
 import { Options } from "../options/options";
 import fs from "fs";
 
+const DETECTIVE_DIR = '.detective';
+
 const initConfig: Config = 
   {
     "scopes": [
     ],
     "groups": [
+    ],
+    "--entries": [
     ],
     "--teams": {
       "--comment": "Add a teams node with this structure",
@@ -31,7 +35,14 @@ export function loadConfig(options: Options): Config {
 
 export function ensureConfig(options: Options): void {
   const configPath = path.join(cwd(), options.config);
+  ensureDetectiveDir();
   if (!fs.existsSync(configPath)) {
     fs.writeFileSync(configPath, JSON.stringify(initConfig, null, 2), 'utf-8');
+  }
+}
+
+function ensureDetectiveDir() {
+  if (!fs.existsSync(DETECTIVE_DIR)) {
+    fs.mkdirSync(DETECTIVE_DIR);
   }
 }

@@ -1,4 +1,9 @@
+import * as fs from 'fs';
 const { spawn } = require("child_process");
+
+export function isRepo(): boolean {
+  return fs.existsSync('.git');
+}
 
 export function getGitLog(): Promise<string> {
     return new Promise<string>((resolve, reject) => {

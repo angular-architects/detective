@@ -6,14 +6,14 @@ import fs from "fs";
 import { calcCoupling } from "./services/coupling";
 import { cwd } from "process";
 import { parseOptions } from "./options/parse-options";
-import { validateOptions } from "./options/validate-options";
 import { inferFolders } from "./services/folders";
 import { calcModuleInfo } from "./services/module-info";
 import { calcTeamAlignment } from "./services/team-alignment";
-import { openSync } from './utils/open';
 import { ensureConfig } from "./infrastructure/config";
 import { aggregateHotspots, findHotspotFiles } from "./services/hotspot";
 import { calcChangeCoupling } from "./services/change-coupling";
+import { getEntryGlobs, inferDeps } from "./infrastructure/deps";
+import { isRepo } from "./infrastructure/git";
 
 const options = parseOptions(process.argv.slice(2));
 
@@ -21,12 +21,18 @@ if (options.path) {
   process.chdir(options.path);
 }
 
-if (!validateOptions(options)) {
-  console.log("Usage: forensic [sheriff-dump] [--port port] [--config path]");
+ensureConfig(options);
+
+if(!inferDeps(options)) {
+  console.error('No entry points found. Tried:', getEntryGlobs(options).join(', '));
+  console.error('\nPlease configured your entry points in .detective/config.json');
   process.exit(1);
 }
 
-ensureConfig(options);
+if (!isRepo()) {
+  console.warn('This does not seem to be a git repository.');
+  console.warn('Most diagrams provided by detective do not work without git!');
+}
 
 const app = express();
 
@@ -141,5 +147,5 @@ app.get("*", (req, res) => {
 app.listen(options.port, () => {
   const url = `http://localhost:${options.port}`;
   console.log(`Detective runs at ${url}`);
-  openSync(url);
+  // openSync(url);
 });
