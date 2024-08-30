@@ -1,14 +1,25 @@
 import * as fs from 'fs';
+import { Limits } from '../model/limit';
 const { spawn } = require("child_process");
 
 export function isRepo(): boolean {
   return fs.existsSync('.git');
 }
 
-export function getGitLog(): Promise<string> {
+export function getGitLog(limits: Limits): Promise<string> {
     return new Promise<string>((resolve, reject) => {
         try {
-            const subprocess = spawn("git", ["log", '--numstat', '--pretty=format:"%an <%ae>,%ad"']);
+            const args = ["log", '--numstat', '--pretty=format:"%an <%ae>,%ad"'];
+
+            if (limits.limitCommits) {
+              args.push('-n ' + limits.limitCommits);
+            }
+
+            if (limits.limitMonths) {
+              args.push(`--since="${limits.limitMonths} months ago"`);
+            }
+
+            const subprocess = spawn("git", args);
 
             let text = "";
             let error = "";

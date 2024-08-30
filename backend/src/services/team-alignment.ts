@@ -1,4 +1,5 @@
 import { loadConfig } from "../infrastructure/config";
+import { Limits } from "../model/limit";
 import { Options } from "../options/options";
 import { parseGitLog } from "../utils/git-parser";
 import { normalizeFolder } from "../utils/normalize-folder";
@@ -16,6 +17,7 @@ export type TeamAlignmentResult = {
 
 export async function calcTeamAlignment(
   byUser = false,
+  limits: Limits,
   options: Options
 ): Promise<TeamAlignmentResult> {
   const config = loadConfig(options);
@@ -59,7 +61,7 @@ export async function calcTeamAlignment(
         }
       }
     }
-  });
+  }, limits);
 
   console.log("users", Array.from(users));
 

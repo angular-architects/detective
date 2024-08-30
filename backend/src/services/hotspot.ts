@@ -5,6 +5,7 @@ import * as fs from 'fs';
 import { calcComplexity } from "../utils/complexity";
 import { loadConfig } from "../infrastructure/config";
 import { normalizeFolder, toDisplayFolder } from "../utils/normalize-folder";
+import { Limits } from "../model/limit";
 
 export type Hotspot = {
   commits: number,
@@ -27,9 +28,6 @@ export type HotspotResult = {
 };
 
 export type HotspotCriteria = {
-  // minCommits: number;
-  // minChangedLines: number;
-  // minComplexity: number;
   module: string,
   minScore: number,
 };
@@ -43,8 +41,8 @@ export type AggregatedHotspotsResult = {
   aggregated: AggregatedHotspot[];
 }
 
-export async function findHotspotFiles(criteria: HotspotCriteria, options: Options): Promise<HotspotResult> {
-  const hotspots: Record<string, Hotspot> = await analyzeLogs(criteria, options);
+export async function findHotspotFiles(criteria: HotspotCriteria, limits: Limits, options: Options): Promise<HotspotResult> {
+  const hotspots: Record<string, Hotspot> = await analyzeLogs(criteria, limits, options);
 
   const filtered: FlatHotspot[] = []; 
   for (const fileName of Object.keys(hotspots)) {
@@ -60,8 +58,8 @@ export async function findHotspotFiles(criteria: HotspotCriteria, options: Optio
   return { hotspots: filtered };
 }
 
-export async function aggregateHotspots(criteria: HotspotCriteria, options: Options): Promise<AggregatedHotspotsResult> {
-  const hotspots = (await findHotspotFiles(criteria, options)).hotspots;
+export async function aggregateHotspots(criteria: HotspotCriteria, limits: Limits, options: Options): Promise<AggregatedHotspotsResult> {
+  const hotspots = (await findHotspotFiles(criteria, limits, options)).hotspots;
   const config = loadConfig(options);
 
   const modules = config.scopes.map(m => normalizeFolder(m));
@@ -81,7 +79,7 @@ export async function aggregateHotspots(criteria: HotspotCriteria, options: Opti
   return { aggregated: result };
 }
 
-async function analyzeLogs(criteria: HotspotCriteria, options: Options) {
+async function analyzeLogs(criteria: HotspotCriteria, limits: Limits, options: Options) {
   const hotspots: Record<string, Hotspot> = {};
 
   await parseGitLog((entry) => {
@@ -115,6 +113,6 @@ async function analyzeLogs(criteria: HotspotCriteria, options: Options) {
       hotspot.commits++;
       hotspot.changedLines += change.linesAdded + change.linesRemoved;
     }
-  });
+  }, limits);
   return hotspots;
 }

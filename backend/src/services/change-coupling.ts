@@ -1,4 +1,5 @@
 import { loadConfig } from "../infrastructure/config";
+import { Limits } from "../model/limit";
 import { Options } from "../options/options";
 import { parseGitLog } from "../utils/git-parser";
 import { getEmptyMatrix } from "../utils/matrix";
@@ -13,7 +14,7 @@ export type ChangeCouplingResult = {
     cohesion: number[];
 }
 
-export async function calcChangeCoupling(options: Options): Promise<ChangeCouplingResult> {
+export async function calcChangeCoupling(limits: Limits, options: Options): Promise<ChangeCouplingResult> {
     const config = loadConfig(options);
 
     const displayModules = config.scopes;
@@ -32,7 +33,7 @@ export async function calcChangeCoupling(options: Options): Promise<ChangeCoupli
             }
         }
         addToMatrix(touchedModules, matrix);
-    });
+    }, limits);
 
     return {
         matrix,

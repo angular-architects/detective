@@ -1,5 +1,6 @@
 import { getGitLog } from "../infrastructure/git";
 import * as path from 'path';
+import { Limits, NoLimits } from "../model/limit";
 
 type State = "header" | "body";
 
@@ -28,9 +29,9 @@ const initHeader: LogHeader = {
   date: new Date(0),
 };
 
-export async function parseGitLog(callback: ParserCallback) {
+export async function parseGitLog(callback: ParserCallback, limits = NoLimits) {
   let pos = 0;
-  const log = await getGitLog();
+  const log = await getGitLog(limits);
 
   let header = initHeader;
   let body: LogBodyEntry[] = [];
