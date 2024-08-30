@@ -1,12 +1,16 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, effect, inject, OnInit, signal } from '@angular/core';
 import { TeamAlignmentService } from './team-alignment.service';
 import { TeamAlignmentResult } from './team-alignment-result';
 import { Chart, ArcElement, Tooltip, Legend, Title } from 'chart.js';
 import { DoughnutController } from 'chart.js';
 import * as d3 from 'd3';
 import { EventService } from '../event.service';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { takeUntilDestroyed, toObservable } from '@angular/core/rxjs-interop';
 import { lastSegments } from '../utils/segments';
+import { LimitsComponent } from '../ui/limits/limits.component';
+import { initLimits, Limits } from '../model/limits';
+import { JsonPipe } from '@angular/common';
+import { combineLatest, merge } from 'rxjs';
 
 Chart.register(ArcElement, Tooltip, Legend, Title, DoughnutController);
 
@@ -15,11 +19,11 @@ type TeamAlignmentChart = Chart<'doughnut', number[], string>;
 @Component({
   selector: 'app-team-alignment',
   standalone: true,
-  imports: [],
+  imports: [LimitsComponent, JsonPipe],
   templateUrl: './team-alignment.component.html',
   styleUrl: './team-alignment.component.css',
 })
-export class TeamAlignmentComponent implements OnInit {
+export class TeamAlignmentComponent {
   private taService = inject(TeamAlignmentService);
   private eventService = inject(EventService);
 
@@ -27,21 +31,24 @@ export class TeamAlignmentComponent implements OnInit {
   teams: string[] = [];
   charts: TeamAlignmentChart[] = [];
 
+  limits = signal(initLimits);
+
   constructor() {
-    this.eventService.filterChanged.pipe(takeUntilDestroyed()).subscribe(() => {
+    merge(
+      this.eventService.filterChanged,
+      toObservable(this.limits),
+    )
+    .pipe(takeUntilDestroyed())
+    .subscribe(() => {
       this.removeDiagrams();
       this.loadAndDraw();
     });
   }
 
-  ngOnInit(): void {
-    this.loadAndDraw();
-  }
-
   private loadAndDraw() {
     const placeholder = document.getElementById('placeholder');
 
-    this.taService.load().subscribe((result) => {
+    this.taService.load(this.limits()).subscribe((result) => {
       this.colors = d3.quantize(d3.interpolateRainbow, result.teams.length + 1);
       this.teams = result.teams;
 

@@ -1,4 +1,4 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import { HotspotService } from './hotspot.service';
 import {
   AggregatedHotspot,
@@ -13,9 +13,11 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
-import { combineLatest, debounceTime, map, startWith } from 'rxjs';
+import { combineLatest, debounceTime, startWith } from 'rxjs';
 import { EventService } from '../event.service';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { takeUntilDestroyed, toObservable } from '@angular/core/rxjs-interop';
+import { LimitsComponent } from "../ui/limits/limits.component";
+import { initLimits } from '../model/limits';
 
 @Component({
   selector: 'app-hotspot',
@@ -26,7 +28,8 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
     MatFormFieldModule,
     MatInputModule,
     ReactiveFormsModule,
-  ],
+    LimitsComponent
+],
   templateUrl: './hotspot.component.html',
   styleUrl: './hotspot.component.css',
 })
@@ -47,14 +50,16 @@ export class HotspotComponent {
 
   selectedModule = '';
 
+  limits = signal(initLimits);
+
   constructor() {
     combineLatest([
       this.eventService.filterChanged.pipe(startWith(null)),
       this.minScoreControl.valueChanges.pipe(startWith(this.minScoreControl.value), debounceTime(300)),
+      toObservable(this.limits)
     ])
     .pipe(takeUntilDestroyed())
     .subscribe(() => {
-      console.log('changed')
       this.loadAggregated();
       if (this.selectedModule) {
         this.loadHotspots();
@@ -85,7 +90,7 @@ export class HotspotComponent {
 
   private loadAggregated() {
     this.hotspotService
-      .loadAggregated(this.minScoreControl.value)
+      .loadAggregated(this.minScoreControl.value, this.limits())
       .subscribe((aggregatedResult) => {
         this.aggregatedResult = aggregatedResult;
         this.dataSource.data = this.formatAggregated(
@@ -96,7 +101,7 @@ export class HotspotComponent {
 
   private loadHotspots() {
     this.hotspotService
-      .load(this.minScoreControl.value, this.selectedModule)
+      .load(this.minScoreControl.value, this.selectedModule, this.limits())
       .subscribe((hotspotResult) => {
         this.hotspotResult = hotspotResult;
         this.detailDataSource.data = this.formatHotspots(

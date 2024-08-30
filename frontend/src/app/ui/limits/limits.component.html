@@ -1,0 +1,22 @@
+<div class="form-container">
+    <mat-form-field appearance="fill" class="form-field type">
+      <mat-select [ngModel]="selected()" (ngModelChange)="optionChanged($event)">
+        @for (option of options; track option.id) {
+        <mat-option value="{{option.id}}">{{option.label}}</mat-option>
+        }
+      </mat-select>
+    </mat-form-field>
+
+    @if (selected() === 'COMMITS') {
+      <mat-form-field appearance="outline" class="form-field commits">
+        <mat-label>Commits</mat-label>
+        <input [ngModel]="limits().limitCommits" (ngModelChange)="update($event, 0)" matInput type="number" min="1">
+      </mat-form-field>
+    }
+    @else {
+      <mat-form-field appearance="outline" class="form-field months">
+        <mat-label>Months</mat-label>
+        <input [ngModel]="limits().limitMonths" (ngModelChange)="update(0, $event)" matInput type="number" min="1">
+      </mat-form-field>
+    }
+</div>

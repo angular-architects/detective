@@ -1,6 +1,6 @@
 import { getGitLog } from "../infrastructure/git";
 import * as path from 'path';
-import { Limits, NoLimits } from "../model/limit";
+import { Limits, NoLimits } from "../model/limits";
 
 type State = "header" | "body";
 

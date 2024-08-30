@@ -1,16 +1,28 @@
-<div class="filter">
-  <mat-checkbox
-    class="mr30"
-    [(ngModel)]="groupByFolder"
-    (change)="groupByFolderChanged($event)"
-    >Group by folder</mat-checkbox
-  >
+<div class="forensic-filter">
+  <div>
+    <mat-checkbox
+      class="mr30"
+      [(ngModel)]="groupByFolder"
+      (change)="groupByFolderChanged($event)"
+      >Group by folder</mat-checkbox
+    >
 
-  <mat-form-field appearance="outline" style="flex: 1">
-    <mat-label>Min. Connections</mat-label>
-    <input type="number" matInput [formControl]="minConnectionsControl" min="0" />
-  </mat-form-field>
+    <mat-form-field appearance="outline" class="connections">
+      <mat-label>Min. Connections</mat-label>
+      <input
+        type="number"
+        matInput
+        [formControl]="minConnectionsControl"
+        min="0"
+      />
+    </mat-form-field>
+  </div>
+  @if (type() === 'changes') {
+    <app-limits [(limits)]="limits"></app-limits>
+  }
 </div>
+
+<!-- <div class="filter"></div> -->
 
 <div id="network"></div>
 <div class="tooltip" id="tooltip"></div>

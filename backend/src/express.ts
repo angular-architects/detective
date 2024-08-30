@@ -9,7 +9,7 @@ import { calcTeamAlignment } from "./services/team-alignment";
 import { aggregateHotspots, findHotspotFiles } from "./services/hotspot";
 import { calcChangeCoupling } from "./services/change-coupling";
 import { Options } from "./options/options";
-import { Limits } from "./model/limit";
+import { Limits } from "./model/limits";
 
 export function setupExpress(options: Options) {
   const app = express();

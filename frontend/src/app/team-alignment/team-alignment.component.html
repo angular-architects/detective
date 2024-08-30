@@ -1,3 +1,8 @@
+<div class="forensic-filter">
+    <div></div>
+    <app-limits [(limits)]="limits"></app-limits>
+</div>
+
 <ul id="legend">
 @for(team of teams; track team) {
     <li><span class="legend-color" [style.backgroundColor]="colors[$index]"></span>{{team}}</li>

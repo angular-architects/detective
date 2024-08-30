@@ -5,7 +5,7 @@ import * as fs from 'fs';
 import { calcComplexity } from "../utils/complexity";
 import { loadConfig } from "../infrastructure/config";
 import { normalizeFolder, toDisplayFolder } from "../utils/normalize-folder";
-import { Limits } from "../model/limit";
+import { Limits } from "../model/limits";
 
 export type Hotspot = {
   commits: number,

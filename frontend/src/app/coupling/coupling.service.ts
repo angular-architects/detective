@@ -3,15 +3,17 @@ import { inject, Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { CouplingResult } from './coupling-result';
 import { GraphType } from './graph/graph-type';
+import { initLimits, Limits } from '../model/limits';
 
 @Injectable({providedIn: 'root'})
 export class CouplingService {
     private http = inject(HttpClient);
 
-    load(type: GraphType = 'structure'): Observable<CouplingResult> {
+    load(type: GraphType = 'structure', limits = initLimits): Observable<CouplingResult> {
 
         if (type === 'changes') {
-            return this.http.get<CouplingResult>('/api/change-coupling');
+            const params = { ...limits };
+            return this.http.get<CouplingResult>('/api/change-coupling', { params });
         }
         else {
             return this.http.get<CouplingResult>('/api/coupling');

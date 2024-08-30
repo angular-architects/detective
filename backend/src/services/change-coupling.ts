@@ -1,5 +1,5 @@
 import { loadConfig } from "../infrastructure/config";
-import { Limits } from "../model/limit";
+import { Limits } from "../model/limits";
 import { Options } from "../options/options";
 import { parseGitLog } from "../utils/git-parser";
 import { getEmptyMatrix } from "../utils/matrix";

@@ -1,7 +1,7 @@
-import { Component, inject, Input, OnInit } from '@angular/core';
+import { Component, inject, input, Input, OnInit, signal } from '@angular/core';
 import { CouplingService } from '../coupling.service';
 import { EventService } from '../../event.service';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { takeUntilDestroyed, toObservable } from '@angular/core/rxjs-interop';
 import cytoscape, {
   Core,
   EdgeDefinition,
@@ -22,6 +22,8 @@ import { GraphType } from './graph-type';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { merge } from 'rxjs';
+import { initLimits } from '../../model/limits';
+import { LimitsComponent } from "../../ui/limits/limits.component";
 
 cytoscape.use(dagre);
 cytoscape.use(cola);
@@ -47,11 +49,12 @@ interface CustomNodeDefinition extends NodeDefinition {
     MatFormFieldModule,
     MatInputModule,
     ReactiveFormsModule,
-  ],
+    LimitsComponent
+],
   templateUrl: './graph.component.html',
   styleUrl: './graph.component.css',
 })
-export class GraphComponent implements OnInit {
+export class GraphComponent {
   private couplingService = inject(CouplingService);
   private eventService = inject(EventService);
 
@@ -65,13 +68,15 @@ export class GraphComponent implements OnInit {
   fileCount: number[];
   cohesion: number[];
 
-  @Input()
-  type: GraphType = 'structure';
+  type = input<GraphType>('structure');
+
+  limits = signal(initLimits);
 
   constructor() {
     merge(
       this.minConnectionsControl.valueChanges,
-      this.eventService.filterChanged
+      this.eventService.filterChanged,
+      toObservable(this.limits)
     )
       .pipe(takeUntilDestroyed())
       .subscribe(() => {
@@ -79,16 +84,12 @@ export class GraphComponent implements OnInit {
       });
   }
 
-  ngOnInit(): void {
-    this.load();
-  }
-
   groupByFolderChanged(event: MatCheckboxChange): void {
     this.draw();
   }
 
   private load() {
-    this.couplingService.load(this.type).subscribe((r) => {
+    this.couplingService.load(this.type(), this.limits()).subscribe((r) => {
       this.matrix = r.matrix;
       this.clearSelfLinks();
 
@@ -121,7 +122,7 @@ export class GraphComponent implements OnInit {
     const nodes: CustomNodeDefinition[] = this.createNodes(groups);
     const edges = this.createEdges();
 
-    const directed = this.type === 'structure';
+    const directed = this.type() === 'structure';
 
     drawGraph([...groups, ...nodes], edges, this.groupByFolder, directed);
   }
@@ -158,7 +159,7 @@ export class GraphComponent implements OnInit {
           id: '' + i,
           label: label.split('/').at(-1),
           tooltip:
-            this.type === 'structure'
+            this.type() === 'structure'
               ? `${label}
 <br><br>${this.fileCount[i]} source files
 <br>Cohesion: ${this.cohesion[i]}%

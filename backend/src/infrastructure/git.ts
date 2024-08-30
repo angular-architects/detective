@@ -1,5 +1,5 @@
 import * as fs from 'fs';
-import { Limits } from '../model/limit';
+import { Limits } from '../model/limits';
 const { spawn } = require("child_process");
 
 export function isRepo(): boolean {

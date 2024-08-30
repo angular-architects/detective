@@ -1,8 +1,19 @@
-<div class="p10">
+<!-- <div class="p10">
   <mat-form-field>
     <mat-label>Min. Hotspot Score</mat-label>
     <input matInput type="number" [formControl]="minScoreControl" min="0" step="1">
   </mat-form-field>
+</div> -->
+
+<div class="forensic-filter">
+  <div>
+    <mat-form-field>
+      <mat-label>Min. Hotspot Score</mat-label>
+      <input matInput type="number" [formControl]="minScoreControl" min="0" step="1">
+    </mat-form-field>
+  </div>  
+  
+  <app-limits [(limits)]="limits"></app-limits>
 </div>
 
 <div class="aggregated">

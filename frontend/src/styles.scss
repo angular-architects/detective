@@ -71,3 +71,10 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif;}
         color: white !important;
     }
 }
+
+.forensic-filter {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;
+}
