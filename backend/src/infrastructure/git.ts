@@ -23,15 +23,15 @@ export function getGitLog(): Promise<string> {
           
             subprocess.on("exit", (code: string) => {
                 if (code || error) {
-                reject('Error running git: ' + error);
-              } else {
+                  reject(new Error('[Error running Git] ' + error));
+                } else {
                 resolve(text);
               }
             });
     
         }
         catch(e) {
-            reject('Error running git: ' + e);
+            reject(new Error('Error running git: ' + e));
         }
     })
 }

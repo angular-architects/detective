@@ -24,22 +24,26 @@ if (options.path) {
 
 ensureConfig(options);
 
-if(!inferDeps(options)) {
-  console.error('No entry points found. Tried:', getEntryGlobs(options).join(', '));
-  console.error('\nPlease configured your entry points in .detective/config.json');
+if (!inferDeps(options)) {
+  console.error(
+    "No entry points found. Tried:",
+    getEntryGlobs(options).join(", ")
+  );
+  console.error(
+    "\nPlease configured your entry points in .detective/config.json"
+  );
   process.exit(1);
 }
 
 if (!isRepo()) {
-  console.warn('This does not seem to be a git repository.');
-  console.warn('Most diagrams provided by detective do not work without git!');
+  console.warn("This does not seem to be a git repository.");
+  console.warn("Most diagrams provided by detective do not work without git!");
 }
 
 const app = express();
 
 app.use(express.json());
 
-// Route für /api/config - Liefert eine statische JSON-Datei
 app.get("/api/config", (req, res) => {
   res.sendFile(path.join(cwd(), options.config));
 });
@@ -65,8 +69,9 @@ app.get("/api/modules", (req, res) => {
   try {
     const result = calcModuleInfo(options);
     res.json(result);
-  } catch (e) {
-    res.status(500).json(e);
+  } catch (e: any) {
+    console.log("error", e);
+    res.status(500).json({ message: e.message });
   }
 });
 
@@ -74,8 +79,9 @@ app.get("/api/folders", (req, res) => {
   try {
     const result = inferFolders(options);
     res.json(result);
-  } catch (e) {
-    res.status(500).json(e);
+  } catch (e: any) {
+    console.log("error", e);
+    res.status(500).json({ message: e.message });
   }
 });
 
@@ -83,9 +89,9 @@ app.get("/api/coupling", (req, res) => {
   try {
     const result = calcCoupling(options);
     res.json(result);
-  } catch (e) {
-    console.log('error', e);
-    res.status(500).json(e);
+  } catch (e: any) {
+    console.log("error", e);
+    res.status(500).json({ message: e.message });
   }
 });
 
@@ -93,9 +99,9 @@ app.get("/api/change-coupling", async (req, res) => {
   try {
     const result = await calcChangeCoupling(options);
     res.json(result);
-  } catch (e) {
-    console.log('error', e);
-    res.status(500).json(e);
+  } catch (e: any) {
+    console.log("error", e);
+    res.status(500).json({ message: e.message });
   }
 });
 
@@ -105,41 +111,41 @@ app.get("/api/team-alignment", async (req, res) => {
   try {
     const result = await calcTeamAlignment(byUser, options);
     res.json(result);
-  } catch (e) {
-    console.log('error', e);
-    res.status(500).json(e);
+  } catch (e: any) {
+    console.log("error", e);
+    res.status(500).json({ message: e.message });
   }
 });
 
 app.get("/api/hotspots/aggregated", async (req, res) => {
   const minScore = Number(req.query.minScore) || -1;
-  const criteria = { minScore, module: '' };
+  const criteria = { minScore, module: "" };
 
   try {
     const result = await aggregateHotspots(criteria, options);
     res.json(result);
-  } catch (e) {
-    console.log('error', e);
-    res.status(500).json(e);
+  } catch (e: any) {
+    console.log("error", e);
+    res.status(500).json({ message: e.message });
   }
 });
 
 app.get("/api/hotspots", async (req, res) => {
   const minScore = Number(req.query.minScore) || -1;
-  const module = req.query.module ? String(req.query.module) : '';
+  const module = req.query.module ? String(req.query.module) : "";
 
   const criteria = { minScore, module };
 
   try {
     const result = await findHotspotFiles(criteria, options);
     res.json(result);
-  } catch (e) {
-    console.log('error', e);
-    res.status(500).json(e);
+  } catch (e: any) {
+    console.log("error", e);
+    res.status(500).json({ message: e.message });
   }
 });
 
-app.use(express.static(path.join(__dirname, '..', 'public')));
+app.use(express.static(path.join(__dirname, "..", "public")));
 
 app.get("*", (req, res) => {
   res.sendFile(path.join(__dirname, "..", "public", "index.html"));

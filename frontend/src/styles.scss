@@ -63,3 +63,11 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif;}
     height: 20px;
     margin-right: 5px; /* Abstand zwischen Farbe und Text */
 }
+
+.snackbar-alarm {
+    --mdc-snackbar-container-color: #C04040 !important;
+    color: white !important;
+    .mat-mdc-button {
+        color: white !important;
+    }
+}
