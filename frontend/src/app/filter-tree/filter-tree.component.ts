@@ -57,17 +57,16 @@ export class FilterTreeComponent implements OnInit {
       this.config.scopes.forEach((scope) => this.selected.add(scope));
       this.expandChecked(result.folders);
       (document.activeElement as any).blur();
-
     });
   }
 
-  expandChecked(folders: Folder[]): boolean {
-    let open = false;
+  expandChecked(folders: Folder[], depth = 0): boolean {
+    let open = (depth <= 2);
     for (let folder of folders) {
       if (this.selected.has(folder.path)) {
         open = true;
       }
-      if (folder.folders && this.expandChecked(folder.folders)) {
+      if (folder.folders && this.expandChecked(folder.folders, depth+1)) {
         this.tree.expand(folder);
         open = true;
       }
