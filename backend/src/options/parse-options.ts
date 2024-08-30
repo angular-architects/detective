@@ -1,7 +1,7 @@
 import { defaultOptions, Options } from "./options";
 
 export function parseOptions(args: string[]): Options {
-    let state: 'port' | 'config' | 'path' | 'none'  = 'none';
+    let state: 'port' | 'config' | 'path' | 'none' | 'open' = 'none';
     const parsed: Partial<Options> = {};
 
     for(let arg of args) {
@@ -14,6 +14,9 @@ export function parseOptions(args: string[]): Options {
             }
             else if (arg === '--path') {
                 state = 'path';
+            }
+            else if (arg === '--open') {
+                state = 'open';
             }
             else if (arg === '--demo') {
                 parsed.demoMode = true;
@@ -32,6 +35,10 @@ export function parseOptions(args: string[]): Options {
         }
         else if (state === 'config') {
             parsed.config = arg;
+            state = 'none';
+        }
+        else if (state === 'open') {
+            parsed.open = Boolean(arg);
             state = 'none';
         }
     }

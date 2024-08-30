@@ -12,6 +12,7 @@ const initConfig: Config =
     ],
     "groups": [
     ],
+    "--entries-comment": "Define custom entry points here",
     "--entries": [
     ],
     "--teams": {
