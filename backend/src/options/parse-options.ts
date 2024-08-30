@@ -38,7 +38,7 @@ export function parseOptions(args: string[]): Options {
             state = 'none';
         }
         else if (state === 'open') {
-            parsed.open = Boolean(arg);
+            parsed.open = arg !== 'false' && Boolean(arg);
             state = 'none';
         }
     }
