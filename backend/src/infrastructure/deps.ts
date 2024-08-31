@@ -21,12 +21,6 @@ const DEFAULT_NX_ENTRIES = [
 
 let deps: Deps;
 
-// export function loadDeps(options: Options): Deps {
-//   const depsPath = path.join(cwd(), options.sheriffDump);
-//   const deps = JSON.parse(fs.readFileSync(depsPath, "utf-8")) as Deps;
-//   return deps;
-// }
-
 export function loadDeps(options: Options): Deps {
   if (!deps) {
     throw new Error('no dependencies loaded!');
@@ -44,9 +38,11 @@ export function inferDeps(options: Options): boolean {
 
   const dir = cwd();
 
-  deps = entries
+  const sheriffDump = entries
     .map(e => getProjectData(e, dir))
     .reduce((acc, curr) => ({...acc, ...curr}));
+
+  deps = normalizeObject(sheriffDump);
 
   return true;
 }
@@ -62,4 +58,9 @@ export function getEntryGlobs(options: Options) {
     entryGlobs = DEFAULT_NX_ENTRIES;
   }
   return entryGlobs;
+}
+
+function normalizeObject<T>(obj: T): T {
+  const normalized = JSON.stringify(obj).replace(/\\\\/g, '/');
+  return JSON.parse(normalized);
 }

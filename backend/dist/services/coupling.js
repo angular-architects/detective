@@ -4,18 +4,21 @@ exports.calcCoupling = calcCoupling;
 var config_1 = require("../infrastructure/config");
 var deps_1 = require("../infrastructure/deps");
 var module_info_1 = require("./module-info");
-var round_1 = require("../utils/round");
+var to_percent_1 = require("../utils/to-percent");
+var matrix_1 = require("../utils/matrix");
+var normalize_folder_1 = require("../utils/normalize-folder");
 function calcCoupling(options) {
     var config = (0, config_1.loadConfig)(options);
     var deps = (0, deps_1.loadDeps)(options);
     var files = Object.keys(deps);
-    var scopeMap = calcScopeMap(config);
-    var matrixSize = config.scopes.length;
-    var matrix = getEmptyMatrix(matrixSize);
-    for (var _i = 0, _a = config.scopes; _i < _a.length; _i++) {
-        var row = _a[_i];
-        for (var _b = 0, _c = config.scopes; _b < _c.length; _b++) {
-            var col = _c[_b];
+    var modules = config.scopes.map(function (m) { return (0, normalize_folder_1.normalizeFolder)(m); });
+    var scopeMap = calcScopeMap(modules);
+    var matrixSize = modules.length;
+    var matrix = (0, matrix_1.getEmptyMatrix)(matrixSize);
+    for (var _i = 0, modules_1 = modules; _i < modules_1.length; _i++) {
+        var row = modules_1[_i];
+        for (var _a = 0, modules_2 = modules; _a < modules_2.length; _a++) {
+            var col = modules_2[_a];
             var count = calcCell(files, deps, row, col);
             var i = scopeMap.get(row);
             var j = scopeMap.get(col);
@@ -40,7 +43,7 @@ function calcCohesion(moduleInfo, matrix) {
     return moduleInfo.fileCount.map(function (count, index) {
         var edges = matrix[index][index];
         var maxEdges = (count * (count - 1)) / 2;
-        return (0, round_1.toPercent)(edges / maxEdges, 2);
+        return (0, to_percent_1.toPercent)(edges / maxEdges);
     });
 }
 function calcCell(files, deps, row, col) {
@@ -63,13 +66,10 @@ function sumUpImports(deps, file, col) {
     }
     return count;
 }
-function getEmptyMatrix(size) {
-    return Array.from({ length: size }, function () { return new Array(size).fill(0); });
-}
-function calcScopeMap(config) {
+function calcScopeMap(modules) {
     var scopeMap = new Map();
-    for (var i = 0; i < config.scopes.length; i++) {
-        scopeMap.set(config.scopes[i], i);
+    for (var i = 0; i < modules.length; i++) {
+        scopeMap.set(modules[i], i);
     }
     return scopeMap;
 }

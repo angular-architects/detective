@@ -28,6 +28,9 @@ function parseOptions(args) {
             else if (arg === '--path') {
                 state = 'path';
             }
+            else if (arg === '--open') {
+                state = 'open';
+            }
             else if (arg === '--demo') {
                 parsed.demoMode = true;
             }
@@ -45,6 +48,10 @@ function parseOptions(args) {
         }
         else if (state === 'config') {
             parsed.config = arg;
+            state = 'none';
+        }
+        else if (state === 'open') {
+            parsed.open = arg !== 'false' && Boolean(arg);
             state = 'none';
         }
     }

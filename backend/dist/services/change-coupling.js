@@ -35,105 +35,57 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
-var __spreadArray = (this && this.__spreadArray) || function (to, from, pack) {
-    if (pack || arguments.length === 2) for (var i = 0, l = from.length, ar; i < l; i++) {
-        if (ar || !(i in from)) {
-            if (!ar) ar = Array.prototype.slice.call(from, 0, i);
-            ar[i] = from[i];
-        }
-    }
-    return to.concat(ar || Array.prototype.slice.call(from));
-};
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.calcTeamAlignment = calcTeamAlignment;
+exports.calcChangeCoupling = calcChangeCoupling;
 var config_1 = require("../infrastructure/config");
 var git_parser_1 = require("../utils/git-parser");
+var matrix_1 = require("../utils/matrix");
 var normalize_folder_1 = require("../utils/normalize-folder");
-var UNKNOWN_TEAM = "unknown";
-function calcTeamAlignment() {
-    return __awaiter(this, arguments, void 0, function (byUser, limits, options) {
-        var config, displayModules, modules, teams, userToTeam, result, users, count;
-        if (byUser === void 0) { byUser = false; }
+function calcChangeCoupling(limits, options) {
+    return __awaiter(this, void 0, void 0, function () {
+        var config, displayModules, modules, matrix;
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
                     config = (0, config_1.loadConfig)(options);
                     displayModules = config.scopes;
-                    modules = displayModules.map(function (m) { return ((0, normalize_folder_1.normalizeFolder)(m)); });
-                    teams = config.teams || {};
-                    userToTeam = initUserToTeam(teams);
-                    result = initResult(displayModules, Object.keys(teams));
-                    users = new Set();
-                    count = 0;
+                    modules = displayModules.map(function (m) { return (0, normalize_folder_1.normalizeFolder)(m); });
+                    matrix = (0, matrix_1.getEmptyMatrix)(modules.length);
                     return [4 /*yield*/, (0, git_parser_1.parseGitLog)(function (entry) {
-                            var userName = entry.header.userName;
-                            if (options.demoMode) {
-                                count++;
-                                if (count % 4 === 1) {
-                                    userName = "Max Muster";
-                                }
-                                else if (count % 4 === 2) {
-                                    userName = "John Doe";
-                                }
-                                else if (count % 4 == 3) {
-                                    userName = "Jane Doe";
-                                }
-                            }
-                            users.add(userName);
-                            var key = calcKey(byUser, userName, userToTeam);
+                            var touchedModules = new Set();
                             for (var _i = 0, _a = entry.body; _i < _a.length; _i++) {
                                 var change = _a[_i];
                                 for (var i = 0; i < modules.length; i++) {
                                     var module_1 = modules[i];
-                                    var display = displayModules[i];
                                     if (change.path.startsWith(module_1)) {
-                                        var changes = result.modules[display].changes;
-                                        var current = changes[key] || 0;
-                                        changes[key] = current + change.linesAdded + change.linesRemoved;
+                                        touchedModules.add(i);
                                     }
                                 }
                             }
+                            addToMatrix(touchedModules, matrix);
                         }, limits)];
                 case 1:
                     _a.sent();
-                    console.log("users", Array.from(users));
-                    if (byUser) {
-                        result.teams = Array.from(users);
-                    }
-                    return [2 /*return*/, result];
+                    return [2 /*return*/, {
+                            matrix: matrix,
+                            dimensions: displayModules,
+                            groups: config.groups,
+                            fileCount: new Array(matrix.length).fill(-1),
+                            cohesion: new Array(matrix.length).fill(-1),
+                        }];
             }
         });
     });
 }
-function calcKey(byUser, userName, userToTeam) {
-    if (byUser) {
-        return userName;
-    }
-    else {
-        return userToTeam[userName] || UNKNOWN_TEAM;
-    }
-}
-function initUserToTeam(teams) {
-    var userToTeam = {};
-    for (var _i = 0, _a = Object.keys(teams); _i < _a.length; _i++) {
-        var teamName = _a[_i];
-        var team = teams[teamName];
-        for (var _b = 0, team_1 = team; _b < team_1.length; _b++) {
-            var user = team_1[_b];
-            userToTeam[user] = teamName;
+function addToMatrix(touchedModules, matrix) {
+    var touchedArray = Array.from(touchedModules);
+    for (var _i = 0, touchedArray_1 = touchedArray; _i < touchedArray_1.length; _i++) {
+        var module1 = touchedArray_1[_i];
+        for (var _a = 0, touchedArray_2 = touchedArray; _a < touchedArray_2.length; _a++) {
+            var module2 = touchedArray_2[_a];
+            if (module1 < module2) {
+                matrix[module1][module2]++;
+            }
         }
     }
-    return userToTeam;
-}
-function initResult(modules, teams) {
-    var sorted = __spreadArray([], teams, true).sort();
-    var result = {
-        modules: {},
-        teams: __spreadArray(__spreadArray([], sorted, true), [UNKNOWN_TEAM], false),
-    };
-    for (var _i = 0, modules_1 = modules; _i < modules_1.length; _i++) {
-        var module_2 = modules_1[_i];
-        result.modules[module_2] = { changes: {} };
-    }
-    return result;
 }

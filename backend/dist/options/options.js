@@ -6,5 +6,6 @@ exports.defaultOptions = {
     config: '.detective/config.json',
     path: '',
     port: 3334,
-    demoMode: false
+    demoMode: false,
+    open: true,
 };
