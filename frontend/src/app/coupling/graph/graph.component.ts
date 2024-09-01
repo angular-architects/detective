@@ -129,6 +129,7 @@ export class GraphComponent {
 
   private createEdges() {
     const edges = [];
+    const delimiter = this.type() === 'structure' ? '→' : '↔';
     for (let i = 0; i < this.matrix.length; i++) {
       for (let j = 0; j < this.matrix.length; j++) {
         if (this.matrix[i][j] > this.minConnectionsControl.value) {
@@ -137,7 +138,7 @@ export class GraphComponent {
               source: '' + i,
               target: '' + j,
               weight: this.matrix[i][j],
-              tooltip: `${this.labels[i].split('/').at(-1)} → ${this.labels[j]
+              tooltip: `${this.labels[i].split('/').at(-1)} ${delimiter} ${this.labels[j]
                 .split('/')
                 .at(-1)}<br><br>${this.matrix[i][j]} connections`,
             },
@@ -167,6 +168,7 @@ export class GraphComponent {
 <br>Incoming Deps: ${sumCol(this.matrix, i)}
 `
               : `${label}
+<br><br>${this.fileCount[i]} commits
 <br>Outgoing Deps: ${sumRow(this.matrix, i)}
 <br>Incoming Deps: ${sumCol(this.matrix, i)}
 `,

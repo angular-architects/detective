@@ -22,12 +22,15 @@ export async function calcChangeCoupling(limits: Limits, options: Options): Prom
 
     const matrix = getEmptyMatrix(modules.length);
 
+    const commitsPerModule: number[] = new Array(matrix.length).fill(0);
+
     await parseGitLog((entry) => {
         const touchedModules = new Set<number>();
         for (const change of entry.body) {
             for (let i=0; i<modules.length; i++) {
                 const module = modules[i];
                 if (change.path.startsWith(module)) {
+                    commitsPerModule[i]++;
                     touchedModules.add(i);
                 }
             }
@@ -40,7 +43,7 @@ export async function calcChangeCoupling(limits: Limits, options: Options): Prom
         dimensions: displayModules,
         groups: config.groups,
 
-        fileCount: new Array(matrix.length).fill(-1),
+        fileCount: commitsPerModule,
         cohesion: new Array(matrix.length).fill(-1),
     }
 }
