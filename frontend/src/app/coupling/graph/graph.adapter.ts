@@ -128,7 +128,6 @@ export function findParent(groups: CustomNodeDefinition[], label: string) {
   const candParents = groups.filter((cp) =>
     label.startsWith(cp.data.dimension)
   );
-  console.log('candParents', candParents);
   if (candParents.length > 0) {
     parent = candParents.reduce(
       (prev, curr) =>

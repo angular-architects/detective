@@ -9,9 +9,6 @@ import cola from 'cytoscape-cola';
 import qtip from 'cytoscape-qtip';
 import dagre from 'cytoscape-dagre';
 
-import { GraphType } from './graph-type';
-import { CouplingResult } from '../coupling-result';
-
 cytoscape.use(dagre);
 cytoscape.use(cola);
 cytoscape.use(qtip);
@@ -111,7 +108,7 @@ export function drawGraph(graph: Graph, container: HTMLElement) {
   cy.ready(() => {
     cy.nodes().forEach((node) => {
       const label = node.data('label');
-      node.style('width', `${label.length * 10}px`); // Breite basierend auf der Beschriftung
+      node.style('width', `${label.length * 10}px`); 
     });
 
     const [min, max] = getMinMaxWeight(cy);
@@ -209,24 +206,4 @@ function centerAllNodes(cy) {
   const shiftY = containerCenterY - graphCenterY;
 
   cy.panBy({ x: shiftX, y: Math.max(0, shiftY - 200) });
-}
-
-function sumRow(matrix: number[][], nodeIndex: number): number {
-  let sum = 0;
-  for (let i = 0; i < matrix.length; i++) {
-    if (i !== nodeIndex) {
-      sum += matrix[nodeIndex][i];
-    }
-  }
-  return sum;
-}
-
-function sumCol(matrix: number[][], nodeIndex: number): number {
-  let sum = 0;
-  for (let i = 0; i < matrix.length; i++) {
-    if (i !== nodeIndex) {
-      sum += matrix[i][nodeIndex];
-    }
-  }
-  return sum;
 }

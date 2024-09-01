@@ -1,7 +1,7 @@
-import { Component, inject, input, signal } from '@angular/core';
+import { Component, effect, ElementRef, inject, input, signal, viewChild } from '@angular/core';
 import { CouplingService } from '../coupling.service';
 import { EventService } from '../../event.service';
-import { takeUntilDestroyed, toObservable } from '@angular/core/rxjs-interop';
+import { toObservable, toSignal } from '@angular/core/rxjs-interop';
 
 import {
   MatCheckboxModule,
@@ -34,12 +34,13 @@ import { createGroups, createNodes, createEdges } from './graph.adapter';
 export class GraphComponent {
   private couplingService = inject(CouplingService);
   private eventService = inject(EventService);
-
   private statusStore = inject(StatusStore);
-  totalCommits = this.statusStore.commits;
+
+  private containerRef = viewChild.required('graph', { read: ElementRef })
 
   type = input<GraphType>('structure');
 
+  totalCommits = this.statusStore.commits;
   groupByFolder = signal(false);
   limits = signal(initLimits);
   minConnections = signal(1);
@@ -53,21 +54,17 @@ export class GraphComponent {
       switchMap((combi) => this.couplingService.load(combi.type, combi.limits))
     );
 
-    const localFilter$ = combineLatest({
-      groupByFolder: toObservable(this.groupByFolder),
-      minConnections: toObservable(this.minConnections),
-    });
-
-    combineLatest({
-      couplingResult: couplingResult$,
-      localFilter: localFilter$,
-    })
-      .pipe(takeUntilDestroyed())
-      .subscribe((combi) => {
-        const graph = this.toGraph(combi.couplingResult);
-        const container = document.getElementById('cy');
+    const couplingResult = toSignal(couplingResult$);
+   
+    effect(() => {
+      const result = couplingResult();
+      if (result) {
+        const graph = this.toGraph(result);
+        const containerRef = this.containerRef();
+        const container = containerRef.nativeElement;
         drawGraph(graph, container);
-      });
+      }
+    });
   }
 
   toGraph(result: CouplingResult): Graph {
