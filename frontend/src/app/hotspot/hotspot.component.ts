@@ -22,6 +22,7 @@ import { LimitsComponent } from "../ui/limits/limits.component";
 import { initLimits } from '../model/limits';
 import { MatSelectModule } from '@angular/material/select';
 import { MatCheckboxModule } from '@angular/material/checkbox';
+import { StatusStore } from '../data/status.store';
 
 type Option = {
   id: ComplexityMetric;
@@ -47,6 +48,9 @@ type Option = {
 export class HotspotComponent {
   private hotspotService = inject(HotspotService);
   private eventService = inject(EventService);
+
+  private statusStore = inject(StatusStore);
+  totalCommits = this.statusStore.commits;
 
   minScoreControl = new FormControl(10);
 

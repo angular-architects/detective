@@ -10,7 +10,7 @@
     @if (selected() === 'COMMITS') {
       <mat-form-field appearance="outline" class="form-field commits">
         <mat-label>Commits</mat-label>
-        <input [ngModel]="limits().limitCommits" (ngModelChange)="update($event, 0)" matInput type="number" min="1">
+        <input [matTooltip]="commitToolTip()" [ngModel]="limits().limitCommits" (ngModelChange)="update($event, 0)" matInput type="number" min="1">
       </mat-form-field>
     }
     @else {

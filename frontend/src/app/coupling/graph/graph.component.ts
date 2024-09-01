@@ -24,6 +24,8 @@ import { MatInputModule } from '@angular/material/input';
 import { merge } from 'rxjs';
 import { initLimits } from '../../model/limits';
 import { LimitsComponent } from "../../ui/limits/limits.component";
+import { StatusService } from '../../data/status.service';
+import { StatusStore } from '../../data/status.store';
 
 cytoscape.use(dagre);
 cytoscape.use(cola);
@@ -61,6 +63,9 @@ export class GraphComponent {
   private matrix: number[][] = [[]];
   private labels: string[] = [];
   private groups: string[] = [];
+
+  private statusStore = inject(StatusStore);
+  totalCommits = this.statusStore.commits;
 
   minConnectionsControl = new FormControl(0);
 

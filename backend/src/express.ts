@@ -6,11 +6,17 @@ import { cwd } from "process";
 import { inferFolders } from "./services/folders";
 import { calcModuleInfo } from "./services/module-info";
 import { calcTeamAlignment } from "./services/team-alignment";
-import { aggregateHotspots, ComplexityMetric, findHotspotFiles, HotspotCriteria } from "./services/hotspot";
+import {
+  aggregateHotspots,
+  ComplexityMetric,
+  findHotspotFiles,
+  HotspotCriteria,
+} from "./services/hotspot";
 import { calcChangeCoupling } from "./services/change-coupling";
 import { Options } from "./options/options";
 import { Limits } from "./model/limits";
 import { isStale, updateLogCache } from "./services/log-cache";
+import { getCommitCount } from "./infrastructure/git";
 
 export function setupExpress(options: Options) {
   const app = express();
@@ -38,10 +44,20 @@ export function setupExpress(options: Options) {
     );
   });
 
+  app.get("/api/status", (req, res) => {
+    try {
+      const commits = getCommitCount();
+      res.json({ commits });
+    } catch (e: any) {
+      console.log("error", e);
+      res.status(500).json({ message: e.message });
+    }
+  });
+
   app.get("/api/cache/log", (req, res) => {
     try {
       const stale = isStale();
-      res.json({isStale: stale});
+      res.json({ isStale: stale });
     } catch (e: any) {
       console.log("error", e);
       res.status(500).json({ message: e.message });
@@ -50,9 +66,9 @@ export function setupExpress(options: Options) {
 
   app.all("/api/cache/log/update", async (req, res) => {
     try {
-      console.log('Updating cache ...')
+      console.log("Updating cache ...");
       await updateLogCache();
-      console.log('Done.')
+      console.log("Done.");
       res.json({});
     } catch (e: any) {
       console.log("error", e);
@@ -103,13 +119,12 @@ export function setupExpress(options: Options) {
   });
 
   app.get("/api/team-alignment", async (req, res) => {
-    const byUser = req.query.byUser === 'true';
+    const byUser = req.query.byUser === "true";
     const limits = getLimits(req);
 
     try {
       const result = await calcTeamAlignment(byUser, limits, options);
       res.json(result);
-      
     } catch (e: any) {
       console.log("error", e);
       res.status(500).json({ message: e.message });
@@ -118,7 +133,8 @@ export function setupExpress(options: Options) {
 
   app.get("/api/hotspots/aggregated", async (req, res) => {
     const minScore = Number(req.query.minScore) || -1;
-    const metric = (req.query.metric?.toString() || 'McCabe') as ComplexityMetric;
+    const metric = (req.query.metric?.toString() ||
+      "McCabe") as ComplexityMetric;
     const criteria: HotspotCriteria = { minScore, module: "", metric };
 
     const limits = getLimits(req);
@@ -135,7 +151,8 @@ export function setupExpress(options: Options) {
   app.get("/api/hotspots", async (req, res) => {
     const minScore = Number(req.query.minScore) || -1;
     const module = req.query.module ? String(req.query.module) : "";
-    const metric = (req.query.metric?.toString() || 'McCabe') as ComplexityMetric;
+    const metric = (req.query.metric?.toString() ||
+      "McCabe") as ComplexityMetric;
     const criteria = { minScore, module, metric };
 
     const limits = getLimits(req);

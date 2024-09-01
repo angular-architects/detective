@@ -20,6 +20,20 @@ export function calcTreeHash(): string {
   return result.stdout.trim();
 }
 
+export function getCommitCount(): string {
+  const result = spawnSync('git', ['rev-list', '--count', 'HEAD'], { encoding: 'utf-8' });
+
+  if (result.error) {
+    throw new Error('Creating Git Tree Hash failed: ' + result.error.message);
+  }
+
+  if (result.status !== 0) {
+    throw new Error('Creating Git Tree Hash failed with exit code: ' + result.status + '\n' + result.stderr);
+  }
+
+  return result.stdout.trim();
+}
+
 
 export function getGitLog(limits = noLimits): Promise<string> {
     return new Promise<string>((resolve, reject) => {

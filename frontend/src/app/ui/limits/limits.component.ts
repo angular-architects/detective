@@ -1,9 +1,11 @@
-import { Component, model, signal } from '@angular/core';
+import { Component, computed, inject, input, model, signal } from '@angular/core';
 import { Limits } from '../../model/limits';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { FormsModule } from '@angular/forms';
+import { MatTooltipModule } from '@angular/material/tooltip';
+import { CommonModule, DecimalPipe } from '@angular/common';
 
 type OptionId = 'COMMITS' | 'MONTHS';
 
@@ -18,7 +20,8 @@ const initMonths = 12;
 @Component({
   selector: 'app-limits',
   standalone: true,
-  imports: [MatFormFieldModule, MatInputModule, MatSelectModule, FormsModule],
+  imports: [MatFormFieldModule, MatInputModule, MatSelectModule, FormsModule, MatTooltipModule],
+  providers: [DecimalPipe],
   templateUrl: './limits.component.html',
   styleUrl: './limits.component.css',
 })
@@ -26,6 +29,17 @@ export class LimitsComponent {
 
   limits = model.required<Limits>();
   selected = signal<OptionId>('COMMITS');
+  totalCommits = input<number>(0);
+
+  decimal = inject(DecimalPipe);
+
+  commitToolTip = computed(() => {
+    const totalCommits = this.totalCommits();
+    if (totalCommits) {
+      return this.decimal.transform(totalCommits) + ' total commits';
+    }
+    return '';
+  })
 
   optionChanged(option: OptionId) {
     this.selected.set(option);

@@ -12,6 +12,7 @@ import { initLimits } from '../model/limits';
 import { merge } from 'rxjs';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { FormsModule } from '@angular/forms';
+import { StatusStore } from '../data/status.store';
 
 Chart.register(ArcElement, Tooltip, Legend, Title, DoughnutController);
 
@@ -27,6 +28,9 @@ type TeamAlignmentChart = Chart<'doughnut', number[], string>;
 export class TeamAlignmentComponent {
   private taService = inject(TeamAlignmentService);
   private eventService = inject(EventService);
+
+  private statusStore = inject(StatusStore);
+  totalCommits = this.statusStore.commits;
 
   colors: string[] = [];
   teams: string[] = [];
