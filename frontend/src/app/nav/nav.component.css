@@ -19,3 +19,8 @@
 .active {
   background-color: navy;
 }
+
+.app-title {
+  padding-left: 15px;
+  margin-right: 20px;
+}
