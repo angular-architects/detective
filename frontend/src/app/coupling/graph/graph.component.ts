@@ -17,6 +17,7 @@ import { StatusStore } from '../../data/status.store';
 import { CouplingResult } from '../coupling-result';
 import { drawGraph, Graph, CustomNodeDefinition } from './graph';
 import { createGroups, createNodes, createEdges } from './graph.adapter';
+import { debounceTimeSkipFirst } from '../../utils/debounce';
 
 @Component({
   selector: 'app-graph',
@@ -47,7 +48,7 @@ export class GraphComponent {
 
   constructor() {
     const couplingResult$ = combineLatest({
-      limits: toObservable(this.limits),
+      limits: toObservable(this.limits).pipe(debounceTimeSkipFirst(300)),
       filterChanged: this.eventService.filterChanged.pipe(startWith(null)),
       type: toObservable(this.type),
     }).pipe(

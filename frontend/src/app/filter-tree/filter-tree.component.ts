@@ -2,7 +2,7 @@ import {
   Component,
   inject,
   OnInit,
-  ViewChild,
+  viewChild,
 } from '@angular/core';
 import { Folder } from './folder';
 import { CdkTree, CdkTreeModule } from '@angular/cdk/tree';
@@ -19,6 +19,8 @@ import { ConfigService } from './config.service';
 import { initConfig } from './config';
 import { EventService } from '../event.service';
 
+const MIN_OPEN_LEVEL = 2;
+
 @Component({
   selector: 'app-filter-tree',
   standalone: true,
@@ -27,21 +29,19 @@ import { EventService } from '../event.service';
   styleUrl: './filter-tree.component.css',
 })
 export class FilterTreeComponent implements OnInit {
-  folderService = inject(FolderService);
-  configService = inject(ConfigService);
-  eventService = inject(EventService);
+  private folderService = inject(FolderService);
+  private configService = inject(ConfigService);
+  private eventService = inject(EventService);
 
-  @ViewChild(CdkTree)
-  tree: CdkTree<Folder>;
-
+  tree = viewChild<CdkTree<Folder>>(CdkTree);
   dataSource = new MatTreeNestedDataSource<Folder>();
 
-  childrenAccessor = (folder: Folder) => of(folder.folders);
-
-  selected = new Set<string>();
-
   config = initConfig;
+  selected = new Set<string>();
   folders: Folder[] = [];
+
+  childrenAccessor = (folder: Folder) => of(folder.folders);
+  hasChild = (_: number, node: Folder) => !!node.folders && node.folders.length > 0;
 
   ngOnInit(): void {
     const folders$ = this.folderService.load();
@@ -56,18 +56,18 @@ export class FilterTreeComponent implements OnInit {
       this.selected.clear();
       this.config.scopes.forEach((scope) => this.selected.add(scope));
       this.expandChecked(result.folders);
-      (document.activeElement as any).blur();
+      removeFocus();
     });
   }
 
   expandChecked(folders: Folder[], depth = 0): boolean {
-    let open = (depth <= 2);
+    let open = (depth <= MIN_OPEN_LEVEL);
     for (let folder of folders) {
       if (this.selected.has(folder.path)) {
         open = true;
       }
       if (folder.folders && this.expandChecked(folder.folders, depth+1)) {
-        this.tree.expand(folder);
+        this.tree().expand(folder);
         open = true;
       }
     }
@@ -75,13 +75,10 @@ export class FilterTreeComponent implements OnInit {
   }
 
   isChecked(folder: Folder): boolean {
-    //console.log('isChecked', folder);
     return this.selected.has(folder.path);
-    // return true;
   }
 
   onCheckChange(folder: Folder, $event: MatCheckboxChange) {
-    //console.log('isChecked', folder, $event.checked);
     if ($event.checked) {
       this.selected.add(folder.path);
     } else {
@@ -107,20 +104,20 @@ export class FilterTreeComponent implements OnInit {
     }
   }
 
-  deselectSubtree(folders: Folder[]) {
+  private deselectSubtree(folders: Folder[]) {
     for(const folder of folders) {
       this.selected.delete(folder.path);
       this.deselectSubtree(folder.folders || []);
     }
   }
 
-  findParents(): string[] {
+  private findParents(): string[] {
     const parents: string[] = [];
     this._findParents(this.folders, parents);
     return parents;
   }
 
-  _findParents(folders = this.folders, parents: string[] ): boolean {
+  private _findParents(folders = this.folders, parents: string[] ): boolean {
     let selected = false;
     for (const folder of folders) {
       if (this.selected.has(folder.path)) {
@@ -137,6 +134,9 @@ export class FilterTreeComponent implements OnInit {
     return selected;
   }
 
-  hasChild = (_: number, node: Folder) =>
-    !!node.folders && node.folders.length > 0;
 }
+
+function removeFocus() {
+  (document.activeElement as any).blur();
+}
+

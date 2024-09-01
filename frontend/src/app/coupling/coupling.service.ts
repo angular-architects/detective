@@ -10,7 +10,6 @@ export class CouplingService {
     private http = inject(HttpClient);
 
     load(type: GraphType = 'structure', limits = initLimits): Observable<CouplingResult> {
-
         if (type === 'changes') {
             const params = { ...limits };
             return this.http.get<CouplingResult>('/api/change-coupling', { params });

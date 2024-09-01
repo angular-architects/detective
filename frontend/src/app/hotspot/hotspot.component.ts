@@ -14,8 +14,15 @@ import { lastSegments } from '../utils/segments';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 
-import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { combineLatest, debounceTime, startWith } from 'rxjs';
+import { FormsModule } from '@angular/forms';
+import {
+  combineLatest,
+  filter,
+  Observable,
+  startWith,
+  switchMap,
+  tap,
+} from 'rxjs';
 import { EventService } from '../event.service';
 import { takeUntilDestroyed, toObservable } from '@angular/core/rxjs-interop';
 import { LimitsComponent } from '../ui/limits/limits.component';
@@ -24,6 +31,7 @@ import { MatSelectModule } from '@angular/material/select';
 import { StatusStore } from '../data/status.store';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
+import { debounceTimeSkipFirst } from '../utils/debounce';
 
 type Option = {
   id: ComplexityMetric;
@@ -41,7 +49,6 @@ type Option = {
     MatSelectModule,
     MatProgressBarModule,
     MatPaginatorModule,
-    ReactiveFormsModule,
     LimitsComponent,
     FormsModule,
   ],
@@ -53,9 +60,6 @@ export class HotspotComponent {
   private eventService = inject(EventService);
 
   private statusStore = inject(StatusStore);
-  totalCommits = this.statusStore.commits;
-
-  minScoreControl = new FormControl(10);
 
   aggregatedResult: AggregatedHotspotsResult;
   dataSource = new MatTableDataSource<AggregatedHotspot>();
@@ -63,11 +67,12 @@ export class HotspotComponent {
 
   hotspotResult: HotspotResult;
   selectedRow: AggregatedHotspot;
+
   columnsToDisplay = ['module', 'count'];
   detailColumns = ['fileName', 'commits', 'complexity', 'score'];
 
-  selectedModule = '';
-
+  totalCommits = this.statusStore.commits;
+  minScoreControl = signal(10);
   limits = signal(initLimits);
   metric = signal<ComplexityMetric>('Length');
 
@@ -76,39 +81,55 @@ export class HotspotComponent {
     { id: 'McCabe', label: 'Cyclomatic Complexity' },
   ];
 
+  selectedModule = signal('');
   loadingAggregated = signal(false);
   loadingHotspots = signal(false);
 
   paginator = viewChild(MatPaginator);
 
   constructor() {
+    const loadAggregatedEvents = [
+      this.eventService.filterChanged.pipe(startWith(null)),
+      toObservable(this.minScoreControl).pipe(debounceTimeSkipFirst(300)),
+      toObservable(this.limits).pipe(debounceTimeSkipFirst(300)),
+      toObservable(this.metric),
+    ];
+
+    const loadHotspotEvent = [
+      ...loadAggregatedEvents,
+      toObservable(this.selectedModule),
+    ];
+
+    combineLatest(loadAggregatedEvents)
+      .pipe(
+        switchMap(() => this.loadAggregated()),
+        takeUntilDestroyed()
+      )
+      .subscribe((result) => {
+        this.aggregatedResult = result;
+        this.dataSource.data = this.formatAggregated(result.aggregated);
+      });
+
+    combineLatest(loadHotspotEvent)
+      .pipe(
+        filter(() => !!this.selectedModule()),
+        switchMap(() => this.loadHotspots()),
+        takeUntilDestroyed()
+      )
+      .subscribe((result) => {
+        this.hotspotResult = result;
+        this.detailDataSource.data = this.formatHotspots(result.hotspots);
+      });
+
     effect(() => {
       this.detailDataSource.paginator = this.paginator();
     });
-
-    combineLatest([
-      this.eventService.filterChanged.pipe(startWith(null)),
-      this.minScoreControl.valueChanges.pipe(
-        startWith(this.minScoreControl.value),
-        debounceTime(300)
-      ),
-      toObservable(this.limits),
-      toObservable(this.metric),
-    ])
-      .pipe(takeUntilDestroyed())
-      .subscribe(() => {
-        this.loadAggregated();
-        if (this.selectedModule) {
-          this.loadHotspots();
-        }
-      });
   }
 
   selectRow(row: AggregatedHotspot, index: number) {
+    const selectModule = this.aggregatedResult.aggregated[index].module;
     this.selectedRow = row;
-    this.selectedModule = this.aggregatedResult.aggregated[index].module;
-
-    this.loadHotspots();
+    this.selectedModule.set(selectModule);
   }
 
   formatAggregated(hotspot: AggregatedHotspot[]): AggregatedHotspot[] {
@@ -125,48 +146,39 @@ export class HotspotComponent {
     }));
   }
 
-  private loadAggregated() {
+  private loadAggregated(): Observable<AggregatedHotspotsResult> {
     const criteria: HotspotCriteria = {
       metric: this.metric(),
-      minScore: this.minScoreControl.value,
+      minScore: this.minScoreControl(),
       module: '',
     };
 
     this.loadingAggregated.set(true);
-
-    this.hotspotService.loadAggregated(criteria, this.limits()).subscribe({
-      next: (aggregatedResult) => {
-        this.aggregatedResult = aggregatedResult;
-        this.dataSource.data = this.formatAggregated(
-          aggregatedResult.aggregated
-        );
-      },
-      complete: () => {
-        this.loadingAggregated.set(false);
-      },
-    });
+    return this.hotspotService.loadAggregated(criteria, this.limits()).pipe(
+      tap({
+        complete: () => {
+          this.loadingAggregated.set(false);
+        },
+      })
+    );
   }
 
-  private loadHotspots() {
+  private loadHotspots(): Observable<HotspotResult> {
     const criteria: HotspotCriteria = {
       metric: this.metric(),
-      minScore: this.minScoreControl.value,
-      module: this.selectedModule,
+      minScore: this.minScoreControl(),
+      module: this.selectedModule(),
     };
 
     this.loadingHotspots.set(true);
 
-    this.hotspotService.load(criteria, this.limits()).subscribe({
-      next: (hotspotResult) => {
-        this.hotspotResult = hotspotResult;
-        this.detailDataSource.data = this.formatHotspots(
-          hotspotResult.hotspots
-        );
-      },
-      complete: () => {
-        this.loadingHotspots.set(false);
-      },
-    });
+    return this.hotspotService.load(criteria, this.limits()).pipe(
+      tap({
+        complete: () => {
+          this.loadingHotspots.set(false);
+        },
+      })
+    );
   }
 }
 

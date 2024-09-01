@@ -125,9 +125,8 @@ function sumCol(matrix: number[][], nodeIndex: number): number {
 
 export function findParent(groups: CustomNodeDefinition[], label: string) {
   let parent = null;
-  const candParents = groups.filter((cp) =>
-    label.startsWith(cp.data.dimension)
-  );
+
+  const candParents = groups.filter((cp) => label.startsWith(cp.data.dimension + '/'));
   if (candParents.length > 0) {
     parent = candParents.reduce(
       (prev, curr) =>

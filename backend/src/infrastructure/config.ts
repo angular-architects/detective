@@ -30,6 +30,7 @@ const initConfig: Config =
 export function loadConfig(options: Options): Config {
   const configPath = path.join(cwd(), options.config);
   const config = JSON.parse(fs.readFileSync(configPath, "utf-8")) as Config;
+  config.scopes.sort();
   return config;
 }
 
