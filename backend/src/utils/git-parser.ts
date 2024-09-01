@@ -1,8 +1,8 @@
-import { getGitLog } from "../infrastructure/git";
-import * as path from 'path';
-import { Limits, NoLimits } from "../model/limits";
+import * as path from "path";
+import { noLimits } from "../model/limits";
+import { loadCachedLog } from "../infrastructure/log";
 
-type State = "header" | "body";
+type State = "header" | "body" | "skip";
 
 export type LogHeader = {
   userName: string;
@@ -11,16 +11,16 @@ export type LogHeader = {
 };
 
 export type LogBodyEntry = {
-    linesAdded: number;
-    linesRemoved: number;
-    path: string;
-  };
+  linesAdded: number;
+  linesRemoved: number;
+  path: string;
+};
 
 export type LogEntry = {
-    header: LogHeader;
-    body: LogBodyEntry[];
-}
-
+  header: LogHeader;
+  body: LogBodyEntry[];
+};
+11;
 export type ParserCallback = (entry: LogEntry) => void;
 
 const initHeader: LogHeader = {
@@ -29,9 +29,12 @@ const initHeader: LogHeader = {
   date: new Date(0),
 };
 
-export async function parseGitLog(callback: ParserCallback, limits = NoLimits) {
+export async function parseGitLog(callback: ParserCallback, limits = noLimits) {
   let pos = 0;
-  const log = await getGitLog(limits);
+  const log = loadCachedLog();
+
+  const today = getToday();
+  const dateLimit = limits.limitMonths ? subtractMonths(today, limits.limitMonths) : new Date(0);
 
   let header = initHeader;
   let body: LogBodyEntry[] = [];
@@ -40,42 +43,66 @@ export async function parseGitLog(callback: ParserCallback, limits = NoLimits) {
 
   let state: State = "header";
 
+  let count = 0;
+
   while (pos < log.length) {
     const [line, next] = getNextLine(log, pos);
     pos = next;
 
     if (state === "header") {
+
+      count++;
+
+      if (limits.limitCommits && count > limits.limitCommits) {
+        return;
+      }
+
       header = parseHeader(line);
-      state = "body";
-    } else if (state === "body") {
-      if (!line.trim()) {
-        callback({header, body});
-        body = [];
-        state = "header";
-      } 
-      else if (!line.includes('\t')) {
-        header = parseHeader(line);
+
+      if (header.date.getTime() < dateLimit.getTime()) {
+        state = 'skip';
       }
       else {
+        state = "body";
+      }
+
+    } else if (state === "body") {
+      if (!line.trim()) {
+        callback({ header, body });
+        body = [];
+        state = "header";
+      } else if (!line.includes("\t")) {
+        header = parseHeader(line);
+      } else {
         const bodyEntry = parseBodyEntry(line, renameMap);
         body.push(bodyEntry);
+      }
+    }
+    else if (state === "skip") {
+      if (!line.trim()) {
+        callback({ header, body });
+        body = [];
+        state = "header";
       }
     }
   }
 }
 
-function parseBodyEntry(line: string, renameMap: Map<string, string>): LogBodyEntry {
+function parseBodyEntry(
+  line: string,
+  renameMap: Map<string, string>
+): LogBodyEntry {
   const parts = line.split("\t");
   const linesAdded = parseInt(parts[0]);
   const linesRemoved = parseInt(parts[1]);
   let filePath = parts[2];
 
   filePath = handleRenames(filePath, renameMap);
-  
+
   const bodyEntry: LogBodyEntry = {
     linesAdded: linesAdded || 0,
     linesRemoved: linesRemoved || 0,
-    path: filePath || '',
+    path: filePath || "",
   };
   return bodyEntry;
 }
@@ -102,8 +129,8 @@ function handleRenames(filePath: string, renameMap: Map<string, string>) {
 
 function parseHeader(line: string): LogHeader {
   const parts = line.split(",");
-  const fullUserName = parts[0];
-  const date = new Date(parts[1]);
+  const date = new Date(parts.pop() as string);
+  const fullUserName = parts.join(",");
   const userParts = fullUserName.split("<");
   const userName = cleanUserName(userParts[0]);
   const email = cleanEmail(userParts);
@@ -111,7 +138,13 @@ function parseHeader(line: string): LogHeader {
 }
 
 function cleanEmail(userParts: string[]) {
-  return userParts[1].substring(0, userParts[1].length - 1);
+  try {
+    return userParts[1].substring(0, userParts[1].length - 1);
+  } catch (e) {
+    console.log("ERROR", e);
+    console.log("userParts", userParts);
+    throw e;
+  }
 }
 
 function cleanUserName(userName: string) {
@@ -136,4 +169,16 @@ function getNextLine(text: string, start: number): [line: string, end: number] {
   }
 
   return [line, pos];
+}
+
+function subtractMonths(date: Date, months: number) {
+  const result = new Date(date);
+  result.setMonth(result.getMonth() - months);
+  return result;
+}
+
+function getToday(): Date {
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  return today;
 }

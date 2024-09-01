@@ -45,7 +45,7 @@ export async function calcTeamAlignment(
       }
     }
 
-    users.add(userName);
+    // users.add(userName);
 
     let key = calcKey(byUser, userName, userToTeam);
 
@@ -58,6 +58,7 @@ export async function calcTeamAlignment(
           const changes = result.modules[display].changes;
           const current = changes[key] || 0;
           changes[key] = current + change.linesAdded + change.linesRemoved;
+          break;
         }
       }
     }

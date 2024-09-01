@@ -3,7 +3,7 @@ export type Limits = {
     limitMonths: number | null;
 }
 
-export const NoLimits: Limits = {
+export const noLimits: Limits = {
     limitCommits: 0,
     limitMonths: 0,
 };

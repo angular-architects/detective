@@ -1,14 +1,30 @@
 import * as fs from 'fs';
-import { Limits } from '../model/limits';
-const { spawn } = require("child_process");
+import { noLimits } from '../model/limits';
+import { spawn, spawnSync } from "child_process";
 
 export function isRepo(): boolean {
   return fs.existsSync('.git');
 }
 
-export function getGitLog(limits: Limits): Promise<string> {
+export function calcTreeHash(): string {
+  const result = spawnSync('git', ['rev-parse', 'HEAD^{tree}'], { encoding: 'utf-8' });
+
+  if (result.error) {
+    throw new Error('Creating Git Tree Hash failed: ' + result.error.message);
+  }
+
+  if (result.status !== 0) {
+    throw new Error('Creating Git Tree Hash failed with exit code: ' + result.status + '\n' + result.stderr);
+  }
+
+  return result.stdout.trim();
+}
+
+
+export function getGitLog(limits = noLimits): Promise<string> {
     return new Promise<string>((resolve, reject) => {
         try {
+
             const args = ["log", '--numstat', '--pretty=format:"%an <%ae>,%ad"'];
 
             if (limits.limitCommits) {

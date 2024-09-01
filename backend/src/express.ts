@@ -10,6 +10,7 @@ import { aggregateHotspots, findHotspotFiles } from "./services/hotspot";
 import { calcChangeCoupling } from "./services/change-coupling";
 import { Options } from "./options/options";
 import { Limits } from "./model/limits";
+import { isStale, updateLogCache } from "./services/log-cache";
 
 export function setupExpress(options: Options) {
   const app = express();
@@ -35,6 +36,28 @@ export function setupExpress(options: Options) {
         res.json({});
       }
     );
+  });
+
+  app.get("/api/cache/log", (req, res) => {
+    try {
+      const stale = isStale();
+      res.json({isStale: stale});
+    } catch (e: any) {
+      console.log("error", e);
+      res.status(500).json({ message: e.message });
+    }
+  });
+
+  app.all("/api/cache/log/update", async (req, res) => {
+    try {
+      console.log('Updating cache ...')
+      await updateLogCache();
+      console.log('Done.')
+      res.json({});
+    } catch (e: any) {
+      console.log("error", e);
+      res.status(500).json({ message: e.message });
+    }
   });
 
   app.get("/api/modules", (req, res) => {
@@ -86,6 +109,7 @@ export function setupExpress(options: Options) {
     try {
       const result = await calcTeamAlignment(byUser, limits, options);
       res.json(result);
+      
     } catch (e: any) {
       console.log("error", e);
       res.status(500).json({ message: e.message });

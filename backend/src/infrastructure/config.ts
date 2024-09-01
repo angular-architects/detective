@@ -3,8 +3,7 @@ import { cwd } from "process";
 import { Config } from "../model/config";
 import { Options } from "../options/options";
 import fs from "fs";
-
-const DETECTIVE_DIR = '.detective';
+import { DETECTIVE_DIR } from "./paths";
 
 const initConfig: Config = 
   {
