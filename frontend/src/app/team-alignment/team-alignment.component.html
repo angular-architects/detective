@@ -1,5 +1,11 @@
 <div class="forensic-filter">
-    <div></div>
+    <div>
+        <mat-checkbox
+        class="mr30"
+        [(ngModel)]="byUser"
+        >By User</mat-checkbox
+      >
+    </div>
     <app-limits [(limits)]="limits"></app-limits>
 </div>
 

@@ -21,6 +21,7 @@ import { takeUntilDestroyed, toObservable } from '@angular/core/rxjs-interop';
 import { LimitsComponent } from "../ui/limits/limits.component";
 import { initLimits } from '../model/limits';
 import { MatSelectModule } from '@angular/material/select';
+import { MatCheckboxModule } from '@angular/material/checkbox';
 
 type Option = {
   id: ComplexityMetric;

@@ -8,9 +8,10 @@ import { EventService } from '../event.service';
 import { takeUntilDestroyed, toObservable } from '@angular/core/rxjs-interop';
 import { lastSegments } from '../utils/segments';
 import { LimitsComponent } from '../ui/limits/limits.component';
-import { initLimits, Limits } from '../model/limits';
-import { JsonPipe } from '@angular/common';
-import { combineLatest, merge } from 'rxjs';
+import { initLimits } from '../model/limits';
+import { merge } from 'rxjs';
+import { MatCheckboxModule } from '@angular/material/checkbox';
+import { FormsModule } from '@angular/forms';
 
 Chart.register(ArcElement, Tooltip, Legend, Title, DoughnutController);
 
@@ -19,7 +20,7 @@ type TeamAlignmentChart = Chart<'doughnut', number[], string>;
 @Component({
   selector: 'app-team-alignment',
   standalone: true,
-  imports: [LimitsComponent, JsonPipe],
+  imports: [LimitsComponent, MatCheckboxModule, FormsModule],
   templateUrl: './team-alignment.component.html',
   styleUrl: './team-alignment.component.css',
 })
@@ -32,11 +33,13 @@ export class TeamAlignmentComponent {
   charts: TeamAlignmentChart[] = [];
 
   limits = signal(initLimits);
+  byUser = signal(false);
 
   constructor() {
     merge(
       this.eventService.filterChanged,
       toObservable(this.limits),
+      toObservable(this.byUser)
     )
     .pipe(takeUntilDestroyed())
     .subscribe(() => {
@@ -48,7 +51,7 @@ export class TeamAlignmentComponent {
   private loadAndDraw() {
     const placeholder = document.getElementById('placeholder');
 
-    this.taService.load(this.limits()).subscribe((result) => {
+    this.taService.load(this.byUser(), this.limits()).subscribe((result) => {
       this.colors = d3.quantize(d3.interpolateRainbow, result.teams.length + 1);
       this.teams = result.teams;
 

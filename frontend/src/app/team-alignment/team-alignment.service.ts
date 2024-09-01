@@ -8,8 +8,8 @@ import { Limits } from '../model/limits';
 export class TeamAlignmentService {
   private http = inject(HttpClient);
 
-  load(limits: Limits): Observable<TeamAlignmentResult> {
-    const params = { ...limits };
+  load(byUser: boolean, limits: Limits): Observable<TeamAlignmentResult> {
+    const params = { byUser, ...limits };
     return this.http.get<TeamAlignmentResult>('/api/team-alignment', {
       params,
     });

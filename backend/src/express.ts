@@ -103,7 +103,7 @@ export function setupExpress(options: Options) {
   });
 
   app.get("/api/team-alignment", async (req, res) => {
-    const byUser = Boolean(req.query.byUser);
+    const byUser = req.query.byUser === 'true';
     const limits = getLimits(req);
 
     try {

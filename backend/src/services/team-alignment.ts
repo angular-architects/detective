@@ -45,7 +45,7 @@ export async function calcTeamAlignment(
       }
     }
 
-    // users.add(userName);
+    users.add(userName);
 
     let key = calcKey(byUser, userName, userToTeam);
 
@@ -58,13 +58,16 @@ export async function calcTeamAlignment(
           const changes = result.modules[display].changes;
           const current = changes[key] || 0;
           changes[key] = current + change.linesAdded + change.linesRemoved;
+          // changes[key] = current + 1;
           break;
         }
       }
     }
   }, limits);
 
-  console.log("users", Array.from(users));
+  if (users.size > 0) {
+    console.log("unmapped users", JSON.stringify(Array.from(users), null, 2));
+  }
 
   if (byUser) {
     result.teams = Array.from(users);

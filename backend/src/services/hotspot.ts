@@ -1,7 +1,8 @@
 import path from "path";
+import * as fs from 'fs';
+
 import { Options } from "../options/options";
 import { LogBodyEntry, parseGitLog } from "../utils/git-parser";
-import * as fs from 'fs';
 import { calcCyclomaticComplexity } from "../utils/complexity";
 import { loadConfig } from "../infrastructure/config";
 import { normalizeFolder, toDisplayFolder } from "../utils/normalize-folder";

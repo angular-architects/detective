@@ -78,7 +78,6 @@ export async function parseGitLog(callback: ParserCallback, limits = noLimits) {
       }
     } else if (state === "skip") {
       if (!line.trim()) {
-        callback({ header, body });
         body = [];
         state = "header";
       }
