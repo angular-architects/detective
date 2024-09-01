@@ -7,7 +7,7 @@ import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatListModule } from '@angular/material/list';
 import { MatIconModule } from '@angular/material/icon';
 import { Observable } from 'rxjs';
-import { map, shareReplay } from 'rxjs/operators';
+import { map, shareReplay, tap } from 'rxjs/operators';
 import { FilterTreeComponent } from "../filter-tree/filter-tree.component";
 import { GraphComponent } from "../coupling/graph/graph.component";
 import { ChordComponent } from '../coupling/chord/chord.component';
@@ -34,7 +34,7 @@ import { RouterModule, RouterOutlet } from '@angular/router';
 export class NavComponent {
   private breakpointObserver = inject(BreakpointObserver);
 
-  isHandset$: Observable<boolean> = this.breakpointObserver.observe(Breakpoints.Handset)
+  isHandset$: Observable<boolean> = this.breakpointObserver.observe(['(max-width: 1200px)'])
     .pipe(
       map(result => result.matches),
       shareReplay()
