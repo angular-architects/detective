@@ -1,8 +1,8 @@
-export type ModuleDetails = {
+export interface ModuleDetails {
   changes: Record<string, number>;
-};
+}
 
-export type TeamAlignmentResult = {
+export interface TeamAlignmentResult {
   modules: Record<string, ModuleDetails>;
   teams: string[];
-};
+}

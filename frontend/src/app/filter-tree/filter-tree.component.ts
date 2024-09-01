@@ -62,7 +62,7 @@ export class FilterTreeComponent implements OnInit {
 
   expandChecked(folders: Folder[], depth = 0): boolean {
     let open = (depth <= MIN_OPEN_LEVEL);
-    for (let folder of folders) {
+    for (const folder of folders) {
       if (this.selected.has(folder.path)) {
         open = true;
       }
@@ -137,6 +137,6 @@ export class FilterTreeComponent implements OnInit {
 }
 
 function removeFocus() {
-  (document.activeElement as any).blur();
+  (document.activeElement as HTMLElement).blur();
 }
 

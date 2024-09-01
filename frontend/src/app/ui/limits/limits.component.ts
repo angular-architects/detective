@@ -5,14 +5,14 @@ import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { FormsModule } from '@angular/forms';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { CommonModule, DecimalPipe } from '@angular/common';
+import { DecimalPipe } from '@angular/common';
 
 type OptionId = 'COMMITS' | 'MONTHS';
 
-type Option = {
+interface Option {
   id: OptionId;
   label: string;
-};
+}
 
 const initCommits = 1000;
 const initMonths = 12;

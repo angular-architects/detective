@@ -1,8 +1,10 @@
 import cytoscape, {
   Core,
   EdgeDefinition,
+  EdgeSingular,
   LayoutOptions,
   NodeDefinition,
+  NodeSingular,
 } from 'cytoscape';
 
 import cola from 'cytoscape-cola';
@@ -13,7 +15,7 @@ cytoscape.use(dagre);
 cytoscape.use(cola);
 cytoscape.use(qtip);
 
-export interface CustomNodeDefinition extends NodeDefinition {
+export interface CouplingNodeDefinition extends NodeDefinition {
   data: {
     id: string;
     label: string;
@@ -24,12 +26,19 @@ export interface CustomNodeDefinition extends NodeDefinition {
   classes?: string;
 }
 
-export type Graph = {
-  nodes: CustomNodeDefinition[];
+export interface Graph {
+  nodes: CouplingNodeDefinition[];
   edges: EdgeDefinition[];
   groupByFolder: boolean;
   directed: boolean;
+}
+
+interface Qtip {
+  qtip(options: unknown): void;
 };
+
+type NodeWithQtip = NodeSingular & Qtip;
+type EdgeWithQtip = EdgeSingular & Qtip;
 
 export function drawGraph(graph: Graph, container: HTMLElement) {
   const cy: Core = cytoscape({
@@ -103,7 +112,7 @@ export function drawGraph(graph: Graph, container: HTMLElement) {
     userZoomingEnabled: true,
     panningEnabled: true,
     userPanningEnabled: true,
-  } as any);
+  } as unknown);
 
   cy.ready(() => {
     cy.nodes().forEach((node) => {
@@ -128,7 +137,7 @@ export function drawGraph(graph: Graph, container: HTMLElement) {
       .update();
   });
 
-  cy.nodes().forEach((node: any) => {
+  cy.nodes().forEach((node: NodeWithQtip) => {
     const tooltip = node.data('tooltip');
 
     if (!tooltip) return;
@@ -155,7 +164,7 @@ export function drawGraph(graph: Graph, container: HTMLElement) {
     });
   });
 
-  cy.edges().forEach((edge: any) => {
+  cy.edges().forEach((edge: EdgeWithQtip) => {
     const tooltip = edge.data('tooltip');
 
     if (!tooltip) return;

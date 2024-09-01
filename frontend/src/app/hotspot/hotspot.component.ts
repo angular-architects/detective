@@ -33,10 +33,10 @@ import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
 import { debounceTimeSkipFirst } from '../utils/debounce';
 
-type Option = {
+interface Option {
   id: ComplexityMetric;
   label: string;
-};
+}
 
 @Component({
   selector: 'app-hotspot',

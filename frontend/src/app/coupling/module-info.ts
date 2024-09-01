@@ -1,3 +1,3 @@
-export type ModuleInfo = {
+export interface ModuleInfo {
   fileCount: number[];
-};
+}

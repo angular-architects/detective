@@ -69,7 +69,7 @@ export function drawAlignmentCharts(
                 }
                 if (context.raw !== null) {
                   label +=
-                    (((context.raw as any) / sum) * 100).toFixed(2) + '%';
+                    (((context.raw as number) / sum) * 100).toFixed(2) + '%';
                 }
                 return label;
               },

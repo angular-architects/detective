@@ -1,6 +1,6 @@
-export type Limits = {
-    limitCommits: number | null;
-    limitMonths: number | null;
+export interface Limits {
+    limitCommits: number;
+    limitMonths: number;
 }
 
 export const initLimits: Limits = {

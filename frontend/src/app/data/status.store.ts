@@ -1,6 +1,6 @@
 import { computed, inject, Injectable, signal } from '@angular/core';
 import { StatusService } from './status.service';
-import { initStatus, Status } from '../model/status';
+import { initStatus } from '../model/status';
 
 @Injectable({providedIn: 'root'})
 export class StatusStore {

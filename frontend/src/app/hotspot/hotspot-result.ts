@@ -1,35 +1,35 @@
-export type Hotspot = {
+export interface Hotspot {
   commits: number;
   changedLines: number;
   complexity: number;
   score: number;
-};
+}
 
-export type FlatHotspot = {
+export interface FlatHotspot {
   fileName: string;
   commits: number;
   changedLines: number;
   complexity: number;
   score: number;
-};
+}
 
-export type HotspotResult = {
+export interface HotspotResult {
   hotspots: FlatHotspot[];
-};
+}
 
 export type ComplexityMetric = 'McCabe' | 'Length';
 
-export type HotspotCriteria = {
+export interface HotspotCriteria {
   module: string;
   minScore: number;
   metric: ComplexityMetric,
-};
+}
 
-export type AggregatedHotspot = {
+export interface AggregatedHotspot {
   module: string;
   count: number;
-};
+}
 
-export type AggregatedHotspotsResult = {
+export interface AggregatedHotspotsResult {
   aggregated: AggregatedHotspot[];
-};
+}

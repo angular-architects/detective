@@ -1,5 +1,5 @@
 export type GraphType = 'structure' | 'changes';
 
-export type GraphTypeData = {
+export interface GraphTypeData {
     type: GraphType;
-};
+}

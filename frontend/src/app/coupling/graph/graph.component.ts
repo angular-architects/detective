@@ -15,7 +15,7 @@ import { initLimits } from '../../model/limits';
 import { LimitsComponent } from '../../ui/limits/limits.component';
 import { StatusStore } from '../../data/status.store';
 import { CouplingResult } from '../coupling-result';
-import { drawGraph, Graph, CustomNodeDefinition } from './graph';
+import { drawGraph, Graph, CouplingNodeDefinition } from './graph';
 import { createGroups, createNodes, createEdges } from './graph.adapter';
 import { debounceTimeSkipFirst } from '../../utils/debounce';
 
@@ -71,7 +71,7 @@ export class GraphComponent {
   toGraph(result: CouplingResult): Graph {
     result.matrix = this.clearSelfLinks(result.matrix);
 
-    const groupNodes: CustomNodeDefinition[] = this.groupByFolder()
+    const groupNodes: CouplingNodeDefinition[] = this.groupByFolder()
       ? createGroups(result.dimensions)
       : [];
 

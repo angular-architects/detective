@@ -1,6 +1,6 @@
 import { EdgeDefinition } from "cytoscape";
 import { CouplingResult } from "../coupling-result";
-import { CustomNodeDefinition } from "./graph";
+import { CouplingNodeDefinition } from "./graph";
 import { GraphType } from "./graph-type";
 
 export function createEdges(
@@ -31,8 +31,8 @@ export function createEdges(
   return edges;
 }
 
-export function createGroups(dimensions: string[]): CustomNodeDefinition[] {
-  const groupNodes: CustomNodeDefinition[] = [];
+export function createGroups(dimensions: string[]): CouplingNodeDefinition[] {
+  const groupNodes: CouplingNodeDefinition[] = [];
   const groups = findGroups(dimensions);
 
   groups.sort();
@@ -40,7 +40,7 @@ export function createGroups(dimensions: string[]): CustomNodeDefinition[] {
   for (let i = 0; i < groups.length; i++) {
     const label = groups[i];
 
-    const node: CustomNodeDefinition = {
+    const node: CouplingNodeDefinition = {
       data: {
         id: 'G' + i,
         label: label.split('/').at(-1),
@@ -50,7 +50,7 @@ export function createGroups(dimensions: string[]): CustomNodeDefinition[] {
       classes: 'group',
     };
 
-    let parent = findParent(groupNodes, label);
+    const parent = findParent(groupNodes, label);
 
     if (parent) {
       node.data.parent = parent.data.id;
@@ -63,15 +63,15 @@ export function createGroups(dimensions: string[]): CustomNodeDefinition[] {
 
 export function createNodes(
   result: CouplingResult,
-  groups: CustomNodeDefinition[],
+  groups: CouplingNodeDefinition[],
   type: GraphType
-): CustomNodeDefinition[] {
-  const nodes: CustomNodeDefinition[] = [];
+): CouplingNodeDefinition[] {
+  const nodes: CouplingNodeDefinition[] = [];
 
   for (let i = 0; i < result.dimensions.length; i++) {
     const label = result.dimensions[i];
 
-    const node: CustomNodeDefinition = {
+    const node: CouplingNodeDefinition = {
       data: {
         id: '' + i,
         label: label.split('/').at(-1),
@@ -92,7 +92,7 @@ export function createNodes(
       },
     };
 
-    let parent = findParent(groups, label);
+    const parent = findParent(groups, label);
 
     if (parent) {
       node.data.parent = parent.data.id;
@@ -123,7 +123,7 @@ function sumCol(matrix: number[][], nodeIndex: number): number {
   return sum;
 }
 
-export function findParent(groups: CustomNodeDefinition[], label: string) {
+export function findParent(groups: CouplingNodeDefinition[], label: string) {
   let parent = null;
 
   const candParents = groups.filter((cp) => label.startsWith(cp.data.dimension + '/'));

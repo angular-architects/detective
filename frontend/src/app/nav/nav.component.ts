@@ -10,7 +10,6 @@ import { Observable } from 'rxjs';
 import { map, shareReplay } from 'rxjs/operators';
 import { FilterTreeComponent } from "../filter-tree/filter-tree.component";
 import { GraphComponent } from "../coupling/graph/graph.component";
-import { ChordComponent } from '../coupling/chord/chord.component';
 import { RouterModule } from '@angular/router';
 
 @Component({
@@ -25,7 +24,6 @@ import { RouterModule } from '@angular/router';
     MatListModule,
     MatIconModule,
     AsyncPipe,
-    ChordComponent,
     FilterTreeComponent,
     GraphComponent,
     RouterModule

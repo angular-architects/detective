@@ -1,3 +1,3 @@
-export type CacheStatus = {
+export interface CacheStatus {
     isStale: boolean;
-};
+}

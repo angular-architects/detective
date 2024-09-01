@@ -1,7 +1,6 @@
 import { Component, inject, OnInit } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { NavComponent } from './nav/nav.component';
-import { StatusService } from './data/status.service';
 import { StatusStore } from './data/status.store';
 
 @Component({
