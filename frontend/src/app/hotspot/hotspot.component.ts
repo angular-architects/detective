@@ -1,4 +1,4 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, effect, inject, signal, viewChild } from '@angular/core';
 import { HotspotService } from './hotspot.service';
 import {
   AggregatedHotspot,
@@ -18,11 +18,12 @@ import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { combineLatest, debounceTime, startWith } from 'rxjs';
 import { EventService } from '../event.service';
 import { takeUntilDestroyed, toObservable } from '@angular/core/rxjs-interop';
-import { LimitsComponent } from "../ui/limits/limits.component";
+import { LimitsComponent } from '../ui/limits/limits.component';
 import { initLimits } from '../model/limits';
 import { MatSelectModule } from '@angular/material/select';
-import { MatCheckboxModule } from '@angular/material/checkbox';
 import { StatusStore } from '../data/status.store';
+import { MatProgressBarModule } from '@angular/material/progress-bar';
+import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
 
 type Option = {
   id: ComplexityMetric;
@@ -38,10 +39,12 @@ type Option = {
     MatFormFieldModule,
     MatInputModule,
     MatSelectModule,
+    MatProgressBarModule,
+    MatPaginatorModule,
     ReactiveFormsModule,
     LimitsComponent,
     FormsModule,
-],
+  ],
   templateUrl: './hotspot.component.html',
   styleUrl: './hotspot.component.css',
 })
@@ -69,24 +72,36 @@ export class HotspotComponent {
   metric = signal<ComplexityMetric>('Length');
 
   metricOptions: Option[] = [
-    { id: 'Length', label: 'File Length'},
-    { id: 'McCabe', label: 'Cyclomatic Complexity'},
+    { id: 'Length', label: 'File Length' },
+    { id: 'McCabe', label: 'Cyclomatic Complexity' },
   ];
 
+  loadingAggregated = signal(false);
+  loadingHotspots = signal(false);
+
+  paginator = viewChild(MatPaginator);
+
   constructor() {
+    effect(() => {
+      this.detailDataSource.paginator = this.paginator();
+    });
+
     combineLatest([
       this.eventService.filterChanged.pipe(startWith(null)),
-      this.minScoreControl.valueChanges.pipe(startWith(this.minScoreControl.value), debounceTime(300)),
+      this.minScoreControl.valueChanges.pipe(
+        startWith(this.minScoreControl.value),
+        debounceTime(300)
+      ),
       toObservable(this.limits),
       toObservable(this.metric),
     ])
-    .pipe(takeUntilDestroyed())
-    .subscribe(() => {
-      this.loadAggregated();
-      if (this.selectedModule) {
-        this.loadHotspots();
-      }
-    });
+      .pipe(takeUntilDestroyed())
+      .subscribe(() => {
+        this.loadAggregated();
+        if (this.selectedModule) {
+          this.loadHotspots();
+        }
+      });
   }
 
   selectRow(row: AggregatedHotspot, index: number) {
@@ -114,34 +129,44 @@ export class HotspotComponent {
     const criteria: HotspotCriteria = {
       metric: this.metric(),
       minScore: this.minScoreControl.value,
-      module: ''
+      module: '',
     };
 
-    this.hotspotService
-      .loadAggregated(criteria, this.limits())
-      .subscribe((aggregatedResult) => {
+    this.loadingAggregated.set(true);
+
+    this.hotspotService.loadAggregated(criteria, this.limits()).subscribe({
+      next: (aggregatedResult) => {
         this.aggregatedResult = aggregatedResult;
         this.dataSource.data = this.formatAggregated(
           aggregatedResult.aggregated
         );
-      });
+      },
+      complete: () => {
+        this.loadingAggregated.set(false);
+      },
+    });
   }
 
   private loadHotspots() {
     const criteria: HotspotCriteria = {
       metric: this.metric(),
       minScore: this.minScoreControl.value,
-      module: this.selectedModule
+      module: this.selectedModule,
     };
 
-    this.hotspotService
-      .load(criteria, this.limits())
-      .subscribe((hotspotResult) => {
+    this.loadingHotspots.set(true);
+
+    this.hotspotService.load(criteria, this.limits()).subscribe({
+      next: (hotspotResult) => {
         this.hotspotResult = hotspotResult;
         this.detailDataSource.data = this.formatHotspots(
           hotspotResult.hotspots
         );
-      });
+      },
+      complete: () => {
+        this.loadingHotspots.set(false);
+      },
+    });
   }
 }
 
