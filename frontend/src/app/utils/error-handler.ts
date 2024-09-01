@@ -14,6 +14,7 @@ export class CustomErrorHandler implements ErrorHandler {
     this.snackBar.open(message, 'OK', { 
         panelClass: ['snackbar-alarm'] 
     });
+    throw error;
   }
 }
 

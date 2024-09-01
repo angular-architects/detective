@@ -1,4 +1,3 @@
-import { Config } from "../model/config";
 import { Deps } from "../model/deps";
 import { Options } from "../options/options";
 import { loadConfig } from "../infrastructure/config";
@@ -28,7 +27,6 @@ export function calcCoupling(options: Options): CouplingResult {
   const matrixSize = modules.length;
   const matrix: number[][] = getEmptyMatrix(matrixSize);
 
-
   for (const row of modules) {
     for (const col of modules) {
       const count = calcCell(files, deps, row, col);
@@ -44,7 +42,8 @@ export function calcCoupling(options: Options): CouplingResult {
     }
   }
 
-  // TODO: Improve performance by combinding this with matrix calculation
+  // TODO: Improve performance (and decrease readability) by combining
+  //  this with matrix calculation?
   const moduleInfo = calcModuleInfo(options);
   const cohesion = calcCohesion(moduleInfo, matrix);
 

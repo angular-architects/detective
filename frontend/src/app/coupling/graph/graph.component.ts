@@ -1,46 +1,22 @@
-import { Component, inject, input, Input, OnInit, signal } from '@angular/core';
+import { Component, inject, input, signal } from '@angular/core';
 import { CouplingService } from '../coupling.service';
 import { EventService } from '../../event.service';
 import { takeUntilDestroyed, toObservable } from '@angular/core/rxjs-interop';
-import cytoscape, {
-  Core,
-  EdgeDefinition,
-  LayoutOptions,
-  NodeDefinition,
-} from 'cytoscape';
-
-import cola from 'cytoscape-cola';
-import qtip from 'cytoscape-qtip';
-import dagre from 'cytoscape-dagre';
 
 import {
-  MatCheckboxChange,
   MatCheckboxModule,
 } from '@angular/material/checkbox';
-import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { FormsModule } from '@angular/forms';
 import { GraphType } from './graph-type';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
-import { merge } from 'rxjs';
+import { combineLatest, startWith, switchMap } from 'rxjs';
 import { initLimits } from '../../model/limits';
-import { LimitsComponent } from "../../ui/limits/limits.component";
-import { StatusService } from '../../data/status.service';
+import { LimitsComponent } from '../../ui/limits/limits.component';
 import { StatusStore } from '../../data/status.store';
-
-cytoscape.use(dagre);
-cytoscape.use(cola);
-cytoscape.use(qtip);
-
-interface CustomNodeDefinition extends NodeDefinition {
-  data: {
-    id: string;
-    label: string;
-    parent?: string;
-    tooltip: string;
-    dimension: string;
-  };
-  classes?: string;
-}
+import { CouplingResult } from '../coupling-result';
+import { drawGraph, Graph, CustomNodeDefinition } from './graph';
+import { createGroups, createNodes, createEdges } from './graph.adapter';
 
 @Component({
   selector: 'app-graph',
@@ -50,9 +26,8 @@ interface CustomNodeDefinition extends NodeDefinition {
     FormsModule,
     MatFormFieldModule,
     MatInputModule,
-    ReactiveFormsModule,
-    LimitsComponent
-],
+    LimitsComponent,
+  ],
   templateUrl: './graph.component.html',
   styleUrl: './graph.component.css',
 })
@@ -60,446 +35,66 @@ export class GraphComponent {
   private couplingService = inject(CouplingService);
   private eventService = inject(EventService);
 
-  private matrix: number[][] = [[]];
-  private labels: string[] = [];
-  private groups: string[] = [];
-
   private statusStore = inject(StatusStore);
   totalCommits = this.statusStore.commits;
 
-  minConnectionsControl = new FormControl(0);
-
-  groupByFolder = false;
-  fileCount: number[];
-  cohesion: number[];
-
   type = input<GraphType>('structure');
 
+  groupByFolder = signal(false);
   limits = signal(initLimits);
+  minConnections = signal(1);
 
   constructor() {
-    merge(
-      this.minConnectionsControl.valueChanges,
-      this.eventService.filterChanged,
-      toObservable(this.limits)
-    )
+    const couplingResult$ = combineLatest({
+      limits: toObservable(this.limits),
+      filterChanged: this.eventService.filterChanged.pipe(startWith(null)),
+      type: toObservable(this.type),
+    }).pipe(
+      switchMap((combi) => this.couplingService.load(combi.type, combi.limits))
+    );
+
+    const localFilter$ = combineLatest({
+      groupByFolder: toObservable(this.groupByFolder),
+      minConnections: toObservable(this.minConnections),
+    });
+
+    combineLatest({
+      couplingResult: couplingResult$,
+      localFilter: localFilter$,
+    })
       .pipe(takeUntilDestroyed())
-      .subscribe(() => {
-        this.load();
+      .subscribe((combi) => {
+        const graph = this.toGraph(combi.couplingResult);
+        const container = document.getElementById('cy');
+        drawGraph(graph, container);
       });
   }
 
-  groupByFolderChanged(event: MatCheckboxChange): void {
-    this.draw();
-  }
+  toGraph(result: CouplingResult): Graph {
+    result.matrix = this.clearSelfLinks(result.matrix);
 
-  private load() {
-    this.couplingService.load(this.type(), this.limits()).subscribe((r) => {
-      this.matrix = r.matrix;
-      this.clearSelfLinks();
-
-      this.fileCount = r.fileCount;
-      this.cohesion = r.cohesion;
-
-      this.labels = r.dimensions;
-      this.groups = r.groups;
-
-      this.groups = this.findGroups(this.labels);
-      
-      this.draw();
-    });
-  }
-
-  findGroups(labels: string[]): string[] {
-    const groups = new Set<string>();
-    for (const label of labels) {
-      const parts = label.split('/');
-      const group = parts.slice(0, parts.length-1).join('/');
-      groups.add(group);
-    }
-    return Array.from(groups)
-  }
-
-  private draw() {
-    const groups: CustomNodeDefinition[] = this.groupByFolder
-      ? this.createGroups()
+    const groupNodes: CustomNodeDefinition[] = this.groupByFolder()
+      ? createGroups(result.dimensions)
       : [];
-    const nodes: CustomNodeDefinition[] = this.createNodes(groups);
-    const edges = this.createEdges();
 
+    const leafNodes = createNodes(result, groupNodes, this.type());
+    const edges = createEdges(result, this.type(), this.minConnections());
     const directed = this.type() === 'structure';
 
-    drawGraph([...groups, ...nodes], edges, this.groupByFolder, directed);
-  }
-
-  private createEdges() {
-    const edges = [];
-    const delimiter = this.type() === 'structure' ? '→' : '↔';
-    for (let i = 0; i < this.matrix.length; i++) {
-      for (let j = 0; j < this.matrix.length; j++) {
-        if (this.matrix[i][j] > this.minConnectionsControl.value) {
-          edges.push({
-            data: {
-              source: '' + i,
-              target: '' + j,
-              weight: this.matrix[i][j],
-              tooltip: `${this.labels[i].split('/').at(-1)} ${delimiter} ${this.labels[j]
-                .split('/')
-                .at(-1)}<br><br>${this.matrix[i][j]} connections`,
-            },
-          });
-        }
-      }
-    }
-    return edges;
-  }
-
-  private createNodes(groups: CustomNodeDefinition[]) {
-    const nodes: CustomNodeDefinition[] = [];
-
-    for (let i = 0; i < this.labels.length; i++) {
-      const label = this.labels[i];
-
-      const node: CustomNodeDefinition = {
-        data: {
-          id: '' + i,
-          label: label.split('/').at(-1),
-          tooltip:
-            this.type() === 'structure'
-              ? `${label}
-<br><br>${this.fileCount[i]} source files
-<br>Cohesion: ${this.cohesion[i]}%
-<br>Outgoing Deps: ${sumRow(this.matrix, i)}
-<br>Incoming Deps: ${sumCol(this.matrix, i)}
-`
-              : `${label}
-<br><br>${this.fileCount[i]} commits
-<br>Outgoing Deps: ${sumRow(this.matrix, i)}
-<br>Incoming Deps: ${sumCol(this.matrix, i)}
-`,
-          dimension: label,
-        },
-      };
-
-      let parent = findParent(groups, label);
-
-      if (parent) {
-        node.data.parent = parent.data.id;
-      }
-
-      nodes.push(node);
-    }
-    return nodes;
-  }
-
-  private createGroups() {
-    const groups: CustomNodeDefinition[] = [];
-
-    this.groups.sort();
-
-    for (let i = 0; i < this.groups.length; i++) {
-      const label = this.groups[i];
-
-      const node: CustomNodeDefinition = {
-        data: {
-          id: 'G' + i,
-          label: label.split('/').at(-1),
-          tooltip: label,
-          dimension: label,
-        },
-        classes: 'group',
-      };
-
-      let parent = findParent(groups, label);
-
-      if (parent) {
-        node.data.parent = parent.data.id;
-      }
-
-      groups.push(node);
-    }
-    return groups;
-  }
-
-  private clearSelfLinks() {
-    for (let i = 0; i < this.matrix.length; i++) {
-      this.matrix[i][i] = 0;
-    }
-  }
-
-  prepareDimensions(dimensions: string[]): string[] {
-    return dimensions.map((d) => d.split('/').at(-1));
-  }
-}
-
-function findParent(groups: CustomNodeDefinition[], label: string) {
-  let parent = null;
-  const candParents = groups.filter((cp) =>
-    label.startsWith(cp.data.dimension)
-  );
-  console.log('candParents', candParents);
-  if (candParents.length > 0) {
-    parent = candParents.reduce(
-      (prev, curr) =>
-        curr.data.dimension.length > prev.data.dimension.length ? curr : prev,
-      candParents[0]
-    );
-  }
-  return parent;
-}
-
-function getMinMaxWeight(cy: cytoscape.Core): [number, number] {
-  const edges = cy.edges();
-  const min = edges.min((e) => e.data('weight'));
-  const max = edges.max((e) => e.data('weight'));
-  return [min.value, max.value];
-}
-
-function drawGraph(
-  nodes: NodeDefinition[],
-  edges: EdgeDefinition[],
-  showGroups = false,
-  directed = true
-) {
-  console.log('showGrups', showGroups);
-  // const axis = showGroups ? 'xy' : 'x';
-
-  // Erstelle eine Instanz von Cytoscape
-  const cy: Core = cytoscape({
-    container: document.getElementById('cy'), // Hier muss das HTML-Element angegeben werden, in dem der Graph dargestellt wird.
-
-    layout: {
-      name: 'dagre',
-      padding: 30,
-      nodeSpacing: 40,
-      nodeSep: 80,
-      avoidOverlap: true,
-      flow: { axis: 'x', minSeparation: 50 },
-      fit: false,
-      animate: false,
-    } as LayoutOptions,
-
-    style: [
-      {
-        selector: 'node',
-        style: {
-          shape: 'round-rectangle',
-          label: 'data(label)',
-          'text-valign': 'center',
-          'text-halign': 'center',
-          height: '20px',
-          width: 'label',
-          padding: '10px',
-          'background-color': '#60a3bc',
-          'border-color': '#1e272e',
-          'border-width': 1,
-          color: '#ffffff',
-          'font-size': '16px',
-          'min-zoomed-font-size': 8,
-          'text-wrap': 'wrap',
-          'text-max-width': '100px',
-        },
-      },
-      {
-        selector: 'edge',
-        style: {
-          width: 1,
-          'line-color': '#1e272e',
-          'target-arrow-color': '#1e272e',
-          'target-arrow-shape': directed ? 'triangle' : 'none',
-          'curve-style': 'bezier',
-        },
-      },
-      {
-        selector: '.group',
-        style: {
-          shape: 'round-rectangle',
-          'background-color': 'rgba(255,255,255,0.5)',
-          'border-color': '#1e272e',
-          'border-width': 1,
-          padding: '20px',
-          label: 'data(label)',
-          'text-valign': 'top',
-          'text-halign': 'center',
-          'font-size': '14px',
-          'font-weight': 'bold',
-          color: 'black',
-        },
-      },
-    ],
-
-    elements: {
-      nodes,
+    const graph: Graph = {
+      nodes: [...groupNodes, ...leafNodes],
       edges,
-      //   nodes: [
-      //       { data: { id: 'a', label: 'Node-A-123-456-789-100', tooltip: 'AAAA' } },
-      //       { data: { id: 'b', label: 'Node B', tooltip: 'BBBB' } },
-      //       { data: { id: 'group1', label: 'Group 1' }, classes: 'group' }, // Gruppe
-      //       { data: { id: 'd', label: 'Node D', parent: 'group1' } }, // Knoten in Gruppe
-      //       { data: { id: 'e', label: 'Node E', parent: 'group1' } }, // Knoten in Gruppe
-      //       { data: { id: 'group2', label: 'Group 2' }, classes: 'group' }, // Gruppe
-      //       { data: { id: 'g', label: 'Node G', parent: 'group2' } }, // Knoten in Gruppe
-      //       { data: { id: 'h', label: 'Node H', parent: 'group2' } },  // Knoten in Gruppe
-      //       { data: { id: 'group2-1', label: 'Group 2.1', parent:'group2' }, classes: 'group' }, // Gruppe
-      //       { data: { id: 'j', label: 'Node J', parent: 'group2-1' } },  // Knoten in Gruppe
-      //       { data: { id: 'k', label: 'Node K', parent: 'group2-1' } }  // Knoten in Gruppe
-      //     ] as NodeDefinition[],
-      //   edges: [
-      //       { data: { source: 'a', target: 'b', weight: 5, tooltip: '' } },
-      //       { data: { source: 'b', target: 'd', weight: 1 } },
-      //       { data: { source: 'd', target: 'e', weight: 2 } },
-      //       { data: { source: 'e', target: 'a', weight: 2 } },
-      //       { data: { source: 'j', target: 'k', weight: 4 } },
-      //       { data: { source: 'a', target: 'j', weight: 12 } },
-      //       { data: { source: 'g', target: 'h', weight: 2 } },
-      //   ] as EdgeDefinition[]
-    },
+      directed,
+      groupByFolder: this.groupByFolder(),
+    };
 
-    wheelSensitivity: 0.2,
-    zoomingEnabled: true,
-    userZoomingEnabled: true,
-    panningEnabled: true,
-    userPanningEnabled: true,
-  } as any);
-
-  cy.ready(() => {
-    cy.nodes().forEach((node) => {
-      const label = node.data('label');
-      node.style('width', `${label.length * 10}px`); // Breite basierend auf der Beschriftung
-    });
-
-    const [min, max] = getMinMaxWeight(cy);
-    const step = (max - min) / 3;
-    const border1 = min + step;
-    const border2 = max - step;
-
-    cy.style()
-      .selector('edge')
-      .style({
-        width: function (edge) {
-          if (edge.data('weight') <= border1) return '1px';
-          if (edge.data('weight') >= border2) return '3px';
-          return '2px';
-        },
-      })
-      .update();
-
-    // var minY = Infinity;
-
-    // var minY = Infinity;
-
-    // // Durchlaufen Sie alle Knoten und Compound Nodes (Gruppen)
-    // cy.nodes().forEach(function (node) {
-    //   var position = node.boundingBox({
-    //     includeNodes: true,
-    //     includeEdges: false,
-    //     includeLabels: false,
-    //   });
-
-    //   // Überprüfen Sie die obere Grenze (y1) der Bounding-Box
-    //   if (position.y1 < minY) {
-    //     minY = position.y1;
-    //   }
-    // });
-
-    // // Den Graphen nach oben verschieben, sodass der obere Rand sichtbar ist
-    // cy.pan({ x: 0, y: -minY + 20 }); // Verschiebt den Graphen nach oben, +20 Pixel für zusätzlichen Puffer
-  });
-
-  cy.nodes().forEach((node: any) => {
-    const tooltip = node.data('tooltip');
-
-    if (!tooltip) return;
-
-    node.qtip({
-      content: tooltip,
-      position: {
-        my: 'top center',
-        at: 'bottom center',
-      },
-      style: {
-        classes: 'qtip-bootstrap',
-        tip: {
-          corner: true,
-          mimic: 'center',
-          width: 10,
-          height: 10,
-        },
-        'z-index': 1, // Setze den z-index für den Tooltip
-      },
-      hide: {
-        event: 'mouseout',
-      },
-    });
-  });
-
-  cy.edges().forEach((edge: any) => {
-    const tooltip = edge.data('tooltip');
-
-    if (!tooltip) return;
-
-    edge.qtip({
-      content: tooltip,
-      position: {
-        my: 'top center',
-        at: 'bottom center',
-      },
-      style: {
-        classes: 'qtip-bootstrap',
-        tip: {
-          corner: true,
-          mimic: 'center',
-          width: 10,
-          height: 10,
-        },
-        'z-index': 1, // Setze den z-index für den Tooltip
-      },
-      hide: {
-        event: 'mouseout',
-      },
-    });
-  });
-
-  centerAllNodes(cy);
-}
-
-function centerAllNodes(cy) {
-  // Berechne die Bounding Box des gesamten Graphen
-  const boundingBox = cy.elements().boundingBox();
-
-  // Berechne die Mitte des Containers
-  const container = cy.container();
-  const containerCenterX = container.clientWidth / 2;
-  const containerCenterY = container.clientHeight / 2;
-
-  // Berechne die Mitte des gesamten Graphen
-  const graphCenterX = (boundingBox.x1 + boundingBox.x2) / 2;
-  const graphCenterY = (boundingBox.y1 + boundingBox.y2) / 2;
-
-  // Berechne die Verschiebung in X- und Y-Richtung
-  const shiftX = containerCenterX - graphCenterX;
-  const shiftY = containerCenterY - graphCenterY;
-
-  // Verwende cy.panBy, um den Graphen nach links/rechts und oben/unten zu verschieben
-  cy.panBy({ x: shiftX, y: Math.max(0, shiftY - 200) });
-}
-
-function sumRow(matrix: number[][], nodeIndex: number): number {
-  let sum = 0;
-  for (let i = 0; i < matrix.length; i++) {
-    if (i !== nodeIndex) {
-      sum += matrix[nodeIndex][i];
-    }
+    return graph;
   }
-  return sum;
-}
 
-function sumCol(matrix: number[][], nodeIndex: number): number {
-  let sum = 0;
-  for (let i = 0; i < matrix.length; i++) {
-    if (i !== nodeIndex) {
-      sum += matrix[i][nodeIndex];
+  private clearSelfLinks(matrix: number[][]): number[][] {
+    for (let i = 0; i < matrix.length; i++) {
+      matrix[i][i] = 0;
     }
+    return matrix;
   }
-  return sum;
 }

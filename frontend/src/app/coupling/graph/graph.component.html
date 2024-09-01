@@ -3,7 +3,6 @@
     <mat-checkbox
       class="mr30"
       [(ngModel)]="groupByFolder"
-      (change)="groupByFolderChanged($event)"
       >Group by folder</mat-checkbox
     >
 
@@ -12,8 +11,8 @@
       <input
         type="number"
         matInput
-        [formControl]="minConnectionsControl"
-        min="0"
+        min="1"
+        [(ngModel)]="minConnections"
       />
     </mat-form-field>
   </div>
@@ -22,9 +21,5 @@
   }
 </div>
 
-<!-- <div class="filter"></div> -->
-
-<div id="network"></div>
 <div class="tooltip" id="tooltip"></div>
-
 <div id="cy"></div>
