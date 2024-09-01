@@ -39,3 +39,15 @@
 .aggregated td {
   cursor: pointer !important;
 }
+
+.forensic-filter mat-form-field {
+  margin-right: 20px;
+}
+
+.metric {
+  width: 250px;
+}
+
+.min-score {
+  width:120px
+}

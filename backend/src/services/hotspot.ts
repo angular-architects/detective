@@ -1,12 +1,14 @@
 import path from "path";
 import { Options } from "../options/options";
-import { parseGitLog } from "../utils/git-parser";
+import { LogBodyEntry, parseGitLog } from "../utils/git-parser";
 import * as fs from 'fs';
-import { calcComplexity } from "../utils/complexity";
+import { calcCyclomaticComplexity } from "../utils/complexity";
 import { loadConfig } from "../infrastructure/config";
 import { normalizeFolder, toDisplayFolder } from "../utils/normalize-folder";
 import { Limits } from "../model/limits";
 import { countLinesInFile } from "../utils/count-lines";
+
+export type ComplexityMetric = 'McCabe' | 'Length';
 
 export type Hotspot = {
   commits: number,
@@ -15,7 +17,6 @@ export type Hotspot = {
   score: number,
 };
 
-// tuple to reduce payload size
 export type FlatHotspot = {
   fileName: string,
   commits: number,
@@ -31,6 +32,7 @@ export type HotspotResult = {
 export type HotspotCriteria = {
   module: string,
   minScore: number,
+  metric: ComplexityMetric,
 };
 
 export type AggregatedHotspot = {
@@ -93,17 +95,12 @@ async function analyzeLogs(criteria: HotspotCriteria, limits: Limits, options: O
 
       if (!hotspots[change.path]) {
 
-        let cc = 1;
-        const filePath = path.join(options.path, change.path);
-        if (filePath.endsWith('.ts') && fs.existsSync(filePath)) {
-          cc = calcComplexity(filePath);
-          // countLinesInFile(filePath); //-1; //
-        }
+        const complexity = calcComplexity(options, change, criteria);
 
         hotspot = {
           commits: 0,
           changedLines: 0,
-          complexity: cc,
+          complexity,
           score: 0,
         };
 
@@ -117,4 +114,16 @@ async function analyzeLogs(criteria: HotspotCriteria, limits: Limits, options: O
     }
   }, limits);
   return hotspots;
+}
+
+function calcComplexity(options: Options, change: LogBodyEntry, criteria: HotspotCriteria) {
+  let complexity = 1;
+  const filePath = path.join(options.path, change.path);
+  if (criteria.metric === 'McCabe' && filePath.endsWith('.ts') && fs.existsSync(filePath)) {
+    complexity = calcCyclomaticComplexity(filePath);
+  }
+  else if (criteria.metric === 'Length' && fs.existsSync(filePath)) {
+    complexity = countLinesInFile(filePath);
+  }
+  return complexity;
 }

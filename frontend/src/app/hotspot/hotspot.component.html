@@ -7,9 +7,18 @@
 
 <div class="forensic-filter">
   <div>
-    <mat-form-field>
-      <mat-label>Min. Hotspot Score</mat-label>
+    <mat-form-field class="min-score">
+      <mat-label>Min. Score</mat-label>
       <input matInput type="number" [formControl]="minScoreControl" min="0" step="1">
+    </mat-form-field>
+
+    <mat-form-field appearance="fill" class="form-field metric">
+      <mat-label>Complexity Metric</mat-label>
+      <mat-select [(ngModel)]="metric">
+        @for (option of metricOptions; track option.id) {
+        <mat-option value="{{option.id}}">{{option.label}}</mat-option>
+        }
+      </mat-select>
     </mat-form-field>
   </div>  
   

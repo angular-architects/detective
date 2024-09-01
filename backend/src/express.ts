@@ -6,7 +6,7 @@ import { cwd } from "process";
 import { inferFolders } from "./services/folders";
 import { calcModuleInfo } from "./services/module-info";
 import { calcTeamAlignment } from "./services/team-alignment";
-import { aggregateHotspots, findHotspotFiles } from "./services/hotspot";
+import { aggregateHotspots, ComplexityMetric, findHotspotFiles, HotspotCriteria } from "./services/hotspot";
 import { calcChangeCoupling } from "./services/change-coupling";
 import { Options } from "./options/options";
 import { Limits } from "./model/limits";
@@ -118,7 +118,8 @@ export function setupExpress(options: Options) {
 
   app.get("/api/hotspots/aggregated", async (req, res) => {
     const minScore = Number(req.query.minScore) || -1;
-    const criteria = { minScore, module: "" };
+    const metric = (req.query.metric?.toString() || 'McCabe') as ComplexityMetric;
+    const criteria: HotspotCriteria = { minScore, module: "", metric };
 
     const limits = getLimits(req);
 
@@ -134,7 +135,8 @@ export function setupExpress(options: Options) {
   app.get("/api/hotspots", async (req, res) => {
     const minScore = Number(req.query.minScore) || -1;
     const module = req.query.module ? String(req.query.module) : "";
-    const criteria = { minScore, module };
+    const metric = (req.query.metric?.toString() || 'McCabe') as ComplexityMetric;
+    const criteria = { minScore, module, metric };
 
     const limits = getLimits(req);
 

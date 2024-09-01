@@ -17,9 +17,12 @@ export type HotspotResult = {
   hotspots: FlatHotspot[];
 };
 
+export type ComplexityMetric = 'McCabe' | 'Length';
+
 export type HotspotCriteria = {
   module: string;
   minScore: number;
+  metric: ComplexityMetric,
 };
 
 export type AggregatedHotspot = {

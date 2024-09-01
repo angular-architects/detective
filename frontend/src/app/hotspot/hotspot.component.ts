@@ -3,7 +3,9 @@ import { HotspotService } from './hotspot.service';
 import {
   AggregatedHotspot,
   AggregatedHotspotsResult,
+  ComplexityMetric,
   FlatHotspot,
+  HotspotCriteria,
   HotspotResult,
 } from './hotspot-result';
 import { MatSortModule } from '@angular/material/sort';
@@ -12,12 +14,18 @@ import { lastSegments } from '../utils/segments';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 
-import { FormControl, ReactiveFormsModule } from '@angular/forms';
+import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { combineLatest, debounceTime, startWith } from 'rxjs';
 import { EventService } from '../event.service';
 import { takeUntilDestroyed, toObservable } from '@angular/core/rxjs-interop';
 import { LimitsComponent } from "../ui/limits/limits.component";
 import { initLimits } from '../model/limits';
+import { MatSelectModule } from '@angular/material/select';
+
+type Option = {
+  id: ComplexityMetric;
+  label: string;
+};
 
 @Component({
   selector: 'app-hotspot',
@@ -27,8 +35,10 @@ import { initLimits } from '../model/limits';
     MatSortModule,
     MatFormFieldModule,
     MatInputModule,
+    MatSelectModule,
     ReactiveFormsModule,
-    LimitsComponent
+    LimitsComponent,
+    FormsModule,
 ],
   templateUrl: './hotspot.component.html',
   styleUrl: './hotspot.component.css',
@@ -51,12 +61,19 @@ export class HotspotComponent {
   selectedModule = '';
 
   limits = signal(initLimits);
+  metric = signal<ComplexityMetric>('Length');
+
+  metricOptions: Option[] = [
+    { id: 'Length', label: 'File Length'},
+    { id: 'McCabe', label: 'Cyclomatic Complexity'},
+  ];
 
   constructor() {
     combineLatest([
       this.eventService.filterChanged.pipe(startWith(null)),
       this.minScoreControl.valueChanges.pipe(startWith(this.minScoreControl.value), debounceTime(300)),
-      toObservable(this.limits)
+      toObservable(this.limits),
+      toObservable(this.metric),
     ])
     .pipe(takeUntilDestroyed())
     .subscribe(() => {
@@ -89,8 +106,14 @@ export class HotspotComponent {
   }
 
   private loadAggregated() {
+    const criteria: HotspotCriteria = {
+      metric: this.metric(),
+      minScore: this.minScoreControl.value,
+      module: ''
+    };
+
     this.hotspotService
-      .loadAggregated(this.minScoreControl.value, this.limits())
+      .loadAggregated(criteria, this.limits())
       .subscribe((aggregatedResult) => {
         this.aggregatedResult = aggregatedResult;
         this.dataSource.data = this.formatAggregated(
@@ -100,8 +123,14 @@ export class HotspotComponent {
   }
 
   private loadHotspots() {
+    const criteria: HotspotCriteria = {
+      metric: this.metric(),
+      minScore: this.minScoreControl.value,
+      module: this.selectedModule
+    };
+
     this.hotspotService
-      .load(this.minScoreControl.value, this.selectedModule, this.limits())
+      .load(criteria, this.limits())
       .subscribe((hotspotResult) => {
         this.hotspotResult = hotspotResult;
         this.detailDataSource.data = this.formatHotspots(
