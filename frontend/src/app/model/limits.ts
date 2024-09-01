@@ -4,6 +4,6 @@ export type Limits = {
 }
 
 export const initLimits: Limits = {
-    limitCommits: 10000,
+    limitCommits: 1000,
     limitMonths: 0,
 };

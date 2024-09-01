@@ -34,7 +34,9 @@ export async function parseGitLog(callback: ParserCallback, limits = noLimits) {
   const log = loadCachedLog();
 
   const today = getToday();
-  const dateLimit = limits.limitMonths ? subtractMonths(today, limits.limitMonths) : new Date(0);
+  const dateLimit = limits.limitMonths
+    ? subtractMonths(today, limits.limitMonths)
+    : new Date(0);
 
   let header = initHeader;
   let body: LogBodyEntry[] = [];
@@ -50,7 +52,6 @@ export async function parseGitLog(callback: ParserCallback, limits = noLimits) {
     pos = next;
 
     if (state === "header") {
-
       count++;
 
       if (limits.limitCommits && count > limits.limitCommits) {
@@ -60,12 +61,10 @@ export async function parseGitLog(callback: ParserCallback, limits = noLimits) {
       header = parseHeader(line);
 
       if (header.date.getTime() < dateLimit.getTime()) {
-        state = 'skip';
-      }
-      else {
+        state = "skip";
+      } else {
         state = "body";
       }
-
     } else if (state === "body") {
       if (!line.trim()) {
         callback({ header, body });
@@ -77,8 +76,7 @@ export async function parseGitLog(callback: ParserCallback, limits = noLimits) {
         const bodyEntry = parseBodyEntry(line, renameMap);
         body.push(bodyEntry);
       }
-    }
-    else if (state === "skip") {
+    } else if (state === "skip") {
       if (!line.trim()) {
         callback({ header, body });
         body = [];

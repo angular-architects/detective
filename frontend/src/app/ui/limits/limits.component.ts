@@ -13,7 +13,7 @@ type Option = {
   label: string;
 };
 
-const initCommits = 10000;
+const initCommits = 1000;
 const initMonths = 12;
 
 @Component({

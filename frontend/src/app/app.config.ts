@@ -1,5 +1,7 @@
-import { ApplicationConfig, provideZoneChangeDetection } from '@angular/core';
+import { ApplicationConfig, importProvidersFrom, provideZoneChangeDetection } from '@angular/core';
 import { provideRouter, withComponentInputBinding } from '@angular/router';
+
+import { MatDialogModule } from '@angular/material/dialog';
 
 import { routes } from './app.routes';
 import { provideHttpClient } from '@angular/common/http';
@@ -15,6 +17,7 @@ export const appConfig: ApplicationConfig = {
       withComponentInputBinding()
     ), 
     provideErrorHandler(CustomErrorHandler),
-    provideAnimationsAsync()
+    provideAnimationsAsync(),
+    importProvidersFrom(MatDialogModule),
   ]
 };

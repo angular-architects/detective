@@ -6,6 +6,7 @@ import { calcComplexity } from "../utils/complexity";
 import { loadConfig } from "../infrastructure/config";
 import { normalizeFolder, toDisplayFolder } from "../utils/normalize-folder";
 import { Limits } from "../model/limits";
+import { countLinesInFile } from "../utils/count-lines";
 
 export type Hotspot = {
   commits: number,
@@ -96,6 +97,7 @@ async function analyzeLogs(criteria: HotspotCriteria, limits: Limits, options: O
         const filePath = path.join(options.path, change.path);
         if (filePath.endsWith('.ts') && fs.existsSync(filePath)) {
           cc = calcComplexity(filePath);
+          // countLinesInFile(filePath); //-1; //
         }
 
         hotspot = {
