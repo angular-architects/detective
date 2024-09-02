@@ -13,12 +13,7 @@ import { EventService } from '../event.service';
 import { toObservable, toSignal } from '@angular/core/rxjs-interop';
 import { LimitsComponent } from '../ui/limits/limits.component';
 import { initLimits } from '../model/limits';
-import {
-  combineLatest,
-  Observable,
-  startWith,
-  switchMap,
-} from 'rxjs';
+import { combineLatest, Observable, startWith, switchMap } from 'rxjs';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { FormsModule } from '@angular/forms';
 import { StatusStore } from '../data/status.store';
@@ -53,14 +48,11 @@ export class TeamAlignmentComponent {
   teams = signal<string[]>([]);
 
   constructor() {
-
     const alignment$ = combineLatest([
       this.eventService.filterChanged.pipe(startWith(null)),
       toObservable(this.limits).pipe(debounceTimeSkipFirst(300)),
       toObservable(this.byUser),
-    ]).pipe(
-      switchMap(() => this.loadTeamAlignment())
-    );
+    ]).pipe(switchMap(() => this.loadTeamAlignment()));
 
     const alignmentResult = toSignal(alignment$);
 

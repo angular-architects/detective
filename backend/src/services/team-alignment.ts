@@ -1,10 +1,10 @@
-import { loadConfig } from "../infrastructure/config";
-import { Limits } from "../model/limits";
-import { Options } from "../options/options";
-import { parseGitLog } from "../utils/git-parser";
-import { normalizeFolder } from "../utils/normalize-folder";
+import { loadConfig } from '../infrastructure/config';
+import { Limits } from '../model/limits';
+import { Options } from '../options/options';
+import { parseGitLog } from '../utils/git-parser';
+import { normalizeFolder } from '../utils/normalize-folder';
 
-const UNKNOWN_TEAM = "unknown";
+const UNKNOWN_TEAM = 'unknown';
 
 export type ModuleDetails = {
   changes: Record<string, number>;
@@ -22,7 +22,7 @@ export async function calcTeamAlignment(
 ): Promise<TeamAlignmentResult> {
   const config = loadConfig(options);
   const displayModules = config.scopes;
-  const modules = displayModules.map(m => (normalizeFolder(m)));
+  const modules = displayModules.map((m) => normalizeFolder(m));
   const teams = config.teams || {};
 
   const userToTeam = initUserToTeam(teams);
@@ -37,11 +37,11 @@ export async function calcTeamAlignment(
     if (options.demoMode) {
       count++;
       if (count % 4 === 1) {
-        userName = "Max Muster";
+        userName = 'Max Muster';
       } else if (count % 4 === 2) {
-        userName = "John Doe";
+        userName = 'John Doe';
       } else if (count % 4 == 3) {
-        userName = "Jane Doe";
+        userName = 'Jane Doe';
       }
     }
 
@@ -50,7 +50,7 @@ export async function calcTeamAlignment(
     let key = calcKey(byUser, userName, userToTeam);
 
     for (const change of entry.body) {
-      for (let i =0; i<modules.length; i++) {
+      for (let i = 0; i < modules.length; i++) {
         const module = modules[i];
         const display = displayModules[i];
 
@@ -66,7 +66,7 @@ export async function calcTeamAlignment(
   }, limits);
 
   if (users.size > 0) {
-    console.log("unmapped users", JSON.stringify(Array.from(users), null, 2));
+    console.log('unmapped users', JSON.stringify(Array.from(users), null, 2));
   }
 
   if (byUser) {

@@ -8,12 +8,12 @@
 }
 
 .p10 {
-    padding: 10px
+  padding: 10px;
 }
 
 .metric-cell {
   width: 100px;
-} 
+}
 
 /* Anpassung für größere Bildschirme (z.B. Laptops) */
 @media (min-width: 1024px) {
@@ -53,5 +53,5 @@
 }
 
 .min-score {
-  width:120px
+  width: 120px;
 }

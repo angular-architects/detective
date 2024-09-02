@@ -8,7 +8,7 @@ import { StatusStore } from './data/status.store';
   standalone: true,
   imports: [RouterOutlet, NavComponent],
   templateUrl: './app.component.html',
-  styleUrl: './app.component.css'
+  styleUrl: './app.component.css',
 })
 export class AppComponent implements OnInit {
   statusStore = inject(StatusStore);
@@ -16,5 +16,4 @@ export class AppComponent implements OnInit {
   ngOnInit(): void {
     this.statusStore.load();
   }
-
 }

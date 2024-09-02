@@ -1,6 +1,6 @@
-import { loadConfig } from "../infrastructure/config";
-import { loadDeps } from "../infrastructure/deps";
-import { Options } from "../options/options";
+import { loadConfig } from '../infrastructure/config';
+import { loadDeps } from '../infrastructure/deps';
+import { Options } from '../options/options';
 
 export type ModuleInfo = {
   fileCount: number[];
@@ -22,6 +22,6 @@ export function calcModuleInfo(options: Options): ModuleInfo {
   }
 
   return {
-    fileCount
+    fileCount,
   };
 }

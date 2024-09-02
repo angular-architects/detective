@@ -1,35 +1,25 @@
-import path from "path";
-import { cwd } from "process";
-import { Config } from "../model/config";
-import { Options } from "../options/options";
-import fs from "fs";
-import { DETECTIVE_DIR } from "./paths";
+import path from 'path';
+import { cwd } from 'process';
+import { Config } from '../model/config';
+import { Options } from '../options/options';
+import fs from 'fs';
+import { DETECTIVE_DIR } from './paths';
 
-const initConfig: Config = 
-  {
-    "scopes": [
-    ],
-    "groups": [
-    ],
-    "--entries-comment": "Define custom entry points here",
-    "--entries": [
-    ],
-    "--teams": {
-      "--comment": "Add a teams node with this structure",
-      "alpha": [
-        "John Doe",
-        "Jane Doe"
-      ],
-      "beta": [
-        "Max Muster",
-        "Susi Sorglos",
-      ]
-    }
-  } as any;
+const initConfig: Config = {
+  scopes: [],
+  groups: [],
+  '--entries-comment': 'Define custom entry points here',
+  '--entries': [],
+  '--teams': {
+    '--comment': 'Add a teams node with this structure',
+    alpha: ['John Doe', 'Jane Doe'],
+    beta: ['Max Muster', 'Susi Sorglos'],
+  },
+} as any;
 
 export function loadConfig(options: Options): Config {
   const configPath = path.join(cwd(), options.config);
-  const config = JSON.parse(fs.readFileSync(configPath, "utf-8")) as Config;
+  const config = JSON.parse(fs.readFileSync(configPath, 'utf-8')) as Config;
   config.scopes.sort();
   return config;
 }

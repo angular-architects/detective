@@ -1,11 +1,11 @@
-import { Deps } from "../model/deps";
-import { Options } from "../options/options";
-import { loadConfig } from "../infrastructure/config";
-import { loadDeps } from "../infrastructure/deps";
-import { calcModuleInfo, ModuleInfo } from "./module-info";
-import { toPercent } from "../utils/to-percent";
-import { getEmptyMatrix } from "../utils/matrix";
-import { normalizeFolder } from "../utils/normalize-folder";
+import { Deps } from '../model/deps';
+import { Options } from '../options/options';
+import { loadConfig } from '../infrastructure/config';
+import { loadDeps } from '../infrastructure/deps';
+import { calcModuleInfo, ModuleInfo } from './module-info';
+import { toPercent } from '../utils/to-percent';
+import { getEmptyMatrix } from '../utils/matrix';
+import { normalizeFolder } from '../utils/normalize-folder';
 
 // TODO: Restructure fileCount and cohesion into dimensions node?
 export type CouplingResult = {
@@ -21,7 +21,7 @@ export function calcCoupling(options: Options): CouplingResult {
   const deps = loadDeps(options);
 
   const files = Object.keys(deps);
-  const modules = config.scopes.map(m => normalizeFolder(m));
+  const modules = config.scopes.map((m) => normalizeFolder(m));
 
   const scopeMap = calcScopeMap(modules);
   const matrixSize = modules.length;
@@ -34,7 +34,7 @@ export function calcCoupling(options: Options): CouplingResult {
       const i = scopeMap.get(row);
       const j = scopeMap.get(col);
 
-      if (typeof i === "undefined" || typeof j === "undefined") {
+      if (typeof i === 'undefined' || typeof j === 'undefined') {
         throw new Error(`undefined matrix position ${i}, ${j}`);
       }
 

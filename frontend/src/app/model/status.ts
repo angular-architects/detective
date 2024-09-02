@@ -1,8 +1,7 @@
-
 export interface Status {
-    commits: number;
+  commits: number;
 }
 
 export const initStatus: Status = {
-    commits: 0
+  commits: 0,
 };

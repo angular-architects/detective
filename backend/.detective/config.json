@@ -1,13 +1,8 @@
 {
-  "scopes": [
-  ],
+  "scopes": [],
   "groups": [],
   "teams": {
-    "alpha": [
-      "Manfred Steyer"
-    ],
-    "beta": [
-      "Hugo"
-    ]
+    "alpha": ["Manfred Steyer"],
+    "beta": ["Hugo"]
   }
 }

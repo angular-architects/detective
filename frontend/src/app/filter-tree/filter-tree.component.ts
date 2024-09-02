@@ -1,9 +1,4 @@
-import {
-  Component,
-  inject,
-  OnInit,
-  viewChild,
-} from '@angular/core';
+import { Component, inject, OnInit, viewChild } from '@angular/core';
 import { Folder } from './folder';
 import { CdkTree, CdkTreeModule } from '@angular/cdk/tree';
 import { MatTreeNestedDataSource } from '@angular/material/tree';
@@ -41,7 +36,8 @@ export class FilterTreeComponent implements OnInit {
   folders: Folder[] = [];
 
   childrenAccessor = (folder: Folder) => of(folder.folders);
-  hasChild = (_: number, node: Folder) => !!node.folders && node.folders.length > 0;
+  hasChild = (_: number, node: Folder) =>
+    !!node.folders && node.folders.length > 0;
 
   ngOnInit(): void {
     const folders$ = this.folderService.load();
@@ -61,12 +57,12 @@ export class FilterTreeComponent implements OnInit {
   }
 
   expandChecked(folders: Folder[], depth = 0): boolean {
-    let open = (depth <= MIN_OPEN_LEVEL);
+    let open = depth <= MIN_OPEN_LEVEL;
     for (const folder of folders) {
       if (this.selected.has(folder.path)) {
         open = true;
       }
-      if (folder.folders && this.expandChecked(folder.folders, depth+1)) {
+      if (folder.folders && this.expandChecked(folder.folders, depth + 1)) {
         this.tree().expand(folder);
         open = true;
       }
@@ -105,7 +101,7 @@ export class FilterTreeComponent implements OnInit {
   }
 
   private deselectSubtree(folders: Folder[]) {
-    for(const folder of folders) {
+    for (const folder of folders) {
       this.selected.delete(folder.path);
       this.deselectSubtree(folder.folders || []);
     }
@@ -117,13 +113,12 @@ export class FilterTreeComponent implements OnInit {
     return parents;
   }
 
-  private _findParents(folders = this.folders, parents: string[] ): boolean {
+  private _findParents(folders = this.folders, parents: string[]): boolean {
     let selected = false;
     for (const folder of folders) {
       if (this.selected.has(folder.path)) {
         selected = true;
-      }
-      else {
+      } else {
         const selectedBelow = this._findParents(folder.folders || [], parents);
         if (selectedBelow) {
           parents.push(folder.path);
@@ -133,10 +128,8 @@ export class FilterTreeComponent implements OnInit {
     }
     return selected;
   }
-
 }
 
 function removeFocus() {
   (document.activeElement as HTMLElement).blur();
 }
-

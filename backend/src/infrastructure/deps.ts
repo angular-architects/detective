@@ -1,17 +1,12 @@
-import { Options } from "../options/options";
-import { Deps } from "../model/deps";
-import fs from "fs";
+import { Options } from '../options/options';
+import { Deps } from '../model/deps';
+import fs from 'fs';
 import { getProjectData } from '@softarc/sheriff-core';
 import { globSync } from 'fast-glob';
-import { loadConfig } from "./config";
-import { cwd } from "process";
+import { loadConfig } from './config';
+import { cwd } from 'process';
 
-const DEFAULT_ENTRIES = [
-  'src/main.ts',
-  'main.ts',
-  'src/index.ts',
-  'index.ts'
-];
+const DEFAULT_ENTRIES = ['src/main.ts', 'main.ts', 'src/index.ts', 'index.ts'];
 
 const DEFAULT_NX_ENTRIES = [
   'apps/**/src/main.ts',
@@ -39,8 +34,8 @@ export function inferDeps(options: Options): boolean {
   const dir = cwd();
 
   const sheriffDump = entries
-    .map(e => getProjectData(e, dir))
-    .reduce((acc, curr) => ({...acc, ...curr}));
+    .map((e) => getProjectData(e, dir))
+    .reduce((acc, curr) => ({ ...acc, ...curr }));
 
   deps = normalizeObject(sheriffDump);
 
@@ -53,8 +48,7 @@ export function getEntryGlobs(options: Options) {
   let entryGlobs = DEFAULT_ENTRIES;
   if (config.entries?.length > 0) {
     entryGlobs = config.entries;
-  }
-  else if (fs.existsSync('nx.json')) {
+  } else if (fs.existsSync('nx.json')) {
     entryGlobs = DEFAULT_NX_ENTRIES;
   }
   return entryGlobs;

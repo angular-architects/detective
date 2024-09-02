@@ -3,12 +3,11 @@ import { inject, Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { Folder } from './folder';
 
-@Injectable({providedIn: 'root'})
+@Injectable({ providedIn: 'root' })
 export class FolderService {
-    private http = inject(HttpClient);
+  private http = inject(HttpClient);
 
-    load(): Observable<Folder[]> {
-        return this.http.get<Folder[]>('/api/folders');
-    }
-    
+  load(): Observable<Folder[]> {
+    return this.http.get<Folder[]>('/api/folders');
+  }
 }

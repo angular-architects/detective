@@ -35,7 +35,7 @@ export interface Graph {
 
 interface Qtip {
   qtip(options: unknown): void;
-};
+}
 
 type NodeWithQtip = NodeSingular & Qtip;
 type EdgeWithQtip = EdgeSingular & Qtip;
@@ -117,7 +117,7 @@ export function drawGraph(graph: Graph, container: HTMLElement) {
   cy.ready(() => {
     cy.nodes().forEach((node) => {
       const label = node.data('label');
-      node.style('width', `${label.length * 10}px`); 
+      node.style('width', `${label.length * 10}px`);
     });
 
     const [min, max] = getMinMaxWeight(cy);

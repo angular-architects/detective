@@ -8,9 +8,8 @@ describe('LimitsComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [LimitsComponent]
-    })
-    .compileComponents();
+      imports: [LimitsComponent],
+    }).compileComponents();
 
     fixture = TestBed.createComponent(LimitsComponent);
     component = fixture.componentInstance;

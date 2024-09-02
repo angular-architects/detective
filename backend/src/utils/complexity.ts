@@ -1,14 +1,14 @@
-import * as ts from "typescript";
-import * as fs from "fs";
+import * as ts from 'typescript';
+import * as fs from 'fs';
 
 export function calcCyclomaticComplexity(fileName: string): number {
-  const code = fs.readFileSync(fileName, "utf-8");
+  const code = fs.readFileSync(fileName, 'utf-8');
   return calcComplexityForCode(code);
 }
 
 function calcComplexityForCode(sourceCode: string): number {
   const sourceFile = ts.createSourceFile(
-    "temp.ts",
+    'temp.ts',
     sourceCode,
     ts.ScriptTarget.Latest,
     true

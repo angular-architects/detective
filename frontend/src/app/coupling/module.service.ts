@@ -3,11 +3,11 @@ import { inject, Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { ModuleInfo } from './module-info';
 
-@Injectable({providedIn: 'root'})
+@Injectable({ providedIn: 'root' })
 export class ModuleService {
-    private http = inject(HttpClient);
+  private http = inject(HttpClient);
 
-    load(): Observable<ModuleInfo> {
-        return this.http.get<ModuleInfo>('/api/modules');
-    }
+  load(): Observable<ModuleInfo> {
+    return this.http.get<ModuleInfo>('/api/modules');
+  }
 }

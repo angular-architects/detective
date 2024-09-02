@@ -1,11 +1,15 @@
 <mat-sidenav-container class="sidenav-container">
-  <mat-sidenav #drawer class="sidenav" fixedInViewport
-      [attr.role]="(isHandset$ | async) ? 'dialog' : 'navigation'"
-      [mode]="(isHandset$ | async) ? 'over' : 'side'"
-      [opened]="(isHandset$ | async) === false">
+  <mat-sidenav
+    #drawer
+    class="sidenav"
+    fixedInViewport
+    [attr.role]="(isHandset$ | async) ? 'dialog' : 'navigation'"
+    [mode]="(isHandset$ | async) ? 'over' : 'side'"
+    [opened]="(isHandset$ | async) === false"
+  >
     <mat-toolbar color="secondary">Filter</mat-toolbar>
     <mat-nav-list>
-     <app-filter-tree></app-filter-tree>
+      <app-filter-tree></app-filter-tree>
     </mat-nav-list>
   </mat-sidenav>
   <mat-sidenav-content>
@@ -15,24 +19,34 @@
           type="button"
           aria-label="Toggle sidenav"
           mat-icon-button
-          (click)="drawer.toggle()">
+          (click)="drawer.toggle()"
+        >
           <mat-icon aria-label="Side nav toggle icon">menu</mat-icon>
         </button>
       }
 
       <span class="app-title">Detective</span>
 
-      <button mat-button routerLink="/graph" routerLinkActive="active">Graph</button>
-      <button mat-button routerLink="/team-alignment" routerLinkActive="active">Team Alignment</button>
-      <button mat-button routerLink="/hotspots" routerLinkActive="active">Hotspots</button>
-      <button mat-button routerLink="/change-coupling" routerLinkActive="active">Change Coupling</button>
-
+      <button mat-button routerLink="/graph" routerLinkActive="active">
+        Graph
+      </button>
+      <button mat-button routerLink="/team-alignment" routerLinkActive="active">
+        Team Alignment
+      </button>
+      <button mat-button routerLink="/hotspots" routerLinkActive="active">
+        Hotspots
+      </button>
+      <button
+        mat-button
+        routerLink="/change-coupling"
+        routerLinkActive="active"
+      >
+        Change Coupling
+      </button>
     </mat-toolbar>
     <!-- Add Content Here -->
     <div class="container">
-
-   <router-outlet></router-outlet>
-  </div>
-
+      <router-outlet></router-outlet>
+    </div>
   </mat-sidenav-content>
 </mat-sidenav-container>

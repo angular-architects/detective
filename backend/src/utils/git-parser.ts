@@ -1,8 +1,8 @@
-import * as path from "path";
-import { noLimits } from "../model/limits";
-import { loadCachedLog } from "../infrastructure/log";
+import * as path from 'path';
+import { noLimits } from '../model/limits';
+import { loadCachedLog } from '../infrastructure/log';
 
-type State = "header" | "body" | "skip";
+type State = 'header' | 'body' | 'skip';
 
 export type LogHeader = {
   userName: string;
@@ -24,8 +24,8 @@ export type LogEntry = {
 export type ParserCallback = (entry: LogEntry) => void;
 
 const initHeader: LogHeader = {
-  userName: "",
-  email: "",
+  userName: '',
+  email: '',
   date: new Date(0),
 };
 
@@ -43,7 +43,7 @@ export async function parseGitLog(callback: ParserCallback, limits = noLimits) {
 
   const renameMap = new Map<string, string>();
 
-  let state: State = "header";
+  let state: State = 'header';
 
   let count = 0;
 
@@ -51,7 +51,7 @@ export async function parseGitLog(callback: ParserCallback, limits = noLimits) {
     const [line, next] = getNextLine(log, pos);
     pos = next;
 
-    if (state === "header") {
+    if (state === 'header') {
       count++;
 
       if (limits.limitCommits && count > limits.limitCommits) {
@@ -61,25 +61,25 @@ export async function parseGitLog(callback: ParserCallback, limits = noLimits) {
       header = parseHeader(line);
 
       if (header.date.getTime() < dateLimit.getTime()) {
-        state = "skip";
+        state = 'skip';
       } else {
-        state = "body";
+        state = 'body';
       }
-    } else if (state === "body") {
+    } else if (state === 'body') {
       if (!line.trim()) {
         callback({ header, body });
         body = [];
-        state = "header";
-      } else if (!line.includes("\t")) {
+        state = 'header';
+      } else if (!line.includes('\t')) {
         header = parseHeader(line);
       } else {
         const bodyEntry = parseBodyEntry(line, renameMap);
         body.push(bodyEntry);
       }
-    } else if (state === "skip") {
+    } else if (state === 'skip') {
       if (!line.trim()) {
         body = [];
-        state = "header";
+        state = 'header';
       }
     }
   }
@@ -89,7 +89,7 @@ function parseBodyEntry(
   line: string,
   renameMap: Map<string, string>
 ): LogBodyEntry {
-  const parts = line.split("\t");
+  const parts = line.split('\t');
   const linesAdded = parseInt(parts[0]);
   const linesRemoved = parseInt(parts[1]);
   let filePath = parts[2];
@@ -99,7 +99,7 @@ function parseBodyEntry(
   const bodyEntry: LogBodyEntry = {
     linesAdded: linesAdded || 0,
     linesRemoved: linesRemoved || 0,
-    path: filePath || "",
+    path: filePath || '',
   };
   return bodyEntry;
 }
@@ -125,10 +125,10 @@ function handleRenames(filePath: string, renameMap: Map<string, string>) {
 }
 
 function parseHeader(line: string): LogHeader {
-  const parts = line.split(",");
+  const parts = line.split(',');
   const date = new Date(parts.pop() as string);
-  const fullUserName = parts.join(",");
-  const userParts = fullUserName.split("<");
+  const fullUserName = parts.join(',');
+  const userParts = fullUserName.split('<');
   const userName = cleanUserName(userParts[0]);
   const email = cleanEmail(userParts);
   return { userName, email, date };
@@ -138,8 +138,8 @@ function cleanEmail(userParts: string[]) {
   try {
     return userParts[1].substring(0, userParts[1].length - 1);
   } catch (e) {
-    console.log("ERROR", e);
-    console.log("userParts", userParts);
+    console.log('ERROR', e);
+    console.log('userParts', userParts);
     throw e;
   }
 }
@@ -153,13 +153,13 @@ function cleanUserName(userName: string) {
 }
 
 function getNextLine(text: string, start: number): [line: string, end: number] {
-  let line = "";
-  let current = "";
+  let line = '';
+  let current = '';
   let pos = start;
 
-  while (pos < text.length && current !== "\n") {
+  while (pos < text.length && current !== '\n') {
     current = text[pos];
-    if (current !== "\n" && current !== "\r") {
+    if (current !== '\n' && current !== '\r') {
       line += current;
     }
     pos++;

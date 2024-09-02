@@ -3,16 +3,15 @@ import { inject, Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { Config } from './config';
 
-@Injectable({providedIn: 'root'})
+@Injectable({ providedIn: 'root' })
 export class ConfigService {
-    private http = inject(HttpClient);
+  private http = inject(HttpClient);
 
-    load(): Observable<Config> {
-        return this.http.get<Config>('/api/config');
-    }
+  load(): Observable<Config> {
+    return this.http.get<Config>('/api/config');
+  }
 
-    save(config: Config): Observable<void> {
-        return this.http.post<void>('/api/config', config);
-    }
-
+  save(config: Config): Observable<void> {
+    return this.http.post<void>('/api/config', config);
+  }
 }

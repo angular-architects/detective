@@ -1,19 +1,19 @@
 .form-container {
-    display: flex;
+  display: flex;
 }
-  
+
 .form-field {
-    margin-right: 16px; /* Add some space between the fields */
+  margin-right: 16px; /* Add some space between the fields */
 }
 
 .type {
-    width: 180px;
+  width: 180px;
 }
 
 .commits {
-    width: 150px;
+  width: 150px;
 }
 
 .months {
-    width: 150px;
+  width: 150px;
 }

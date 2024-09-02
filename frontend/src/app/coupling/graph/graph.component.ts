@@ -1,11 +1,17 @@
-import { Component, effect, ElementRef, inject, input, signal, viewChild } from '@angular/core';
+import {
+  Component,
+  effect,
+  ElementRef,
+  inject,
+  input,
+  signal,
+  viewChild,
+} from '@angular/core';
 import { CouplingService } from '../coupling.service';
 import { EventService } from '../../event.service';
 import { toObservable, toSignal } from '@angular/core/rxjs-interop';
 
-import {
-  MatCheckboxModule,
-} from '@angular/material/checkbox';
+import { MatCheckboxModule } from '@angular/material/checkbox';
 import { FormsModule } from '@angular/forms';
 import { GraphType } from './graph-type';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -37,7 +43,7 @@ export class GraphComponent {
   private eventService = inject(EventService);
   private statusStore = inject(StatusStore);
 
-  private containerRef = viewChild.required('graph', { read: ElementRef })
+  private containerRef = viewChild.required('graph', { read: ElementRef });
 
   type = input<GraphType>('structure');
 
@@ -52,11 +58,11 @@ export class GraphComponent {
       filterChanged: this.eventService.filterChanged.pipe(startWith(null)),
       type: toObservable(this.type),
     }).pipe(
-      switchMap((combi) => this.couplingService.load(combi.type, combi.limits))
+      switchMap((combi) => this.couplingService.load(combi.type, combi.limits)),
     );
 
     const couplingResult = toSignal(couplingResult$);
-   
+
     effect(() => {
       const result = couplingResult();
       if (result) {

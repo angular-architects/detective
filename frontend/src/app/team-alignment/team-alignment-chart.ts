@@ -1,4 +1,11 @@
-import { Chart, ArcElement, Tooltip, Legend, Title, DoughnutController } from 'chart.js';
+import {
+  Chart,
+  ArcElement,
+  Tooltip,
+  Legend,
+  Title,
+  DoughnutController,
+} from 'chart.js';
 
 import { TeamAlignmentResult } from './team-alignment-result';
 import { lastSegments } from '../utils/segments';
@@ -10,7 +17,7 @@ export type TeamAlignmentChart = Chart<'doughnut', number[], string>;
 export function drawAlignmentCharts(
   result: TeamAlignmentResult,
   placeholder: HTMLElement,
-  colors: string[]
+  colors: string[],
 ): TeamAlignmentChart[] {
   const charts: TeamAlignmentChart[] = [];
 

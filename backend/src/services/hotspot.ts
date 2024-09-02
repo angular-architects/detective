@@ -1,29 +1,29 @@
-import path from "path";
+import path from 'path';
 import * as fs from 'fs';
 
-import { Options } from "../options/options";
-import { LogBodyEntry, parseGitLog } from "../utils/git-parser";
-import { calcCyclomaticComplexity } from "../utils/complexity";
-import { loadConfig } from "../infrastructure/config";
-import { normalizeFolder, toDisplayFolder } from "../utils/normalize-folder";
-import { Limits } from "../model/limits";
-import { countLinesInFile } from "../utils/count-lines";
+import { Options } from '../options/options';
+import { LogBodyEntry, parseGitLog } from '../utils/git-parser';
+import { calcCyclomaticComplexity } from '../utils/complexity';
+import { loadConfig } from '../infrastructure/config';
+import { normalizeFolder, toDisplayFolder } from '../utils/normalize-folder';
+import { Limits } from '../model/limits';
+import { countLinesInFile } from '../utils/count-lines';
 
 export type ComplexityMetric = 'McCabe' | 'Length';
 
 export type Hotspot = {
-  commits: number,
-  changedLines: number,
-  complexity: number,
-  score: number,
+  commits: number;
+  changedLines: number;
+  complexity: number;
+  score: number;
 };
 
 export type FlatHotspot = {
-  fileName: string,
-  commits: number,
-  changedLines: number,
-  complexity: number,
-  score: number,
+  fileName: string;
+  commits: number;
+  changedLines: number;
+  complexity: number;
+  score: number;
 };
 
 export type HotspotResult = {
@@ -31,27 +31,36 @@ export type HotspotResult = {
 };
 
 export type HotspotCriteria = {
-  module: string,
-  minScore: number,
-  metric: ComplexityMetric,
+  module: string;
+  minScore: number;
+  metric: ComplexityMetric;
 };
 
 export type AggregatedHotspot = {
   module: string;
   count: number;
-}
+};
 
 export type AggregatedHotspotsResult = {
   aggregated: AggregatedHotspot[];
-}
+};
 
-export async function findHotspotFiles(criteria: HotspotCriteria, limits: Limits, options: Options): Promise<HotspotResult> {
-  const hotspots: Record<string, Hotspot> = await analyzeLogs(criteria, limits, options);
+export async function findHotspotFiles(
+  criteria: HotspotCriteria,
+  limits: Limits,
+  options: Options
+): Promise<HotspotResult> {
+  const hotspots: Record<string, Hotspot> = await analyzeLogs(
+    criteria,
+    limits,
+    options
+  );
 
-  const filtered: FlatHotspot[] = []; 
+  const filtered: FlatHotspot[] = [];
   for (const fileName of Object.keys(hotspots)) {
     const hotspot = hotspots[fileName];
-    hotspot.score = hotspot.complexity === -1 ? -1 : hotspot.complexity * hotspot.commits;
+    hotspot.score =
+      hotspot.complexity === -1 ? -1 : hotspot.complexity * hotspot.commits;
     if (hotspot.score >= criteria.minScore) {
       filtered.push({ fileName, ...hotspot });
     }
@@ -62,17 +71,24 @@ export async function findHotspotFiles(criteria: HotspotCriteria, limits: Limits
   return { hotspots: filtered };
 }
 
-export async function aggregateHotspots(criteria: HotspotCriteria, limits: Limits, options: Options): Promise<AggregatedHotspotsResult> {
+export async function aggregateHotspots(
+  criteria: HotspotCriteria,
+  limits: Limits,
+  options: Options
+): Promise<AggregatedHotspotsResult> {
   const hotspots = (await findHotspotFiles(criteria, limits, options)).hotspots;
   const config = loadConfig(options);
 
-  const modules = config.scopes.map(m => normalizeFolder(m));
+  const modules = config.scopes.map((m) => normalizeFolder(m));
 
-  const result: AggregatedHotspot[] = []; 
+  const result: AggregatedHotspot[] = [];
   for (const module of modules) {
     let count = 0;
     for (const hotspot of hotspots) {
-      if (hotspot.fileName.startsWith(module) && hotspot.score >= criteria.minScore) {
+      if (
+        hotspot.fileName.startsWith(module) &&
+        hotspot.score >= criteria.minScore
+      ) {
         count++;
       }
     }
@@ -83,7 +99,11 @@ export async function aggregateHotspots(criteria: HotspotCriteria, limits: Limit
   return { aggregated: result };
 }
 
-async function analyzeLogs(criteria: HotspotCriteria, limits: Limits, options: Options) {
+async function analyzeLogs(
+  criteria: HotspotCriteria,
+  limits: Limits,
+  options: Options
+) {
   const hotspots: Record<string, Hotspot> = {};
 
   await parseGitLog((entry) => {
@@ -95,7 +115,6 @@ async function analyzeLogs(criteria: HotspotCriteria, limits: Limits, options: O
       }
 
       if (!hotspots[change.path]) {
-
         const complexity = calcComplexity(options, change, criteria);
 
         hotspot = {
@@ -117,13 +136,20 @@ async function analyzeLogs(criteria: HotspotCriteria, limits: Limits, options: O
   return hotspots;
 }
 
-function calcComplexity(options: Options, change: LogBodyEntry, criteria: HotspotCriteria) {
+function calcComplexity(
+  options: Options,
+  change: LogBodyEntry,
+  criteria: HotspotCriteria
+) {
   let complexity = 1;
   const filePath = path.join(options.path, change.path);
-  if (criteria.metric === 'McCabe' && filePath.endsWith('.ts') && fs.existsSync(filePath)) {
+  if (
+    criteria.metric === 'McCabe' &&
+    filePath.endsWith('.ts') &&
+    fs.existsSync(filePath)
+  ) {
     complexity = calcCyclomaticComplexity(filePath);
-  }
-  else if (criteria.metric === 'Length' && fs.existsSync(filePath)) {
+  } else if (criteria.metric === 'Length' && fs.existsSync(filePath)) {
     complexity = countLinesInFile(filePath);
   }
   return complexity;

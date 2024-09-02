@@ -8,9 +8,8 @@ describe('HotspotComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [HotspotComponent]
-    })
-    .compileComponents();
+      imports: [HotspotComponent],
+    }).compileComponents();
 
     fixture = TestBed.createComponent(HotspotComponent);
     component = fixture.componentInstance;

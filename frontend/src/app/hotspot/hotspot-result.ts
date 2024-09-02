@@ -22,7 +22,7 @@ export type ComplexityMetric = 'McCabe' | 'Length';
 export interface HotspotCriteria {
   module: string;
   minScore: number;
-  metric: ComplexityMetric,
+  metric: ComplexityMetric;
 }
 
 export interface AggregatedHotspot {

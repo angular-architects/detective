@@ -1,9 +1,9 @@
 export interface Limits {
-    limitCommits: number;
-    limitMonths: number;
+  limitCommits: number;
+  limitMonths: number;
 }
 
 export const initLimits: Limits = {
-    limitCommits: 1000,
-    limitMonths: 0,
+  limitCommits: 1000,
+  limitMonths: 0,
 };

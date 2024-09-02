@@ -103,7 +103,7 @@ export class HotspotComponent {
     combineLatest(loadAggregatedEvents)
       .pipe(
         switchMap(() => this.loadAggregated()),
-        takeUntilDestroyed()
+        takeUntilDestroyed(),
       )
       .subscribe((result) => {
         this.aggregatedResult = result;
@@ -114,7 +114,7 @@ export class HotspotComponent {
       .pipe(
         filter(() => !!this.selectedModule()),
         switchMap(() => this.loadHotspots()),
-        takeUntilDestroyed()
+        takeUntilDestroyed(),
       )
       .subscribe((result) => {
         this.hotspotResult = result;
@@ -159,7 +159,7 @@ export class HotspotComponent {
         complete: () => {
           this.loadingAggregated.set(false);
         },
-      })
+      }),
     );
   }
 
@@ -177,7 +177,7 @@ export class HotspotComponent {
         complete: () => {
           this.loadingHotspots.set(false);
         },
-      })
+      }),
     );
   }
 }
