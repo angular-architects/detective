@@ -12,7 +12,12 @@
       "options": {
         "buildTarget": "backend:build",
         "runBuildTargetDependencies": false,
-        "args": ["--path", "/Users/manfredsteyer/tmp/angular", "--open", "false"]
+        "args": [
+          "--path",
+          "/Users/manfredsteyer/tmp/angular",
+          "--open",
+          "false"
+        ]
       },
       "configurations": {
         "development": {
@@ -26,9 +31,7 @@
     "lint": {
       "executor": "@nx/linter:eslint",
       "options": {
-        "lintFilePatterns": [
-          "apps/backend/**/*.ts"
-        ]
+        "lintFilePatterns": ["apps/backend/**/*.ts"]
       }
     },
     "test": {

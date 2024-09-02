@@ -35,7 +35,7 @@ export class AppErrorHandler implements ErrorHandler {
 }
 
 export function provideErrorHandler(
-  errorHandler: Type<ErrorHandler>,
+  errorHandler: Type<ErrorHandler>
 ): EnvironmentProviders {
   return makeEnvironmentProviders([
     { provide: ErrorHandler, useClass: errorHandler },

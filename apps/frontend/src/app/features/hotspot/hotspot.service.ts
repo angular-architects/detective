@@ -14,7 +14,7 @@ export class HotspotService {
 
   load(
     criteria: HotspotCriteria,
-    limits = initLimits,
+    limits = initLimits
   ): Observable<HotspotResult> {
     const url = `/api/hotspots`;
     const params = { ...criteria, ...limits };
@@ -23,7 +23,7 @@ export class HotspotService {
 
   loadAggregated(
     criteria: HotspotCriteria,
-    limits = initLimits,
+    limits = initLimits
   ): Observable<AggregatedHotspotsResult> {
     const url = `/api/hotspots/aggregated`;
     const params = { ...criteria, ...limits };

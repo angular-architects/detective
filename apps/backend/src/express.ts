@@ -165,7 +165,7 @@ export function setupExpress(options: Options) {
 
 function handleError(e: unknown, res) {
   console.log('error', e);
-  const message = (typeof e === 'object' && 'message' in e) ? e.message : '' + e;
+  const message = typeof e === 'object' && 'message' in e ? e.message : '' + e;
   res.status(500).json({ message });
 }
 

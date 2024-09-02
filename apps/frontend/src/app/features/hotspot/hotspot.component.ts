@@ -107,16 +107,14 @@ export class HotspotComponent {
       toObservable(this.selectedModule),
     ];
 
-    const aggregated$ = combineLatest(loadAggregatedEvents)
-      .pipe(
-        switchMap(() => this.loadAggregated()),
-      );
-     
-    const hotspots$ = combineLatest(loadHotspotEvent)
-      .pipe(
-        filter(() => !!this.selectedModule()),
-        switchMap(() => this.loadHotspots()),
-      );
+    const aggregated$ = combineLatest(loadAggregatedEvents).pipe(
+      switchMap(() => this.loadAggregated())
+    );
+
+    const hotspots$ = combineLatest(loadHotspotEvent).pipe(
+      filter(() => !!this.selectedModule()),
+      switchMap(() => this.loadHotspots())
+    );
 
     const aggregated = toSignal(aggregated$);
     const hotspots = toSignal(hotspots$);

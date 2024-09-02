@@ -2,7 +2,7 @@ import { Signal, effect, untracked } from '@angular/core';
 
 export function explicitEffect<T>(
   source: Signal<T>,
-  action: (value: T) => void,
+  action: (value: T) => void
 ) {
   effect(() => {
     const s = source();
@@ -12,9 +12,7 @@ export function explicitEffect<T>(
   });
 }
 
-export function onceEffect(
-  action: () => void,
-) {
+export function onceEffect(action: () => void) {
   const ref = effect(() => {
     untracked(() => {
       action();

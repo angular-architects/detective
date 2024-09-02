@@ -6,7 +6,14 @@ import { globSync } from 'fast-glob';
 import { loadConfig } from './config';
 import { cwd } from 'process';
 
-const DEFAULT_ENTRIES = ['src/main.ts', 'main.ts', 'src/index.ts', 'index.ts', 'projects/*/src/main.ts', 'packages/*/src/main.ts'];
+const DEFAULT_ENTRIES = [
+  'src/main.ts',
+  'main.ts',
+  'src/index.ts',
+  'index.ts',
+  'projects/*/src/main.ts',
+  'packages/*/src/main.ts',
+];
 
 const DEFAULT_NX_ENTRIES = [
   'apps/**/src/main.ts',

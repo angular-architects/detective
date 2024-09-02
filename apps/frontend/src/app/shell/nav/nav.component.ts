@@ -36,6 +36,6 @@ export class NavComponent {
     .observe(['(max-width: 1200px)'])
     .pipe(
       map((result) => result.matches),
-      shareReplay(),
+      shareReplay()
     );
 }

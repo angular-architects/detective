@@ -11,5 +11,5 @@ export const initCouplingResult: CouplingResult = {
   fileCount: [],
   cohesion: [],
   matrix: [[]],
-  groups: []
+  groups: [],
 };

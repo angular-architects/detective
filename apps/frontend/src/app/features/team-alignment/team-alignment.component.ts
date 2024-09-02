@@ -1,19 +1,39 @@
-import { Component, inject, viewChild, ElementRef, signal, computed } from "@angular/core";
-import { toObservable, toSignal } from "@angular/core/rxjs-interop";
-import { FormsModule } from "@angular/forms";
-import { MatCheckboxModule } from "@angular/material/checkbox";
-import { quantize, interpolateRainbow } from "d3";
-import { combineLatest, startWith, switchMap, Observable, catchError, of } from "rxjs";
-import { StatusStore } from "../../data/status.store";
-import { TeamAlignmentService } from "../../data/team-alignment.service";
-import { initLimits } from "../../model/limits";
-import { initTeamAlignmentResult, TeamAlignmentResult } from "../../model/team-alignment-result";
-import { LimitsComponent } from "../../ui/limits/limits.component";
-import { debounceTimeSkipFirst } from "../../utils/debounce";
-import { EventService } from "../../utils/event.service";
-import { explicitEffect } from "../../utils/effects";
-import { TeamAlignmentChart, drawAlignmentCharts } from "./team-alignment-chart";
-import { injectShowError } from "../../utils/error-handler";
+import {
+  Component,
+  inject,
+  viewChild,
+  ElementRef,
+  signal,
+  computed,
+} from '@angular/core';
+import { toObservable, toSignal } from '@angular/core/rxjs-interop';
+import { FormsModule } from '@angular/forms';
+import { MatCheckboxModule } from '@angular/material/checkbox';
+import { quantize, interpolateRainbow } from 'd3';
+import {
+  combineLatest,
+  startWith,
+  switchMap,
+  Observable,
+  catchError,
+  of,
+} from 'rxjs';
+import { StatusStore } from '../../data/status.store';
+import { TeamAlignmentService } from '../../data/team-alignment.service';
+import { initLimits } from '../../model/limits';
+import {
+  initTeamAlignmentResult,
+  TeamAlignmentResult,
+} from '../../model/team-alignment-result';
+import { LimitsComponent } from '../../ui/limits/limits.component';
+import { debounceTimeSkipFirst } from '../../utils/debounce';
+import { EventService } from '../../utils/event.service';
+import { explicitEffect } from '../../utils/effects';
+import {
+  TeamAlignmentChart,
+  drawAlignmentCharts,
+} from './team-alignment-chart';
+import { injectShowError } from '../../utils/error-handler';
 
 @Component({
   selector: 'app-team-alignment',

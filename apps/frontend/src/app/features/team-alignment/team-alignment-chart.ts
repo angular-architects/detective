@@ -9,7 +9,6 @@ import {
 import { TeamAlignmentResult } from '../../model/team-alignment-result';
 import { lastSegments } from '../../utils/segments';
 
-
 Chart.register(ArcElement, Tooltip, Legend, Title, DoughnutController);
 
 export type TeamAlignmentChart = Chart<'doughnut', number[], string>;
@@ -17,7 +16,7 @@ export type TeamAlignmentChart = Chart<'doughnut', number[], string>;
 export function drawAlignmentCharts(
   result: TeamAlignmentResult,
   placeholder: HTMLElement,
-  colors: string[],
+  colors: string[]
 ): TeamAlignmentChart[] {
   const charts: TeamAlignmentChart[] = [];
 
@@ -45,7 +44,7 @@ export function drawAlignmentCharts(
     if (!ctx) {
       throw new Error('2d context not found');
     }
-    
+
     const chart = new Chart(ctx, {
       type: 'doughnut',
       data: {

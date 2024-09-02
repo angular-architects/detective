@@ -11,7 +11,7 @@ export class CouplingService {
 
   load(
     type: GraphType = 'structure',
-    limits = initLimits,
+    limits = initLimits
   ): Observable<CouplingResult> {
     if (type === 'changes') {
       const params = { ...limits };

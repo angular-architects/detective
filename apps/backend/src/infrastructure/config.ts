@@ -8,8 +8,8 @@ import { DETECTIVE_DIR } from './paths';
 const initConfig: Config = {
   scopes: [],
   groups: [],
-  'entries': [],
-  'teams': {
+  entries: [],
+  teams: {
     'example-team-a': ['John Doe', 'Jane Doe'],
     'example-team-b': ['Max Muster', 'Susi Sorglos'],
   },

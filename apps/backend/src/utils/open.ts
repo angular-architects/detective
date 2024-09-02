@@ -24,7 +24,9 @@ export function openSync(url: string): void {
     execSync(command);
   } catch (err) {
     console.error(
-      `Failed to automatically open this URL in your browser: ${(err as Error).message}`
+      `Failed to automatically open this URL in your browser: ${
+        (err as Error).message
+      }`
     );
   }
 }

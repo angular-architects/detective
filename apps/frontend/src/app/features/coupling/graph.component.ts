@@ -16,11 +16,21 @@ import { FormsModule } from '@angular/forms';
 import { GraphType } from '../../model/graph-type';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
-import { catchError, combineLatest, Observable, of, startWith, switchMap } from 'rxjs';
+import {
+  catchError,
+  combineLatest,
+  Observable,
+  of,
+  startWith,
+  switchMap,
+} from 'rxjs';
 import { initLimits, Limits } from '../../model/limits';
 import { LimitsComponent } from '../../ui/limits/limits.component';
 import { StatusStore } from '../../data/status.store';
-import { CouplingResult, initCouplingResult } from '../../model/coupling-result';
+import {
+  CouplingResult,
+  initCouplingResult,
+} from '../../model/coupling-result';
 import { drawGraph, Graph, CouplingNodeDefinition } from './graph';
 import { createGroups, createNodes, createEdges } from './graph.adapter';
 import { debounceTimeSkipFirst } from '../../utils/debounce';
@@ -59,9 +69,7 @@ export class GraphComponent {
       limits: toObservable(this.limits).pipe(debounceTimeSkipFirst(300)),
       filterChanged: this.eventService.filterChanged.pipe(startWith(null)),
       type: toObservable(this.type),
-    }).pipe(
-      switchMap((combi) => this.loadCoupling(combi)),
-    );
+    }).pipe(switchMap((combi) => this.loadCoupling(combi)));
 
     const couplingResult = toSignal(couplingResult$);
 
@@ -76,9 +84,13 @@ export class GraphComponent {
     });
   }
 
-  private loadCoupling(combi: { limits: Limits; filterChanged: void | null; type: GraphType; }): Observable<CouplingResult> {
+  private loadCoupling(combi: {
+    limits: Limits;
+    filterChanged: void | null;
+    type: GraphType;
+  }): Observable<CouplingResult> {
     return this.couplingService.load(combi.type, combi.limits).pipe(
-      catchError(err => {
+      catchError((err) => {
         this.showError(err);
         return of(initCouplingResult);
       })

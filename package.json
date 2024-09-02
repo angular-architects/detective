@@ -77,7 +77,6 @@
     "ts-node": "10.9.1",
     "typescript": "~5.5.2",
     "webpack-cli": "^5.1.4",
-
     "@types/cytoscape": "^3.21.6",
     "@types/d3": "^7.4.3"
   }

@@ -6,7 +6,7 @@ import { GraphType } from '../../model/graph-type';
 export function createEdges(
   result: CouplingResult,
   type: GraphType,
-  minConnections: number,
+  minConnections: number
 ): EdgeDefinition[] {
   const edges: EdgeDefinition[] = [];
   const delimiter = type === 'structure' ? '→' : '↔';
@@ -64,7 +64,7 @@ export function createGroups(dimensions: string[]): CouplingNodeDefinition[] {
 export function createNodes(
   result: CouplingResult,
   groups: CouplingNodeDefinition[],
-  type: GraphType,
+  type: GraphType
 ): CouplingNodeDefinition[] {
   const nodes: CouplingNodeDefinition[] = [];
 
@@ -127,13 +127,13 @@ export function findParent(groups: CouplingNodeDefinition[], label: string) {
   let parent = null;
 
   const candParents = groups.filter((cp) =>
-    label.startsWith(cp.data.dimension + '/'),
+    label.startsWith(cp.data.dimension + '/')
   );
   if (candParents.length > 0) {
     parent = candParents.reduce(
       (prev, curr) =>
         curr.data.dimension.length > prev.data.dimension.length ? curr : prev,
-      candParents[0],
+      candParents[0]
     );
   }
   return parent;

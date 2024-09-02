@@ -9,5 +9,5 @@ export interface TeamAlignmentResult {
 
 export const initTeamAlignmentResult: TeamAlignmentResult = {
   modules: {},
-  teams: []
+  teams: [],
 };

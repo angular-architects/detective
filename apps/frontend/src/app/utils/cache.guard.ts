@@ -25,6 +25,6 @@ export function ensureCache(): Observable<void> {
       if (dialogRef) {
         dialogRef.close();
       }
-    }),
+    })
   );
 }
