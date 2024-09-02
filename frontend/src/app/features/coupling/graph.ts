@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import cytoscape, {
   Core,
   EdgeDefinition,
@@ -74,7 +75,7 @@ export function drawGraph(graph: Graph, container: HTMLElement) {
           'min-zoomed-font-size': 8,
           'text-wrap': 'wrap',
           'text-max-width': '100px',
-        },
+        } as any,
       },
       {
         selector: 'edge',
@@ -112,7 +113,7 @@ export function drawGraph(graph: Graph, container: HTMLElement) {
     userZoomingEnabled: true,
     panningEnabled: true,
     userPanningEnabled: true,
-  } as unknown);
+  });
 
   cy.ready(() => {
     cy.nodes().forEach((node) => {
@@ -128,7 +129,7 @@ export function drawGraph(graph: Graph, container: HTMLElement) {
     cy.style()
       .selector('edge')
       .style({
-        width: function (edge) {
+        width: function (edge: EdgeSingular) {
           if (edge.data('weight') <= border1) return '1px';
           if (edge.data('weight') >= border2) return '3px';
           return '2px';
@@ -137,12 +138,15 @@ export function drawGraph(graph: Graph, container: HTMLElement) {
       .update();
   });
 
-  cy.nodes().forEach((node: NodeWithQtip) => {
+  cy.nodes().forEach((node) => {
     const tooltip = node.data('tooltip');
 
-    if (!tooltip) return;
+    if (!tooltip) {
+      return;
+    }
 
-    node.qtip({
+    const nodeWithQtip = node as NodeWithQtip;
+    nodeWithQtip.qtip({
       content: tooltip,
       position: {
         my: 'top center',
@@ -164,12 +168,16 @@ export function drawGraph(graph: Graph, container: HTMLElement) {
     });
   });
 
-  cy.edges().forEach((edge: EdgeWithQtip) => {
+  cy.edges().forEach((edge: EdgeSingular) => {
     const tooltip = edge.data('tooltip');
 
-    if (!tooltip) return;
+    if (!tooltip) {
+      return;
+    }
 
-    edge.qtip({
+    const edgeWithQtip = edge as EdgeWithQtip;
+
+    edgeWithQtip.qtip({
       content: tooltip,
       position: {
         my: 'top center',
@@ -201,9 +209,13 @@ function getMinMaxWeight(cy: cytoscape.Core): [number, number] {
   return [min.value, max.value];
 }
 
-function centerAllNodes(cy) {
+function centerAllNodes(cy: cytoscape.Core): void {
   const boundingBox = cy.elements().boundingBox();
   const container = cy.container();
+
+  if (!container) {
+    return;
+  }
 
   const containerCenterX = container.clientWidth / 2;
   const containerCenterY = container.clientHeight / 2;

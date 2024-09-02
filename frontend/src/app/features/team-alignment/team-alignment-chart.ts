@@ -41,6 +41,11 @@ export function drawAlignmentCharts(
     const sum = data.reduce((acc, curr) => acc + (curr || 0), 0);
 
     const ctx = canvas.getContext('2d');
+
+    if (!ctx) {
+      throw new Error('2d context not found');
+    }
+    
     const chart = new Chart(ctx, {
       type: 'doughnut',
       data: {

@@ -8,7 +8,7 @@ export function ensureCache(): Observable<void> {
   const cacheService = inject(CacheService);
   const dialog = inject(MatDialog);
 
-  let dialogRef: MatDialogRef<LoadingComponent, unknown> = null;
+  let dialogRef: MatDialogRef<LoadingComponent, unknown> | null = null;
 
   return cacheService.loadLogCacheStatus().pipe(
     switchMap((status) => {
@@ -18,7 +18,7 @@ export function ensureCache(): Observable<void> {
         });
         return cacheService.updateLogCache();
       } else {
-        return of(null);
+        return of(undefined);
       }
     }),
     tap(() => {

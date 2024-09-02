@@ -26,7 +26,7 @@ export class TeamAlignmentComponent {
   private eventService = inject(EventService);
 
   private statusStore = inject(StatusStore);
-  private containerRef = viewChild('container', { read: ElementRef });
+  private containerRef = viewChild.required('container', { read: ElementRef });
 
   charts: TeamAlignmentChart[] = [];
 

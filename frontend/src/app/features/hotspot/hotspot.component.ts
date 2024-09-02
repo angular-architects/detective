@@ -1,4 +1,4 @@
-import { Component, effect, inject, signal, viewChild } from '@angular/core';
+import { Component, inject, signal, viewChild } from '@angular/core';
 import { HotspotService } from './hotspot.service';
 import {
   AggregatedHotspot,
@@ -7,13 +7,14 @@ import {
   FlatHotspot,
   HotspotCriteria,
   HotspotResult,
+  initAggregatedHotspotsResult,
+  initHotspotResult,
 } from './hotspot-result';
 import { MatSortModule } from '@angular/material/sort';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 import { lastSegments } from '../../utils/segments';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
-
 import { FormsModule } from '@angular/forms';
 import {
   combineLatest,
@@ -32,6 +33,7 @@ import { StatusStore } from '../../data/status.store';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
 import { debounceTimeSkipFirst } from '../../utils/debounce';
+import { onceEffect } from '../../utils/effects';
 
 interface Option {
   id: ComplexityMetric;
@@ -61,12 +63,12 @@ export class HotspotComponent {
 
   private statusStore = inject(StatusStore);
 
-  aggregatedResult: AggregatedHotspotsResult;
+  aggregatedResult = initAggregatedHotspotsResult;
   dataSource = new MatTableDataSource<AggregatedHotspot>();
   detailDataSource = new MatTableDataSource<FlatHotspot>();
 
-  hotspotResult: HotspotResult;
-  selectedRow: AggregatedHotspot;
+  hotspotResult = initHotspotResult;
+  selectedRow: AggregatedHotspot | null = null;
 
   columnsToDisplay = ['module', 'count'];
   detailColumns = ['fileName', 'commits', 'complexity', 'score'];
@@ -121,8 +123,11 @@ export class HotspotComponent {
         this.detailDataSource.data = this.formatHotspots(result.hotspots);
       });
 
-    effect(() => {
-      this.detailDataSource.paginator = this.paginator();
+    onceEffect(() => {
+      const paginator = this.paginator();
+      if (paginator) {
+        this.detailDataSource.paginator = paginator;
+      }
     });
   }
 
@@ -142,7 +147,7 @@ export class HotspotComponent {
   formatHotspots(hotspot: FlatHotspot[]): FlatHotspot[] {
     return hotspot.map((hs) => ({
       ...hs,
-      fileName: trimSegments(hs.fileName, this.selectedRow.module),
+      fileName: trimSegments(hs.fileName, this.selectedRow?.module || ''),
     }));
   }
 

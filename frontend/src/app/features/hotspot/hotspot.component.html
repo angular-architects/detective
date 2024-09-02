@@ -58,7 +58,7 @@
     @if (loadingHotspots()) {
       Determining Hotspots ...
       <mat-progress-bar mode="indeterminate"></mat-progress-bar>
-    } @else if (hotspotResult?.hotspots.length > 0) {
+    } @else if (hotspotResult.hotspots.length > 0) {
       <div class="mat-elevation-z8">
         <table mat-table [dataSource]="detailDataSource">
           <ng-container matColumnDef="fileName">

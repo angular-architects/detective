@@ -11,3 +11,14 @@ export function explicitEffect<T>(
     });
   });
 }
+
+export function onceEffect(
+  action: () => void,
+) {
+  const ref = effect(() => {
+    untracked(() => {
+      action();
+      ref.destroy();
+    });
+  });
+}

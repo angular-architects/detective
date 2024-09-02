@@ -28,7 +28,7 @@ export class FilterTreeComponent implements OnInit {
   private configService = inject(ConfigService);
   private eventService = inject(EventService);
 
-  tree = viewChild<CdkTree<Folder>>(CdkTree);
+  tree = viewChild.required<CdkTree<Folder>>(CdkTree);
   dataSource = new MatTreeNestedDataSource<Folder>();
 
   config = initConfig;

@@ -17,6 +17,10 @@ export interface HotspotResult {
   hotspots: FlatHotspot[];
 }
 
+export const initHotspotResult: HotspotResult = {
+  hotspots: []
+};
+
 export type ComplexityMetric = 'McCabe' | 'Length';
 
 export interface HotspotCriteria {
@@ -33,3 +37,7 @@ export interface AggregatedHotspot {
 export interface AggregatedHotspotsResult {
   aggregated: AggregatedHotspot[];
 }
+
+export const initAggregatedHotspotsResult: AggregatedHotspotsResult = {
+  aggregated: []
+};
