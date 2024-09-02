@@ -1,6 +1,6 @@
 {
   "name": "@softarc/detective",
-  "version": "0.0.99-preview.2",
+  "version": "1.0.0",
   "bin": {
     "detective": "./bin/main.js",
     "@softarc/detective": "./bin/main.js"
@@ -10,5 +10,9 @@
   },
   "author": "Manfred Steyer",
   "license": "MIT",
-  "description": ""
+  "description": "Visualize your TypeScript project",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/angular-architects/detective"
+  }
 }

@@ -1,4 +1,4 @@
-.example-tree-invisible {
+/* .example-tree-invisible {
   display: none;
 }
 
@@ -18,10 +18,10 @@
 }
 
 mat-icon {
-  vertical-align: middle; /* oder verwenden Sie einen spezifischen Wert */
-  margin-top: 2px; /* Anpassen nach Bedarf */
+  vertical-align: middle; 
+  margin-top: 2px; 
 }
 
 .node-with-children {
   cursor: pointer;
-}
+} */

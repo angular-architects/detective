@@ -24,3 +24,7 @@
   padding-left: 15px;
   margin-right: 20px;
 }
+
+.flex-spacer {
+  flex: 1 1 auto;
+}

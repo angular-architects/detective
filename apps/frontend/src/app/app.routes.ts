@@ -4,6 +4,7 @@ import { GraphTypeData } from './model/graph-type';
 import { ensureCache } from './utils/cache.guard';
 import { HotspotComponent } from './features/hotspot/hotspot.component';
 import { TeamAlignmentComponent } from './features/team-alignment/team-alignment.component';
+import { AboutComponent } from './shell/about/about.component';
 
 export const routes: Routes = [
   {
@@ -17,6 +18,10 @@ export const routes: Routes = [
     data: {
       type: 'structure',
     } as GraphTypeData,
+  },
+  {
+    path: 'about',
+    component: AboutComponent
   },
   {
     path: '',
