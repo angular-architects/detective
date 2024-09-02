@@ -1,5 +1,8 @@
-/* .example-tree-invisible {
-  display: none;
+.example-tree-invisible {
+  visibility: hidden;
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.3s ease-out, visibility 0.3s ease-out;
 }
 
 .example-tree ul,
@@ -7,10 +10,13 @@
   margin-top: 0;
   margin-bottom: 0;
   list-style-type: none;
+  padding-left: 0; 
 }
+
 .example-tree-node {
   display: block;
   line-height: 40px;
+  position: relative; 
 }
 
 .example-tree-node .example-tree-node {
@@ -18,10 +24,17 @@
 }
 
 mat-icon {
-  vertical-align: middle; 
-  margin-top: 2px; 
+  vertical-align: middle;
+  margin-top: 2px;
 }
 
 .node-with-children {
   cursor: pointer;
-} */
+}
+
+@supports (-webkit-overflow-scrolling: touch) {
+  .example-tree-node {
+    display: flex; 
+    align-items: center;
+  }
+}
