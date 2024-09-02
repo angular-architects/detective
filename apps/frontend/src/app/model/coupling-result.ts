@@ -5,3 +5,11 @@ export interface CouplingResult {
   matrix: number[][];
   groups: string[];
 }
+
+export const initCouplingResult: CouplingResult = {
+  dimensions: [],
+  fileCount: [],
+  cohesion: [],
+  matrix: [[]],
+  groups: []
+};

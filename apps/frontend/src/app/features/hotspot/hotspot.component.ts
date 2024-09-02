@@ -21,6 +21,7 @@ import {
   combineLatest,
   filter,
   Observable,
+  of,
   startWith,
   switchMap,
   tap,
@@ -36,6 +37,7 @@ import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
 import { debounceTimeSkipFirst } from '../../utils/debounce';
 import { onceEffect } from '../../utils/effects';
+import { injectShowError } from '../../utils/error-handler';
 
 interface Option {
   id: ComplexityMetric;
@@ -64,6 +66,7 @@ export class HotspotComponent {
   private eventService = inject(EventService);
 
   private statusStore = inject(StatusStore);
+  private showError = injectShowError();
 
   aggregatedResult = initAggregatedHotspotsResult;
   dataSource = new MatTableDataSource<AggregatedHotspot>();
@@ -176,7 +179,8 @@ export class HotspotComponent {
       }),
       catchError((err) => {
         this.loadingAggregated.set(false);
-        return throwError(() => err);
+        this.showError(err);
+        return of(initAggregatedHotspotsResult);
       })
     );
   }
@@ -196,7 +200,8 @@ export class HotspotComponent {
       }),
       catchError((err) => {
         this.loadingHotspots.set(false);
-        return throwError(() => err);
+        this.showError(err);
+        return of(initHotspotResult);
       })
     );
   }

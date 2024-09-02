@@ -128,7 +128,6 @@ export function setupExpress(options: Options) {
     const metric = (req.query.metric?.toString() ||
       'McCabe') as ComplexityMetric;
     const criteria: HotspotCriteria = { minScore, module: '', metric };
-
     const limits = getLimits(req);
 
     try {

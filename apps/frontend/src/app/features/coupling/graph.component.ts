@@ -16,14 +16,15 @@ import { FormsModule } from '@angular/forms';
 import { GraphType } from '../../model/graph-type';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
-import { combineLatest, startWith, switchMap } from 'rxjs';
-import { initLimits } from '../../model/limits';
+import { catchError, combineLatest, Observable, of, startWith, switchMap } from 'rxjs';
+import { initLimits, Limits } from '../../model/limits';
 import { LimitsComponent } from '../../ui/limits/limits.component';
 import { StatusStore } from '../../data/status.store';
-import { CouplingResult } from '../../model/coupling-result';
+import { CouplingResult, initCouplingResult } from '../../model/coupling-result';
 import { drawGraph, Graph, CouplingNodeDefinition } from './graph';
 import { createGroups, createNodes, createEdges } from './graph.adapter';
 import { debounceTimeSkipFirst } from '../../utils/debounce';
+import { injectShowError } from '../../utils/error-handler';
 
 @Component({
   selector: 'app-graph',
@@ -42,6 +43,7 @@ export class GraphComponent {
   private couplingService = inject(CouplingService);
   private eventService = inject(EventService);
   private statusStore = inject(StatusStore);
+  private showError = injectShowError();
 
   private containerRef = viewChild.required('graph', { read: ElementRef });
 
@@ -58,7 +60,7 @@ export class GraphComponent {
       filterChanged: this.eventService.filterChanged.pipe(startWith(null)),
       type: toObservable(this.type),
     }).pipe(
-      switchMap((combi) => this.couplingService.load(combi.type, combi.limits)),
+      switchMap((combi) => this.loadCoupling(combi)),
     );
 
     const couplingResult = toSignal(couplingResult$);
@@ -72,6 +74,15 @@ export class GraphComponent {
         drawGraph(graph, container);
       }
     });
+  }
+
+  private loadCoupling(combi: { limits: Limits; filterChanged: void | null; type: GraphType; }): Observable<CouplingResult> {
+    return this.couplingService.load(combi.type, combi.limits).pipe(
+      catchError(err => {
+        this.showError(err);
+        return of(initCouplingResult);
+      })
+    );
   }
 
   toGraph(result: CouplingResult): Graph {

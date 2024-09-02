@@ -3,16 +3,17 @@ import { toObservable, toSignal } from "@angular/core/rxjs-interop";
 import { FormsModule } from "@angular/forms";
 import { MatCheckboxModule } from "@angular/material/checkbox";
 import { quantize, interpolateRainbow } from "d3";
-import { combineLatest, startWith, switchMap, Observable } from "rxjs";
+import { combineLatest, startWith, switchMap, Observable, catchError, of } from "rxjs";
 import { StatusStore } from "../../data/status.store";
 import { TeamAlignmentService } from "../../data/team-alignment.service";
 import { initLimits } from "../../model/limits";
-import { TeamAlignmentResult } from "../../model/team-alignment-result";
+import { initTeamAlignmentResult, TeamAlignmentResult } from "../../model/team-alignment-result";
 import { LimitsComponent } from "../../ui/limits/limits.component";
 import { debounceTimeSkipFirst } from "../../utils/debounce";
 import { EventService } from "../../utils/event.service";
 import { explicitEffect } from "../../utils/effects";
 import { TeamAlignmentChart, drawAlignmentCharts } from "./team-alignment-chart";
+import { injectShowError } from "../../utils/error-handler";
 
 @Component({
   selector: 'app-team-alignment',
@@ -24,8 +25,9 @@ import { TeamAlignmentChart, drawAlignmentCharts } from "./team-alignment-chart"
 export class TeamAlignmentComponent {
   private taService = inject(TeamAlignmentService);
   private eventService = inject(EventService);
-
   private statusStore = inject(StatusStore);
+  private showError = injectShowError();
+
   private containerRef = viewChild.required('container', { read: ElementRef });
 
   charts: TeamAlignmentChart[] = [];
@@ -72,6 +74,11 @@ export class TeamAlignmentComponent {
   }
 
   private loadTeamAlignment(): Observable<TeamAlignmentResult> {
-    return this.taService.load(this.byUser(), this.limits());
+    return this.taService.load(this.byUser(), this.limits()).pipe(
+      catchError((err) => {
+        this.showError(err);
+        return of(initTeamAlignmentResult);
+      })
+    );
   }
 }

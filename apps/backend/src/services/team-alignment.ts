@@ -65,10 +65,6 @@ export async function calcTeamAlignment(
     }
   }, limits);
 
-  if (users.size > 0) {
-    console.log('unmapped users', JSON.stringify(Array.from(users), null, 2));
-  }
-
   if (byUser) {
     result.teams = Array.from(users);
   }

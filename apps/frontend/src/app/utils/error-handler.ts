@@ -7,21 +7,30 @@ import {
 } from '@angular/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
 
-interface GenericError {
+export type ShowErrorFn = (error: GenericError) => void;
+
+export interface GenericError {
   error?: {
     message: string;
   };
   message: string;
 }
 
-export class CustomErrorHandler implements ErrorHandler {
-  snackBar = inject(MatSnackBar);
-  handleError(error: GenericError): void {
+export function injectShowError(): ShowErrorFn {
+  const snackBar = inject(MatSnackBar);
+  return (error: GenericError) => {
     const message = error.error?.message || error.message;
-    this.snackBar.open(message, 'OK', {
+    snackBar.open(message, 'OK', {
       panelClass: ['snackbar-alarm'],
     });
-    throw error;
+    console.error(error);
+  };
+}
+
+export class AppErrorHandler implements ErrorHandler {
+  private showError = injectShowError();
+  handleError(error: GenericError): void {
+    this.showError(error);
   }
 }
 
