@@ -1,9 +1,9 @@
 import { Routes } from '@angular/router';
-import { GraphComponent } from './coupling/graph/graph.component';
-import { TeamAlignmentComponent } from './team-alignment/team-alignment.component';
-import { HotspotComponent } from './hotspot/hotspot.component';
-import { GraphTypeData } from './coupling/graph/graph-type';
+import { GraphComponent } from './features/coupling/graph.component';
+import { GraphTypeData } from './model/graph-type';
 import { ensureCache } from './utils/cache.guard';
+import { HotspotComponent } from './features/hotspot/hotspot.component';
+import { TeamAlignmentComponent } from './features/team-alignment/team-alignment.component';
 
 export const routes: Routes = [
   {
