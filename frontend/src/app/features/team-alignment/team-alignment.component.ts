@@ -11,7 +11,7 @@ import { TeamAlignmentResult } from "../../model/team-alignment-result";
 import { LimitsComponent } from "../../ui/limits/limits.component";
 import { debounceTimeSkipFirst } from "../../utils/debounce";
 import { EventService } from "../../utils/event.service";
-import { explicitEffect } from "../../utils/explicit-effect";
+import { explicitEffect } from "../../utils/effects";
 import { TeamAlignmentChart, drawAlignmentCharts } from "./team-alignment-chart";
 
 @Component({

@@ -1,6 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import cytoscape, {
-  Core,
   EdgeDefinition,
   EdgeSingular,
   LayoutOptions,
@@ -42,7 +41,20 @@ type NodeWithQtip = NodeSingular & Qtip;
 type EdgeWithQtip = EdgeSingular & Qtip;
 
 export function drawGraph(graph: Graph, container: HTMLElement) {
-  const cy: Core = cytoscape({
+  const cy = createGraph(container, graph);
+
+  cy.ready(() => {
+    adjustNodeWidth(cy);
+    formatEdges(cy);
+  });
+
+  defineToolTipsForNodes(cy);
+  defineToolTipsForEdges(cy);
+  centerAllNodes(cy);
+}
+
+function createGraph(container: HTMLElement, graph: Graph): cytoscape.Core {
+  return cytoscape({
     container,
 
     layout: {
@@ -114,60 +126,9 @@ export function drawGraph(graph: Graph, container: HTMLElement) {
     panningEnabled: true,
     userPanningEnabled: true,
   });
+}
 
-  cy.ready(() => {
-    cy.nodes().forEach((node) => {
-      const label = node.data('label');
-      node.style('width', `${label.length * 10}px`);
-    });
-
-    const [min, max] = getMinMaxWeight(cy);
-    const step = (max - min) / 3;
-    const border1 = min + step;
-    const border2 = max - step;
-
-    cy.style()
-      .selector('edge')
-      .style({
-        width: function (edge: EdgeSingular) {
-          if (edge.data('weight') <= border1) return '1px';
-          if (edge.data('weight') >= border2) return '3px';
-          return '2px';
-        },
-      })
-      .update();
-  });
-
-  cy.nodes().forEach((node) => {
-    const tooltip = node.data('tooltip');
-
-    if (!tooltip) {
-      return;
-    }
-
-    const nodeWithQtip = node as NodeWithQtip;
-    nodeWithQtip.qtip({
-      content: tooltip,
-      position: {
-        my: 'top center',
-        at: 'bottom center',
-      },
-      style: {
-        classes: 'qtip-bootstrap',
-        tip: {
-          corner: true,
-          mimic: 'center',
-          width: 10,
-          height: 10,
-        },
-        'z-index': 1,
-      },
-      hide: {
-        event: 'mouseout',
-      },
-    });
-  });
-
+function defineToolTipsForEdges(cy: cytoscape.Core) {
   cy.edges().forEach((edge: EdgeSingular) => {
     const tooltip = edge.data('tooltip');
 
@@ -198,8 +159,63 @@ export function drawGraph(graph: Graph, container: HTMLElement) {
       },
     });
   });
+}
 
-  centerAllNodes(cy);
+function defineToolTipsForNodes(cy: cytoscape.Core) {
+  cy.nodes().forEach((node) => {
+    const tooltip = node.data('tooltip');
+
+    if (!tooltip) {
+      return;
+    }
+
+    const nodeWithQtip = node as NodeWithQtip;
+    nodeWithQtip.qtip({
+      content: tooltip,
+      position: {
+        my: 'top center',
+        at: 'bottom center',
+      },
+      style: {
+        classes: 'qtip-bootstrap',
+        tip: {
+          corner: true,
+          mimic: 'center',
+          width: 10,
+          height: 10,
+        },
+        'z-index': 1,
+      },
+      hide: {
+        event: 'mouseout',
+      },
+    });
+  });
+}
+
+function formatEdges(cy: cytoscape.Core) {
+  const [min, max] = getMinMaxWeight(cy);
+  const step = (max - min) / 3;
+  const border1 = min + step;
+  const border2 = max - step;
+
+  cy.style()
+    .selector('edge')
+    .style({
+      width: function (edge: EdgeSingular) {
+        if (edge.data('weight') <= border1) return '1px';
+        if (edge.data('weight') >= border2) return '3px';
+        return '2px';
+      },
+    })
+    .update();
+}
+
+function adjustNodeWidth(cy: cytoscape.Core) {
+  cy.nodes().forEach((node) => {
+    const label = node.data('label');
+    node.style('width', `${label.length * 10}px`);
+  });
 }
 
 function getMinMaxWeight(cy: cytoscape.Core): [number, number] {
