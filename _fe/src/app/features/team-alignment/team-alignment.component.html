@@ -1,0 +1,20 @@
+<div class="forensic-filter">
+  <div>
+    <mat-checkbox class="mr30" [(ngModel)]="byUser">By User</mat-checkbox>
+  </div>
+  <app-limits [(limits)]="limits" [totalCommits]="totalCommits()"></app-limits>
+</div>
+
+<ul id="legend">
+  @for (team of teams(); track team) {
+    <li>
+      <span
+        class="legend-color"
+        [style.backgroundColor]="colors()[$index]"
+      ></span
+      >{{ team }}
+    </li>
+  }
+</ul>
+
+<div #container></div>

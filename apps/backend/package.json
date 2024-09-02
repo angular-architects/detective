@@ -1,0 +1,14 @@
+{
+    "name": "@softarc/detective",
+    "version": "0.0.99-preview.2",
+    "bin": {
+        "detective": "./bin/main.js",
+        "@softarc/detective": "./bin/main.js"
+    },
+    "dependencies": {
+        "tslib": "^2.0.0"
+    },
+    "author": "Manfred Steyer",
+    "license": "MIT",
+    "description": ""
+}
