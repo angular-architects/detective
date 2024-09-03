@@ -12,12 +12,14 @@ const DEFAULT_ENTRIES = [
   'src/index.ts',
   'index.ts',
   'projects/*/src/main.ts',
+  'projects/*/src/index.ts',
   'packages/*/src/main.ts',
+  'packages/*/src/index.ts',
 ];
 
 const DEFAULT_NX_ENTRIES = [
   'apps/**/src/main.ts',
-  'libs/**/src/main.ts',
+  'libs/**/src/index.ts',
   'packages/**/src/main.ts',
 ];
 
