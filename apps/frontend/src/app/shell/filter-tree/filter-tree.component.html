@@ -1,42 +1,31 @@
-<cdk-tree #tree [dataSource]="dataSource" [childrenAccessor]="childrenAccessor">
-  <cdk-nested-tree-node
-    #treeNode="cdkNestedTreeNode"
-    *cdkTreeNodeDef="let node"
-    class="example-tree-node"
+<mat-tree #tree [dataSource]="dataSource" [childrenAccessor]="childrenAccessor">
+  <mat-tree-node
+    *matTreeNodeDef="let node"
+    matTreeNodeToggle
+    matTreeNodePadding
   >
+    <button mat-icon-button disabled></button>
     <mat-checkbox
       [checked]="isChecked(node)"
       (change)="onCheckChange(node, $event)"
-    ></mat-checkbox>
-    {{ node.name }}
-  </cdk-nested-tree-node>
-
-  <cdk-nested-tree-node
-    #treeNode="cdkNestedTreeNode"
-    *cdkTreeNodeDef="let node; when: hasChild"
-    [cdkTreeNodeTypeaheadLabel]="node.name"
-    isExpandable
-    class="example-tree-node node-with-children"
-  >
-    <button
-      cdkTreeNodeToggle
-      mat-icon-button
-      [attr.aria-label]="'Toggle ' + node.name"
-      cdkTreeNodeToggle
+      >{{ node.name }}</mat-checkbox
     >
-      <mat-icon>
+  </mat-tree-node>
+
+  <mat-tree-node *matTreeNodeDef="let node; when: hasChild" matTreeNodePadding>
+    <button
+      mat-icon-button
+      matTreeNodeToggle
+      [attr.aria-label]="'toggle ' + node.filename"
+    >
+      <mat-icon class="mat-icon-rtl-mirror">
         {{ tree.isExpanded(node) ? 'expand_more' : 'chevron_right' }}
       </mat-icon>
     </button>
     <mat-checkbox
       [checked]="isChecked(node)"
       (change)="onCheckChange(node, $event)"
-      (click)="$event.stopPropagation()"
-    ></mat-checkbox>
-    <span cdkTreeNodeToggle>{{ node.name }}</span>
-
-    <div [class.example-tree-invisible]="!tree.isExpanded(node)">
-      <ng-container cdkTreeNodeOutlet></ng-container>
-    </div>
-  </cdk-nested-tree-node>
-</cdk-tree>
+      >{{ node.name }}</mat-checkbox
+    >
+  </mat-tree-node>
+</mat-tree>

@@ -1,7 +1,7 @@
 import { Component, inject, OnInit, viewChild } from '@angular/core';
 import { Folder } from '../../model/folder';
 import { CdkTree, CdkTreeModule } from '@angular/cdk/tree';
-import { MatTreeNestedDataSource } from '@angular/material/tree';
+import { MatTreeModule, MatTreeNestedDataSource } from '@angular/material/tree';
 import { FolderService } from '../../data/folder.service';
 import { combineLatest, of } from 'rxjs';
 import { MatIconModule } from '@angular/material/icon';
@@ -19,7 +19,7 @@ const MIN_OPEN_LEVEL = 2;
 @Component({
   selector: 'app-filter-tree',
   standalone: true,
-  imports: [CdkTreeModule, MatIconModule, MatButtonModule, MatCheckboxModule],
+  imports: [MatTreeModule, MatIconModule, MatButtonModule, MatCheckboxModule],
   templateUrl: './filter-tree.component.html',
   styleUrl: './filter-tree.component.css',
 })
