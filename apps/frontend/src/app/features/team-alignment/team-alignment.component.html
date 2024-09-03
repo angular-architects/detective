@@ -1,6 +1,14 @@
 <div class="forensic-filter">
   <div>
     <mat-checkbox class="mr30" [(ngModel)]="byUser">By User</mat-checkbox>
+
+    <mat-icon
+      matTooltip="The Team Alignment Analysis shows whether your team structure and module/domain boundaries are aligned."
+      matTooltipPosition="above"
+      class="help-icon"
+    >
+      help_outline
+    </mat-icon>
   </div>
   <app-limits [(limits)]="limits" [totalCommits]="totalCommits()"></app-limits>
 </div>

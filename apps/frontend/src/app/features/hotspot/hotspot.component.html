@@ -19,6 +19,14 @@
         }
       </mat-select>
     </mat-form-field>
+
+    <mat-icon
+      matTooltip="A Hotspot is a complex file that was previously changed quite often and hence comes with a higher risk for bugs."
+      matTooltipPosition="above"
+      class="help-icon-hotspot"
+    >
+      help_outline
+    </mat-icon>
   </div>
 
   <app-limits [(limits)]="limits" [totalCommits]="totalCommits()"></app-limits>

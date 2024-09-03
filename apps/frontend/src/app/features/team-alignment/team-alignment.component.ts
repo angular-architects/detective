@@ -34,11 +34,19 @@ import {
   drawAlignmentCharts,
 } from './team-alignment-chart';
 import { injectShowError } from '../../utils/error-handler';
+import { MatIconModule } from '@angular/material/icon';
+import { MatTooltipModule } from '@angular/material/tooltip';
 
 @Component({
   selector: 'app-team-alignment',
   standalone: true,
-  imports: [LimitsComponent, MatCheckboxModule, FormsModule],
+  imports: [
+    LimitsComponent,
+    MatCheckboxModule,
+    FormsModule,
+    MatIconModule,
+    MatTooltipModule,
+  ],
   templateUrl: './team-alignment.component.html',
   styleUrl: './team-alignment.component.css',
 })

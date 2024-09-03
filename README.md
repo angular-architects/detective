@@ -26,7 +26,7 @@ The Team Alignment Analysis shows whether your team structure and module/domain 
 
 ### Analyze Hotspots 
 
-The Team Alignment Analysis shows whether your team structure and module/domain boundaries are aligned:
+A Hotspot is a complex file with that was previously changed quite often and hence comes with a higher risk for bugs. 
 
 ![Hotspots](./docs/hotspots.png)
 

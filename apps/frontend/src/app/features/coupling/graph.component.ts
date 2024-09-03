@@ -1,5 +1,6 @@
 import {
   Component,
+  computed,
   effect,
   ElementRef,
   inject,
@@ -35,6 +36,11 @@ import { drawGraph, Graph, CouplingNodeDefinition } from './graph';
 import { createGroups, createNodes, createEdges } from './graph.adapter';
 import { debounceTimeSkipFirst } from '../../utils/debounce';
 import { injectShowError } from '../../utils/error-handler';
+import { MatIconModule } from '@angular/material/icon';
+import { MatTooltipModule } from '@angular/material/tooltip';
+
+const STRUCTURE_TIP = 'Select the modules in the tree on the left to visualize them and the depencencies of their files.';
+const COUPLING_TIP = 'Change Coupling shows which files and modules have been changed together, indicating a non-obvious type of coupling.';
 
 @Component({
   selector: 'app-graph',
@@ -45,6 +51,8 @@ import { injectShowError } from '../../utils/error-handler';
     MatFormFieldModule,
     MatInputModule,
     LimitsComponent,
+    MatIconModule,
+    MatTooltipModule
   ],
   templateUrl: './graph.component.html',
   styleUrl: './graph.component.css',
@@ -58,6 +66,7 @@ export class GraphComponent {
   private containerRef = viewChild.required('graph', { read: ElementRef });
 
   type = input<GraphType>('structure');
+  toolTip = computed(() => this.type() === 'structure' ? STRUCTURE_TIP : COUPLING_TIP)
 
   totalCommits = this.statusStore.commits;
   groupByFolder = signal(false);

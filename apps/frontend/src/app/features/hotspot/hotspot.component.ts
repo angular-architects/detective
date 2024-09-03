@@ -25,7 +25,6 @@ import {
   startWith,
   switchMap,
   tap,
-  throwError,
 } from 'rxjs';
 import { EventService } from '../../utils/event.service';
 import { toObservable, toSignal } from '@angular/core/rxjs-interop';
@@ -36,8 +35,9 @@ import { StatusStore } from '../../data/status.store';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
 import { debounceTimeSkipFirst } from '../../utils/debounce';
-import { onceEffect } from '../../utils/effects';
 import { injectShowError } from '../../utils/error-handler';
+import { MatIconModule } from '@angular/material/icon';
+import { MatTooltipModule } from '@angular/material/tooltip';
 
 interface Option {
   id: ComplexityMetric;
@@ -57,6 +57,8 @@ interface Option {
     MatPaginatorModule,
     LimitsComponent,
     FormsModule,
+    MatIconModule,
+    MatTooltipModule,
   ],
   templateUrl: './hotspot.component.html',
   styleUrl: './hotspot.component.css',
@@ -135,7 +137,7 @@ export class HotspotComponent {
       }
     });
 
-    onceEffect(() => {
+    effect(() => {
       const paginator = this.paginator();
       if (paginator) {
         this.detailDataSource.paginator = paginator;

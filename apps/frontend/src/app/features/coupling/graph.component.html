@@ -8,11 +8,18 @@
       <mat-label>Min. Connections</mat-label>
       <input type="number" matInput min="1" [(ngModel)]="minConnections" />
     </mat-form-field>
+
+    <mat-icon
+      [matTooltip]="toolTip()"
+      matTooltipPosition="above"
+      class="help-icon"
+    >
+      help_outline
+    </mat-icon>
   </div>
   @if (type() === 'changes') {
   <app-limits [(limits)]="limits" [totalCommits]="totalCommits()"></app-limits>
   }
 </div>
-
 <div class="tooltip" id="tooltip"></div>
 <div #graph id="cy"></div>
