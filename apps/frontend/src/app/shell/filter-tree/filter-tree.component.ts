@@ -1,6 +1,6 @@
 import { Component, inject, OnInit, viewChild } from '@angular/core';
 import { Folder } from '../../model/folder';
-import { CdkTree, CdkTreeModule } from '@angular/cdk/tree';
+import { CdkTree } from '@angular/cdk/tree';
 import { MatTreeModule, MatTreeNestedDataSource } from '@angular/material/tree';
 import { FolderService } from '../../data/folder.service';
 import { combineLatest, of } from 'rxjs';
