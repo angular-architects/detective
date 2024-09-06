@@ -5,6 +5,8 @@ import {
   ElementRef,
   signal,
   computed,
+  effect,
+  Signal,
 } from '@angular/core';
 import { toObservable, toSignal } from '@angular/core/rxjs-interop';
 import { FormsModule } from '@angular/forms';
@@ -28,7 +30,6 @@ import {
 import { LimitsComponent } from '../../ui/limits/limits.component';
 import { debounceTimeSkipFirst } from '../../utils/debounce';
 import { EventService } from '../../utils/event.service';
-import { explicitEffect } from '../../utils/effects';
 import {
   TeamAlignmentChart,
   drawAlignmentCharts,
@@ -69,37 +70,39 @@ export class TeamAlignmentComponent {
   limits = signal(initLimits);
   byUser = signal(false);
 
-  colors = signal<string[]>([]);
-  teams = signal<string[]>([]);
+  teamAlignmentResult: Signal<TeamAlignmentResult>;
+
+  teams = computed(() => this.teamAlignmentResult().teams);
+  colors = computed(() => this.toColors(this.teams().length));
 
   constructor() {
     const alignment$ = combineLatest({
-      filterChanged: this.eventService.filterChanged.pipe(startWith(null)),
       limits: toObservable(this.limits).pipe(debounceTimeSkipFirst(300)),
       byUser: toObservable(this.byUser),
+      filterChanged: this.eventService.filterChanged.pipe(startWith(null)),
     }).pipe(switchMap((combi) => this.loadTeamAlignment(combi)));
 
-    const alignmentResult = toSignal(alignment$);
+    this.teamAlignmentResult = toSignal(alignment$, {
+      initialValue: initTeamAlignmentResult
+    });
 
-    const trigger = computed(() => ({
-      result: alignmentResult(),
-      containerRef: this.containerRef(),
-    }));
-
-    explicitEffect(trigger, (combi) => {
-      const result = combi.result;
-      const placeholder = combi.containerRef.nativeElement;
+    effect(() => {
+      const result = this.teamAlignmentResult();
+      const colors = this.colors();
+      const containerRef = this.containerRef();
+      const placeholder = containerRef.nativeElement;
       if (result) {
-        const colors = quantize(interpolateRainbow, result.teams.length + 1);
-        this.colors.set(colors);
-        this.teams.set(result.teams);
         this.removeCharts();
         this.charts = drawAlignmentCharts(result, placeholder, colors);
       }
     });
   }
 
-  removeCharts() {
+  private toColors(count: number): string[] {
+    return quantize(interpolateRainbow, count + 1);
+  }
+
+  private removeCharts(): void {
     const containerRef = this.containerRef();
     const container = containerRef.nativeElement;
     container.innerHTML = '';
