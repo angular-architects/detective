@@ -138,16 +138,12 @@ export class HotspotComponent {
 
     effect(() => {
       const result = this.aggregatedResult();
-      if (result) {
-        this.dataSource.data = this.formatAggregated(result.aggregated);
-      }
+      this.dataSource.data = this.formatAggregated(result.aggregated);
     });
 
     effect(() => {
       const result = this.hotspotResult();
-      if (result) {
-        this.detailDataSource.data = this.formatHotspots(result.hotspots);
-      }
+      this.detailDataSource.data = this.formatHotspots(result.hotspots);
     });
 
     effect(() => {

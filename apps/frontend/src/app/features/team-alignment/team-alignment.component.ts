@@ -91,10 +91,9 @@ export class TeamAlignmentComponent {
       const colors = this.colors();
       const containerRef = this.containerRef();
       const placeholder = containerRef.nativeElement;
-      if (result) {
-        this.removeCharts();
-        this.charts = drawAlignmentCharts(result, placeholder, colors);
-      }
+
+      this.removeCharts();
+      this.charts = drawAlignmentCharts(result, placeholder, colors);
     });
   }
 

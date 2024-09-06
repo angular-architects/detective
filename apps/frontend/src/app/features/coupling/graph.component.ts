@@ -39,8 +39,10 @@ import { injectShowError } from '../../utils/error-handler';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
 
-const STRUCTURE_TIP = 'Select the modules in the tree on the left to visualize them and the depencencies of their files.';
-const COUPLING_TIP = 'Change Coupling shows which files and modules have been changed together, indicating a non-obvious type of coupling.';
+const STRUCTURE_TIP =
+  'Select the modules in the tree on the left to visualize them and the depencencies of their files.';
+const COUPLING_TIP =
+  'Change Coupling shows which files and modules have been changed together, indicating a non-obvious type of coupling.';
 
 @Component({
   selector: 'app-graph',
@@ -52,7 +54,7 @@ const COUPLING_TIP = 'Change Coupling shows which files and modules have been ch
     MatInputModule,
     LimitsComponent,
     MatIconModule,
-    MatTooltipModule
+    MatTooltipModule,
   ],
   templateUrl: './graph.component.html',
   styleUrl: './graph.component.css',
@@ -66,7 +68,9 @@ export class GraphComponent {
   private containerRef = viewChild.required('graph', { read: ElementRef });
 
   type = input<GraphType>('structure');
-  toolTip = computed(() => this.type() === 'structure' ? STRUCTURE_TIP : COUPLING_TIP)
+  toolTip = computed(() =>
+    this.type() === 'structure' ? STRUCTURE_TIP : COUPLING_TIP
+  );
 
   totalCommits = this.statusStore.commits;
   groupByFolder = signal(false);
@@ -80,16 +84,16 @@ export class GraphComponent {
       type: toObservable(this.type),
     }).pipe(switchMap((combi) => this.loadCoupling(combi)));
 
-    const couplingResult = toSignal(couplingResult$);
+    const couplingResult = toSignal(couplingResult$, {
+      initialValue: initCouplingResult,
+    });
 
     effect(() => {
       const result = couplingResult();
-      if (result) {
-        const graph = this.toGraph(result);
-        const containerRef = this.containerRef();
-        const container = containerRef.nativeElement;
-        drawGraph(graph, container);
-      }
+      const graph = this.toGraph(result);
+      const containerRef = this.containerRef();
+      const container = containerRef.nativeElement;
+      drawGraph(graph, container);
     });
   }
 
