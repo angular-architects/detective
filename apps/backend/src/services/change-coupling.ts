@@ -32,7 +32,7 @@ export async function calcChangeCoupling(
     for (const change of entry.body) {
       for (let i = 0; i < modules.length; i++) {
         const module = modules[i];
-        if (change.path.startsWith(module)) {
+        if (change.path.startsWith(module) && !touchedModules.has(i)) {
           commitsPerModule[i]++;
           touchedModules.add(i);
         }

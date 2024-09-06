@@ -4,3 +4,10 @@ export type Config = {
   teams: Record<string, string[]>;
   entries: [];
 };
+
+export const emptyConfig: Config = {
+  scopes: [],
+  groups: [],
+  teams: {},
+  entries: [],
+};
