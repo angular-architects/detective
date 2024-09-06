@@ -37,8 +37,8 @@ jest.mock('../infrastructure/log', () => ({
   ),
 }));
 
-describe('test', () => {
-  it('it', async () => {
+describe('change coupling service', () => {
+  it('calculates commits per module alongside change coupling', async () => {
     const limits: Limits = {
       limitCommits: 3,
       limitMonths: 0,
@@ -55,6 +55,5 @@ describe('test', () => {
     ]);
 
     expect(result.fileCount).toEqual([3, 2, 2]);
-
   });
 });
