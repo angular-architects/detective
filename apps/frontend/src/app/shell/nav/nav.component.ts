@@ -9,7 +9,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { Observable } from 'rxjs';
 import { map, shareReplay } from 'rxjs/operators';
 import { FilterTreeComponent } from '../filter-tree/filter-tree.component';
-import { GraphComponent } from '../../features/coupling/graph.component';
+import { CouplingComponent } from '../../features/coupling/coupling.component';
 import { RouterModule } from '@angular/router';
 
 @Component({
@@ -25,7 +25,7 @@ import { RouterModule } from '@angular/router';
     MatIconModule,
     AsyncPipe,
     FilterTreeComponent,
-    GraphComponent,
+    CouplingComponent,
     RouterModule,
   ],
 })

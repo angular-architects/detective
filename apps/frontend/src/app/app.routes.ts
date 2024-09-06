@@ -1,5 +1,5 @@
 import { Routes } from '@angular/router';
-import { GraphComponent } from './features/coupling/graph.component';
+import { CouplingComponent } from './features/coupling/coupling.component';
 import { GraphTypeData } from './model/graph-type';
 import { ensureCache } from './utils/cache.guard';
 import { HotspotComponent } from './features/hotspot/hotspot.component';
@@ -14,7 +14,7 @@ export const routes: Routes = [
   },
   {
     path: 'graph',
-    component: GraphComponent,
+    component: CouplingComponent,
     data: {
       type: 'structure',
     } as GraphTypeData,
@@ -37,7 +37,7 @@ export const routes: Routes = [
       },
       {
         path: 'change-coupling',
-        component: GraphComponent,
+        component: CouplingComponent,
         data: {
           type: 'changes',
         } as GraphTypeData,

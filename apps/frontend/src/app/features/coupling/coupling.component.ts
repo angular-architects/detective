@@ -56,10 +56,10 @@ const COUPLING_TIP =
     MatIconModule,
     MatTooltipModule,
   ],
-  templateUrl: './graph.component.html',
-  styleUrl: './graph.component.css',
+  templateUrl: './coupling.component.html',
+  styleUrl: './coupling.component.css',
 })
-export class GraphComponent {
+export class CouplingComponent {
   private couplingService = inject(CouplingService);
   private eventService = inject(EventService);
   private statusStore = inject(StatusStore);
