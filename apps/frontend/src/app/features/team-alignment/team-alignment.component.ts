@@ -20,7 +20,7 @@ import {
 } from 'rxjs';
 import { StatusStore } from '../../data/status.store';
 import { TeamAlignmentService } from '../../data/team-alignment.service';
-import { initLimits } from '../../model/limits';
+import { initLimits, Limits } from '../../model/limits';
 import {
   initTeamAlignmentResult,
   TeamAlignmentResult,
@@ -36,6 +36,11 @@ import {
 import { injectShowError } from '../../utils/error-handler';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
+
+type LoadTeamAlignmentOptions = {
+  limits: Limits;
+  byUser: boolean;
+};
 
 @Component({
   selector: 'app-team-alignment',
@@ -68,11 +73,11 @@ export class TeamAlignmentComponent {
   teams = signal<string[]>([]);
 
   constructor() {
-    const alignment$ = combineLatest([
-      this.eventService.filterChanged.pipe(startWith(null)),
-      toObservable(this.limits).pipe(debounceTimeSkipFirst(300)),
-      toObservable(this.byUser),
-    ]).pipe(switchMap(() => this.loadTeamAlignment()));
+    const alignment$ = combineLatest({
+      filterChanged: this.eventService.filterChanged.pipe(startWith(null)),
+      limits: toObservable(this.limits).pipe(debounceTimeSkipFirst(300)),
+      byUser: toObservable(this.byUser),
+    }).pipe(switchMap((combi) => this.loadTeamAlignment(combi)));
 
     const alignmentResult = toSignal(alignment$);
 
@@ -101,8 +106,8 @@ export class TeamAlignmentComponent {
     this.charts.forEach((c) => c.destroy());
   }
 
-  private loadTeamAlignment(): Observable<TeamAlignmentResult> {
-    return this.taService.load(this.byUser(), this.limits()).pipe(
+  private loadTeamAlignment(options: LoadTeamAlignmentOptions): Observable<TeamAlignmentResult> {
+    return this.taService.load(options.byUser, options.limits).pipe(
       catchError((err) => {
         this.showError(err);
         return of(initTeamAlignmentResult);

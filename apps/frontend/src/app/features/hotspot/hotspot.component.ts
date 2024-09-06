@@ -1,4 +1,4 @@
-import { Component, effect, inject, signal, viewChild } from '@angular/core';
+import { Component, effect, inject, Signal, signal, viewChild } from '@angular/core';
 import { HotspotService } from './hotspot.service';
 import {
   AggregatedHotspot,
@@ -29,7 +29,7 @@ import {
 import { EventService } from '../../utils/event.service';
 import { toObservable, toSignal } from '@angular/core/rxjs-interop';
 import { LimitsComponent } from '../../ui/limits/limits.component';
-import { initLimits } from '../../model/limits';
+import { initLimits, Limits } from '../../model/limits';
 import { MatSelectModule } from '@angular/material/select';
 import { StatusStore } from '../../data/status.store';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
@@ -43,6 +43,16 @@ interface Option {
   id: ComplexityMetric;
   label: string;
 }
+
+type LoadAggregateOptions = {
+  minScore: number;
+  limits: Limits;
+  metric: ComplexityMetric;
+};
+
+type LoadHotspotOptions = LoadAggregateOptions & {
+  selectedModule: string;
+};
 
 @Component({
   selector: 'app-hotspot',
@@ -70,11 +80,11 @@ export class HotspotComponent {
   private statusStore = inject(StatusStore);
   private showError = injectShowError();
 
-  aggregatedResult = initAggregatedHotspotsResult;
   dataSource = new MatTableDataSource<AggregatedHotspot>();
   detailDataSource = new MatTableDataSource<FlatHotspot>();
 
-  hotspotResult = initHotspotResult;
+  hotspotResult: Signal<HotspotResult>;
+  aggregatedResult: Signal<AggregatedHotspotsResult>;
   selectedRow: AggregatedHotspot | null = null;
 
   columnsToDisplay = ['module', 'count'];
@@ -97,42 +107,45 @@ export class HotspotComponent {
   paginator = viewChild(MatPaginator);
 
   constructor() {
-    const loadAggregatedEvents = [
-      this.eventService.filterChanged.pipe(startWith(null)),
-      toObservable(this.minScoreControl).pipe(debounceTimeSkipFirst(300)),
-      toObservable(this.limits).pipe(debounceTimeSkipFirst(300)),
-      toObservable(this.metric),
-    ];
+    const loadAggregatedEvents =  {
+      filterChanged: this.eventService.filterChanged.pipe(startWith(null)),
+      minScore: toObservable(this.minScoreControl).pipe(debounceTimeSkipFirst(300)),
+      limits: toObservable(this.limits).pipe(debounceTimeSkipFirst(300)),
+      metric: toObservable(this.metric),
+    };
 
-    const loadHotspotEvent = [
+    const loadHotspotEvent = {
       ...loadAggregatedEvents,
-      toObservable(this.selectedModule),
-    ];
+      selectedModule: toObservable(this.selectedModule),
+    };
 
     const aggregated$ = combineLatest(loadAggregatedEvents).pipe(
-      switchMap(() => this.loadAggregated())
+      switchMap((combi) => this.loadAggregated(combi))
     );
 
     const hotspots$ = combineLatest(loadHotspotEvent).pipe(
-      filter(() => !!this.selectedModule()),
-      switchMap(() => this.loadHotspots())
+      filter((combi) => !!combi.selectedModule),
+      switchMap((combi) => this.loadHotspots(combi))
     );
 
-    const aggregated = toSignal(aggregated$);
-    const hotspots = toSignal(hotspots$);
+    this.aggregatedResult = toSignal(aggregated$, {
+      initialValue: initAggregatedHotspotsResult
+    });
+
+    this.hotspotResult = toSignal(hotspots$, {
+      initialValue: initHotspotResult
+    });
 
     effect(() => {
-      const result = aggregated();
+      const result = this.aggregatedResult();
       if (result) {
-        this.aggregatedResult = result;
         this.dataSource.data = this.formatAggregated(result.aggregated);
       }
     });
 
     effect(() => {
-      const result = hotspots();
+      const result = this.hotspotResult();
       if (result) {
-        this.hotspotResult = result;
         this.detailDataSource.data = this.formatHotspots(result.hotspots);
       }
     });
@@ -146,7 +159,7 @@ export class HotspotComponent {
   }
 
   selectRow(row: AggregatedHotspot, index: number) {
-    const selectModule = this.aggregatedResult.aggregated[index].module;
+    const selectModule = this.aggregatedResult().aggregated[index].module;
     this.selectedRow = row;
     this.selectedModule.set(selectModule);
   }
@@ -165,15 +178,15 @@ export class HotspotComponent {
     }));
   }
 
-  private loadAggregated(): Observable<AggregatedHotspotsResult> {
+  private loadAggregated(options: LoadAggregateOptions): Observable<AggregatedHotspotsResult> {
     const criteria: HotspotCriteria = {
-      metric: this.metric(),
-      minScore: this.minScoreControl(),
+      metric: options.metric,
+      minScore: options.minScore,
       module: '',
     };
 
     this.loadingAggregated.set(true);
-    return this.hotspotService.loadAggregated(criteria, this.limits()).pipe(
+    return this.hotspotService.loadAggregated(criteria, options.limits).pipe(
       tap(() => {
         this.loadingAggregated.set(false);
       }),
@@ -185,16 +198,16 @@ export class HotspotComponent {
     );
   }
 
-  private loadHotspots(): Observable<HotspotResult> {
+  private loadHotspots(options: LoadHotspotOptions): Observable<HotspotResult> {
     const criteria: HotspotCriteria = {
-      metric: this.metric(),
-      minScore: this.minScoreControl(),
-      module: this.selectedModule(),
+      metric: options.metric,
+      minScore: options.minScore,
+      module: options.selectedModule,
     };
 
     this.loadingHotspots.set(true);
 
-    return this.hotspotService.load(criteria, this.limits()).pipe(
+    return this.hotspotService.load(criteria, options.limits).pipe(
       tap(() => {
         this.loadingHotspots.set(false);
       }),
