@@ -1,4 +1,11 @@
-import { Component, effect, inject, Signal, signal, viewChild } from '@angular/core';
+import {
+  Component,
+  effect,
+  inject,
+  Signal,
+  signal,
+  viewChild,
+} from '@angular/core';
 import { HotspotService } from '../../data/hotspot.service';
 import {
   AggregatedHotspot,
@@ -107,9 +114,11 @@ export class HotspotComponent {
   paginator = viewChild(MatPaginator);
 
   constructor() {
-    const loadAggregatedEvents =  {
+    const loadAggregatedEvents = {
       filterChanged: this.eventService.filterChanged.pipe(startWith(null)),
-      minScore: toObservable(this.minScoreControl).pipe(debounceTimeSkipFirst(300)),
+      minScore: toObservable(this.minScoreControl).pipe(
+        debounceTimeSkipFirst(300)
+      ),
       limits: toObservable(this.limits).pipe(debounceTimeSkipFirst(300)),
       metric: toObservable(this.metric),
     };
@@ -129,11 +138,11 @@ export class HotspotComponent {
     );
 
     this.aggregatedResult = toSignal(aggregated$, {
-      initialValue: initAggregatedHotspotsResult
+      initialValue: initAggregatedHotspotsResult,
     });
 
     this.hotspotResult = toSignal(hotspots$, {
-      initialValue: initHotspotResult
+      initialValue: initHotspotResult,
     });
 
     effect(() => {
@@ -174,7 +183,9 @@ export class HotspotComponent {
     }));
   }
 
-  private loadAggregated(options: LoadAggregateOptions): Observable<AggregatedHotspotsResult> {
+  private loadAggregated(
+    options: LoadAggregateOptions
+  ): Observable<AggregatedHotspotsResult> {
     const criteria: HotspotCriteria = {
       metric: options.metric,
       minScore: options.minScore,

@@ -1,10 +1,30 @@
-import { Component, ElementRef, input, OnChanges, OnDestroy, SimpleChanges, viewChild } from '@angular/core';
+import {
+  Component,
+  ElementRef,
+  input,
+  OnChanges,
+  OnDestroy,
+  SimpleChanges,
+  viewChild,
+} from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ArcElement, Chart, ChartConfiguration, DoughnutController, Legend, Title, Tooltip } from 'chart.js';
+import {
+  ArcElement,
+  Chart,
+  ChartConfiguration,
+  DoughnutController,
+  Legend,
+  Title,
+  Tooltip,
+} from 'chart.js';
 
 Chart.register(ArcElement, Tooltip, Legend, Title, DoughnutController);
 
-export type DoughnutChartConfig = ChartConfiguration<'doughnut', number[], string>;
+export type DoughnutChartConfig = ChartConfiguration<
+  'doughnut',
+  number[],
+  string
+>;
 type DoughnutChart = Chart<'doughnut', number[], string>;
 
 @Component({

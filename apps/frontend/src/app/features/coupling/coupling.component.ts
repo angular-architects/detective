@@ -1,10 +1,4 @@
-import {
-  Component,
-  computed,
-  inject,
-  input,
-  signal,
-} from '@angular/core';
+import { Component, computed, inject, input, signal } from '@angular/core';
 import { CouplingService } from '../../data/coupling.service';
 import { EventService } from '../../utils/event.service';
 import { toObservable, toSignal } from '@angular/core/rxjs-interop';
@@ -82,7 +76,7 @@ export class CouplingComponent {
 
   couplingResult = toSignal(this.couplingResult$, {
     initialValue: initCouplingResult,
-  });  
+  });
 
   graph = computed(() => this.toGraph(this.couplingResult()));
 

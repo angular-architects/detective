@@ -1,9 +1,4 @@
-import {
-  Component,
-  inject,
-  signal,
-  computed,
-} from '@angular/core';
+import { Component, inject, signal, computed } from '@angular/core';
 import { toObservable, toSignal } from '@angular/core/rxjs-interop';
 import { FormsModule } from '@angular/forms';
 import { MatCheckboxModule } from '@angular/material/checkbox';
@@ -26,13 +21,11 @@ import {
 import { LimitsComponent } from '../../ui/limits/limits.component';
 import { debounceTimeSkipFirst } from '../../utils/debounce';
 import { EventService } from '../../utils/event.service';
-import {
-  toAlignmentChartConfigs,
-} from './team-alignment-chart-adapter';
+import { toAlignmentChartConfigs } from './team-alignment-chart-adapter';
 import { injectShowError } from '../../utils/error-handler';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { DoughnutComponent } from "../../ui/doughnut/doughnut.component";
+import { DoughnutComponent } from '../../ui/doughnut/doughnut.component';
 
 type LoadTeamAlignmentOptions = {
   limits: Limits;
@@ -48,8 +41,8 @@ type LoadTeamAlignmentOptions = {
     FormsModule,
     MatIconModule,
     MatTooltipModule,
-    DoughnutComponent
-],
+    DoughnutComponent,
+  ],
   templateUrl: './team-alignment.component.html',
   styleUrl: './team-alignment.component.css',
 })
@@ -70,18 +63,22 @@ export class TeamAlignmentComponent {
   }).pipe(switchMap((combi) => this.loadTeamAlignment(combi)));
 
   teamAlignmentResult = toSignal(this.alignment$, {
-    initialValue: initTeamAlignmentResult
+    initialValue: initTeamAlignmentResult,
   });
 
   teams = computed(() => this.teamAlignmentResult().teams);
   colors = computed(() => this.toColors(this.teams().length));
-  chartConfigs = computed(() => toAlignmentChartConfigs(this.teamAlignmentResult(), this.colors()));
+  chartConfigs = computed(() =>
+    toAlignmentChartConfigs(this.teamAlignmentResult(), this.colors())
+  );
 
   private toColors(count: number): string[] {
     return quantize(interpolateRainbow, count + 1);
   }
 
-  private loadTeamAlignment(options: LoadTeamAlignmentOptions): Observable<TeamAlignmentResult> {
+  private loadTeamAlignment(
+    options: LoadTeamAlignmentOptions
+  ): Observable<TeamAlignmentResult> {
     return this.taService.load(options.byUser, options.limits).pipe(
       catchError((err) => {
         this.showError(err);

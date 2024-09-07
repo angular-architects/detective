@@ -6,27 +6,27 @@ Detective leverages forensic code analysis at the architectural level to uncover
 
 ## Features
 
-### Visualize Your Project Structure 
+### Visualize Your Project Structure
 
 Gain an overview of your modules, domains, and layers:
 
 ![Visualize your project structure](./docs/domains-detail.png)
 
-### Analyze Change Coupling 
+### Analyze Change Coupling
 
 The Change Coupling analysis reveals which modules have often been changed together, indicating a non-obvious type of coupling.
 
 ![Change Coupling](./docs/change-coupling.png)
 
-### Analyze Team/Code Alignment 
+### Analyze Team/Code Alignment
 
 The Team Alignment Analysis shows whether your team structure and module/domain boundaries are aligned:
 
 ![Team Alignment](./docs/team-alignment.png)
 
-### Analyze Hotspots 
+### Analyze Hotspots
 
-A Hotspot is a complex file with that was previously changed quite often and hence comes with a higher risk for bugs. 
+A Hotspot is a complex file with that was previously changed quite often and hence comes with a higher risk for bugs.
 
 ![Hotspots](./docs/hotspots.png)
 
@@ -41,7 +41,7 @@ npx detective
 
 ## Defining Teams
 
-For the Team Alignment Analysis, you need to map team names to the names of your team members as found in ``git log``. This is done in the file `.detective/config.json` created the first time detective runs:
+For the Team Alignment Analysis, you need to map team names to the names of your team members as found in `git log`. This is done in the file `.detective/config.json` created the first time detective runs:
 
 ```json
 {

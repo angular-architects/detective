@@ -1,0 +1,2 @@
+nx run-many --target=lint --all --fix
+nx format:write --all
