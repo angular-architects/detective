@@ -1,12 +1,9 @@
 import {
   Component,
   computed,
-  effect,
-  ElementRef,
   inject,
   input,
   signal,
-  viewChild,
 } from '@angular/core';
 import { CouplingService } from '../../data/coupling.service';
 import { EventService } from '../../utils/event.service';
@@ -32,12 +29,13 @@ import {
   CouplingResult,
   initCouplingResult,
 } from '../../model/coupling-result';
-import { drawGraph, Graph, CouplingNodeDefinition } from './graph';
+import { Graph, CouplingNodeDefinition } from '../../ui/graph/graph';
 import { createGroups, createNodes, createEdges } from './graph.adapter';
 import { debounceTimeSkipFirst } from '../../utils/debounce';
 import { injectShowError } from '../../utils/error-handler';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { GraphComponent } from '../../ui/graph/graph.component';
 
 const STRUCTURE_TIP =
   'Select the modules in the tree on the left to visualize them and the depencencies of their files.';
@@ -45,7 +43,7 @@ const COUPLING_TIP =
   'Change Coupling shows which files and modules have been changed together, indicating a non-obvious type of coupling.';
 
 @Component({
-  selector: 'app-graph',
+  selector: 'app-coupling',
   standalone: true,
   imports: [
     MatCheckboxModule,
@@ -55,6 +53,7 @@ const COUPLING_TIP =
     LimitsComponent,
     MatIconModule,
     MatTooltipModule,
+    GraphComponent,
   ],
   templateUrl: './coupling.component.html',
   styleUrl: './coupling.component.css',
@@ -64,8 +63,6 @@ export class CouplingComponent {
   private eventService = inject(EventService);
   private statusStore = inject(StatusStore);
   private showError = injectShowError();
-
-  private containerRef = viewChild.required('graph', { read: ElementRef });
 
   type = input<GraphType>('structure');
   toolTip = computed(() =>
@@ -77,25 +74,17 @@ export class CouplingComponent {
   limits = signal(initLimits);
   minConnections = signal(1);
 
-  constructor() {
-    const couplingResult$ = combineLatest({
-      limits: toObservable(this.limits).pipe(debounceTimeSkipFirst(300)),
-      filterChanged: this.eventService.filterChanged.pipe(startWith(null)),
-      type: toObservable(this.type),
-    }).pipe(switchMap((combi) => this.loadCoupling(combi)));
+  couplingResult$ = combineLatest({
+    limits: toObservable(this.limits).pipe(debounceTimeSkipFirst(300)),
+    filterChanged: this.eventService.filterChanged.pipe(startWith(null)),
+    type: toObservable(this.type),
+  }).pipe(switchMap((combi) => this.loadCoupling(combi)));
 
-    const couplingResult = toSignal(couplingResult$, {
-      initialValue: initCouplingResult,
-    });
+  couplingResult = toSignal(this.couplingResult$, {
+    initialValue: initCouplingResult,
+  });  
 
-    effect(() => {
-      const result = couplingResult();
-      const graph = this.toGraph(result);
-      const containerRef = this.containerRef();
-      const container = containerRef.nativeElement;
-      drawGraph(graph, container);
-    });
-  }
+  graph = computed(() => this.toGraph(this.couplingResult()));
 
   private loadCoupling(combi: {
     limits: Limits;
