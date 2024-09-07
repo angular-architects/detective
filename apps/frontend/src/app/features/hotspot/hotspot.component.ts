@@ -1,5 +1,5 @@
 import { Component, effect, inject, Signal, signal, viewChild } from '@angular/core';
-import { HotspotService } from './hotspot.service';
+import { HotspotService } from '../../data/hotspot.service';
 import {
   AggregatedHotspot,
   AggregatedHotspotsResult,
