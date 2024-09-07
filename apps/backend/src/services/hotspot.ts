@@ -3,10 +3,11 @@ import * as fs from 'fs';
 
 import { Options } from '../options/options';
 import { LogBodyEntry, parseGitLog } from '../utils/git-parser';
-import { calcCyclomaticComplexity } from '../utils/complexity';
 import { loadConfig } from '../infrastructure/config';
 import { normalizeFolder, toDisplayFolder } from '../utils/normalize-folder';
 import { Limits } from '../model/limits';
+
+import { calcCyclomaticComplexity } from '../utils/complexity';
 import { countLinesInFile } from '../utils/count-lines';
 
 export type ComplexityMetric = 'McCabe' | 'Length';
@@ -76,7 +77,8 @@ export async function aggregateHotspots(
   limits: Limits,
   options: Options
 ): Promise<AggregatedHotspotsResult> {
-  const hotspots = (await findHotspotFiles(criteria, limits, options)).hotspots;
+  const hotspotResult = await findHotspotFiles(criteria, limits, options);
+  const hotspots = hotspotResult.hotspots;
   const config = loadConfig(options);
 
   const modules = config.scopes.map((m) => normalizeFolder(m));
@@ -152,5 +154,6 @@ function calcComplexity(
   } else if (criteria.metric === 'Length' && fs.existsSync(filePath)) {
     complexity = countLinesInFile(filePath);
   }
+
   return complexity;
 }
