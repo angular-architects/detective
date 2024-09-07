@@ -1,12 +1,8 @@
 import {
   Component,
   inject,
-  viewChild,
-  ElementRef,
   signal,
   computed,
-  effect,
-  Signal,
 } from '@angular/core';
 import { toObservable, toSignal } from '@angular/core/rxjs-interop';
 import { FormsModule } from '@angular/forms';
@@ -31,12 +27,12 @@ import { LimitsComponent } from '../../ui/limits/limits.component';
 import { debounceTimeSkipFirst } from '../../utils/debounce';
 import { EventService } from '../../utils/event.service';
 import {
-  TeamAlignmentChart,
-  drawAlignmentCharts,
-} from './team-alignment-chart';
+  toAlignmentChartConfigs,
+} from './team-alignment-chart-adapter';
 import { injectShowError } from '../../utils/error-handler';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { DoughnutComponent } from "../../ui/doughnut/doughnut.component";
 
 type LoadTeamAlignmentOptions = {
   limits: Limits;
@@ -52,7 +48,8 @@ type LoadTeamAlignmentOptions = {
     FormsModule,
     MatIconModule,
     MatTooltipModule,
-  ],
+    DoughnutComponent
+],
   templateUrl: './team-alignment.component.html',
   styleUrl: './team-alignment.component.css',
 })
@@ -62,50 +59,26 @@ export class TeamAlignmentComponent {
   private statusStore = inject(StatusStore);
   private showError = injectShowError();
 
-  private containerRef = viewChild.required('container', { read: ElementRef });
-
-  charts: TeamAlignmentChart[] = [];
-
   totalCommits = this.statusStore.commits;
   limits = signal(initLimits);
   byUser = signal(false);
 
-  teamAlignmentResult: Signal<TeamAlignmentResult>;
+  alignment$ = combineLatest({
+    limits: toObservable(this.limits).pipe(debounceTimeSkipFirst(300)),
+    byUser: toObservable(this.byUser),
+    filterChanged: this.eventService.filterChanged.pipe(startWith(null)),
+  }).pipe(switchMap((combi) => this.loadTeamAlignment(combi)));
+
+  teamAlignmentResult = toSignal(this.alignment$, {
+    initialValue: initTeamAlignmentResult
+  });
 
   teams = computed(() => this.teamAlignmentResult().teams);
   colors = computed(() => this.toColors(this.teams().length));
-
-  constructor() {
-    const alignment$ = combineLatest({
-      limits: toObservable(this.limits).pipe(debounceTimeSkipFirst(300)),
-      byUser: toObservable(this.byUser),
-      filterChanged: this.eventService.filterChanged.pipe(startWith(null)),
-    }).pipe(switchMap((combi) => this.loadTeamAlignment(combi)));
-
-    this.teamAlignmentResult = toSignal(alignment$, {
-      initialValue: initTeamAlignmentResult
-    });
-
-    effect(() => {
-      const result = this.teamAlignmentResult();
-      const colors = this.colors();
-      const containerRef = this.containerRef();
-      const placeholder = containerRef.nativeElement;
-
-      this.removeCharts();
-      this.charts = drawAlignmentCharts(result, placeholder, colors);
-    });
-  }
+  chartConfigs = computed(() => toAlignmentChartConfigs(this.teamAlignmentResult(), this.colors()));
 
   private toColors(count: number): string[] {
     return quantize(interpolateRainbow, count + 1);
-  }
-
-  private removeCharts(): void {
-    const containerRef = this.containerRef();
-    const container = containerRef.nativeElement;
-    container.innerHTML = '';
-    this.charts.forEach((c) => c.destroy());
   }
 
   private loadTeamAlignment(options: LoadTeamAlignmentOptions): Observable<TeamAlignmentResult> {

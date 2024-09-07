@@ -22,4 +22,6 @@
   }
 </ul>
 
-<div #container></div>
+@for(config of chartConfigs(); track config) {
+  <app-doughnut [chartConfig]="config"></app-doughnut>
+}

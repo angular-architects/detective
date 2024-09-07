@@ -1,24 +1,12 @@
-import {
-  Chart,
-  ArcElement,
-  Tooltip,
-  Legend,
-  Title,
-  DoughnutController,
-} from 'chart.js';
 import { TeamAlignmentResult } from '../../model/team-alignment-result';
 import { lastSegments } from '../../utils/segments';
+import { DoughnutChartConfig } from '../../ui/doughnut/doughnut.component';
 
-Chart.register(ArcElement, Tooltip, Legend, Title, DoughnutController);
-
-export type TeamAlignmentChart = Chart<'doughnut', number[], string>;
-
-export function drawAlignmentCharts(
+export function toAlignmentChartConfigs(
   result: TeamAlignmentResult,
-  placeholder: HTMLElement,
   colors: string[]
-): TeamAlignmentChart[] {
-  const charts: TeamAlignmentChart[] = [];
+): DoughnutChartConfig[] {
+  const chartConfigs: DoughnutChartConfig[] = [];
 
   const moduleNames = Object.keys(result.modules);
   const teams = result.teams;
@@ -28,24 +16,10 @@ export function drawAlignmentCharts(
 
     const label = lastSegments(moduleName, 3);
 
-    const container = document.createElement('div');
-    container.classList.add('ta-container');
-    placeholder.appendChild(container);
-
-    const canvas = document.createElement('canvas');
-    canvas.classList.add('ta-diagram');
-    container.appendChild(canvas);
-
     const data = teams.map((t) => module.changes[t]);
     const sum = data.reduce((acc, curr) => acc + (curr || 0), 0);
 
-    const ctx = canvas.getContext('2d');
-
-    if (!ctx) {
-      throw new Error('2d context not found');
-    }
-
-    const chart = new Chart(ctx, {
+    chartConfigs.push({
       type: 'doughnut',
       data: {
         labels: teams,
@@ -89,8 +63,6 @@ export function drawAlignmentCharts(
         },
       },
     });
-
-    charts.push(chart);
   }
-  return charts;
+  return chartConfigs;
 }

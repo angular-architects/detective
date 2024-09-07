@@ -11,7 +11,7 @@ import { drawGraph, Graph } from './graph';
 })
 export class GraphComponent implements OnChanges {
   graph = input.required<Graph>();
-  containerRef = viewChild.required('container', { read: ElementRef });
+  containerRef = viewChild.required<ElementRef<HTMLElement>>('container');
 
   ngOnChanges(_changes: SimpleChanges): void {
     const containerRef = this.containerRef();
