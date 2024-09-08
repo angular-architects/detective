@@ -57,7 +57,8 @@ function calcCohesion(moduleInfo: ModuleInfo, matrix: number[][]) {
   return moduleInfo.fileCount.map((count, index) => {
     const edges = matrix[index][index];
     const maxEdges = (count * (count - 1)) / 2;
-    return toPercent(edges / maxEdges);
+    const factor = maxEdges > 0 ? edges / maxEdges : 1;
+    return toPercent(factor);
   });
 }
 
