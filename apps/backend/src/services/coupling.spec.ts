@@ -52,17 +52,15 @@ jest.mock('../infrastructure/deps', () => ({
 
 describe('coupling service', () => {
   it('infers coupling from dependencies', async () => {
-
     const result = await calcCoupling(defaultOptions);
 
-    expect(result.matrix).toEqual([ 
-      [ 1, 1, 2 ], 
-      [ 0, 0, 1 ], 
-      [ 0, 0, 1 ] 
+    expect(result.matrix).toEqual([
+      [1, 1, 2],
+      [0, 0, 1],
+      [0, 0, 1],
     ]);
     expect(result.dimensions).toEqual(scopes);
-    expect(result.fileCount).toEqual([ 2, 1, 3 ]);
-    expect(result.cohesion).toEqual([ 100, 100, 33 ]);
-
+    expect(result.fileCount).toEqual([2, 1, 3]);
+    expect(result.cohesion).toEqual([100, 100, 33]);
   });
 });
