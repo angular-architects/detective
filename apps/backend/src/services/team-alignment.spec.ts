@@ -1,6 +1,6 @@
 import { emptyConfig } from '../model/config';
 import { Limits } from '../model/limits';
-import { defaultOptions } from '../options/options';
+import { defaultOptions, Options } from '../options/options';
 import { calcTeamAlignment } from './team-alignment';
 
 const now = new Date();
@@ -88,6 +88,8 @@ describe('team alignment service', () => {
         },
       },
     });
+
+    expect(result.teams).toEqual(['alpha', 'beta', 'unknown']);
   });
 
   it('breaks down team alignment to user level', async () => {
@@ -107,6 +109,51 @@ describe('team alignment service', () => {
       },
       '/shared': {
         changes: { 'John Doe': 1, 'Max Muster': 1, 'Maria Muster': 1 },
+      },
+    });
+
+    expect(result.teams).toEqual([
+      'John Doe',
+      'Jane Doe',
+      'Max Muster',
+      'Maria Muster',
+    ]);
+  });
+
+  it('uses dummy users in demo mode', async () => {
+    const limits: Limits = {
+      limitCommits: 4,
+      limitMonths: 0,
+    };
+
+    const options: Options = {
+      ...defaultOptions,
+      demoMode: true,
+    };
+
+    const result = await calcTeamAlignment(true, limits, options);
+
+    expect(result.modules).toEqual({
+      '/booking': {
+        changes: {
+          'Max Muster': 2,
+          'John Doe': 10,
+          'Jane Doe': 10,
+        },
+      },
+      '/checkin': {
+        changes: {
+          'Max Muster': 20,
+          'John Doe': 1,
+          'Maria Muster': 20,
+        },
+      },
+      '/shared': {
+        changes: {
+          'Max Muster': 1,
+          'Jane Doe': 1,
+          'Maria Muster': 1,
+        },
       },
     });
   });
