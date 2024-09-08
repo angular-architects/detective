@@ -149,13 +149,7 @@ function toDate(isoString: string): Date {
 }
 
 function cleanEmail(userParts: string[]) {
-  try {
-    return userParts[1].substring(0, userParts[1].length - 1);
-  } catch (e) {
-    console.log('ERROR', e);
-    console.log('userParts', userParts);
-    throw e;
-  }
+  return userParts[1].substring(0, userParts[1].length - 1);
 }
 
 function cleanUserName(userName: string) {
