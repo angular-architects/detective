@@ -1,6 +1,7 @@
 import * as path from 'path';
 import { noLimits } from '../model/limits';
 import { loadCachedLog } from '../infrastructure/log';
+import { getToday, subtractMonths } from '../utils/date-utils';
 
 type State = 'header' | 'body' | 'skip';
 
@@ -83,6 +84,10 @@ export async function parseGitLog(callback: ParserCallback, limits = noLimits) {
       }
     }
   }
+
+  if (body.length > 0) {
+    callback({ header, body });
+  }
 }
 
 function parseBodyEntry(
@@ -126,12 +131,21 @@ function handleRenames(filePath: string, renameMap: Map<string, string>) {
 
 function parseHeader(line: string): LogHeader {
   const parts = line.split(',');
-  const date = new Date(parts.pop() as string);
+  const isoString = parts.pop() as string;
+  const date = toDate(isoString);
   const fullUserName = parts.join(',');
   const userParts = fullUserName.split('<');
   const userName = cleanUserName(userParts[0]);
   const email = cleanEmail(userParts);
   return { userName, email, date };
+}
+
+function toDate(isoString: string): Date {
+  if (isoString.endsWith('"')) {
+    isoString = isoString.substring(0, isoString.length - 1);
+  }
+  const date = new Date(isoString);
+  return date;
 }
 
 function cleanEmail(userParts: string[]) {
@@ -166,16 +180,4 @@ function getNextLine(text: string, start: number): [line: string, end: number] {
   }
 
   return [line, pos];
-}
-
-function subtractMonths(date: Date, months: number) {
-  const result = new Date(date);
-  result.setMonth(result.getMonth() - months);
-  return result;
-}
-
-function getToday(): Date {
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
-  return today;
 }

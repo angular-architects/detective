@@ -1,9 +1,7 @@
 import { emptyConfig } from '../model/config';
 import { Limits } from '../model/limits';
 import { defaultOptions } from '../options/options';
-import {
-  calcTeamAlignment,
-} from './team-alignment';
+import { calcTeamAlignment } from './team-alignment';
 
 const now = new Date();
 
@@ -21,13 +19,8 @@ jest.mock('../infrastructure/config', () => ({
   loadConfig: jest.fn(() => ({
     ...emptyConfig,
     teams: {
-      'alpha': [
-        'John Doe'
-      ],
-      'beta': [
-        'Jane Doe',
-        'Max Muster'
-      ]
+      alpha: ['John Doe'],
+      beta: ['Jane Doe', 'Max Muster'],
     },
     scopes,
   })),
@@ -74,27 +67,27 @@ describe('team alignment service', () => {
     const result = await calcTeamAlignment(false, limits, defaultOptions);
 
     expect(result.modules).toEqual({
-        "/booking": {
-          "changes": {
-            "alpha": 2,
-            "beta": 20,
-          }
+      '/booking': {
+        changes: {
+          alpha: 2,
+          beta: 20,
         },
-        "/checkin": {
-          "changes": {
-            "alpha": 20,
-            "beta": 1,
-            "unknown": 20,
-          }
+      },
+      '/checkin': {
+        changes: {
+          alpha: 20,
+          beta: 1,
+          unknown: 20,
         },
-        "/shared": {
-          "changes": {
-            "alpha": 1,
-            "beta": 1,
-            "unknown": 1,
-          }
-        }
-      });
+      },
+      '/shared': {
+        changes: {
+          alpha: 1,
+          beta: 1,
+          unknown: 1,
+        },
+      },
+    });
   });
 
   it('breaks down team alignment to user level', async () => {
@@ -106,10 +99,15 @@ describe('team alignment service', () => {
     const result = await calcTeamAlignment(true, limits, defaultOptions);
 
     expect(result.modules).toEqual({
-      '/booking': { changes: { 'John Doe': 2, 'Jane Doe': 10, 'Max Muster': 10 } },
-      '/checkin': { changes: { 'John Doe': 20, 'Jane Doe': 1, 'Maria Muster': 20 } },
-      '/shared': { changes: { 'John Doe': 1, 'Max Muster': 1, 'Maria Muster': 1 } }
-    })
+      '/booking': {
+        changes: { 'John Doe': 2, 'Jane Doe': 10, 'Max Muster': 10 },
+      },
+      '/checkin': {
+        changes: { 'John Doe': 20, 'Jane Doe': 1, 'Maria Muster': 20 },
+      },
+      '/shared': {
+        changes: { 'John Doe': 1, 'Max Muster': 1, 'Maria Muster': 1 },
+      },
+    });
   });
-
 });
