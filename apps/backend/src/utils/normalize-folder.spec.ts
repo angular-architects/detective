@@ -1,4 +1,4 @@
-import { normalizeFolder, toDisplayFolder } from "./normalize-folder";
+import { normalizeFolder, toDisplayFolder } from './normalize-folder';
 
 describe('normalize-folder', () => {
   it('normalizeFolder adds trailing slash', () => {
@@ -11,7 +11,7 @@ describe('normalize-folder', () => {
     const path = 'x/y/z/';
     const result = normalizeFolder(path);
     expect(result).toBe('x/y/z/');
-  })
+  });
 
   it('toDisplayFolder removes trailing slash', () => {
     const path = 'x/y/z/';
@@ -24,5 +24,4 @@ describe('normalize-folder', () => {
     const result = toDisplayFolder(path);
     expect(result).toBe('x/y/z');
   });
-
 });

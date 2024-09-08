@@ -14,6 +14,9 @@
     ],
     "sharedGlobals": []
   },
+  "release": {
+    "projects": ["backend"]
+  },
   "targetDefaults": {
     "@angular-devkit/build-angular:application": {
       "cache": true,

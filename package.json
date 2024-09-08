@@ -83,6 +83,7 @@
     "webpack-cli": "^5.1.4"
   },
   "scripts": {
-    "prepare": "husky"
+    "prepare": "husky",
+    "release": "nx release --skip-publish"
   }
 }

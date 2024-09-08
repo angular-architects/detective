@@ -1,5 +1,4 @@
-## 1.0.5-0 (2024-09-08)
-
+## 1.0.2
 
 ### 🚀 Features
 
@@ -56,14 +55,6 @@
 - add missing files ([026a16f](https://github.com/angular-architects/forensic/commit/026a16f))
 - fix tree appearance ([8da2573](https://github.com/angular-architects/forensic/commit/8da2573))
 
-### ❤️  Thank You
+### ❤️ Thank You
 
 - Manfred Steyer
-
-# v1.0.0 (2024-09-08)
-
-This was a version bump only, there were no code changes.
-
-## 1.0.3-0 (2024-09-08)
-
-This was a version bump only, there were no code changes.
