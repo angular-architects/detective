@@ -1,6 +1,6 @@
 {
   "name": "@softarc/detective",
-  "version": "1.0.2",
+  "version": "1.0.3-0",
   "bin": {
     "detective": "./bin/main.js",
     "@softarc/detective": "./bin/main.js"
