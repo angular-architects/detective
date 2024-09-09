@@ -29,7 +29,6 @@ export function loadDeps(_options: Options): Deps {
   if (!deps) {
     throw new Error('no dependencies loaded!');
   }
-  console.log('deps', deps);
   return deps;
 }
 

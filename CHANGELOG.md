@@ -1,6 +1,6 @@
 ## 1.0.3 (2024-09-09)
 
-This was a version bump only, there were no code changes.
+- update to sheriff-core 0.17.1
 
 ## 1.0.0
 

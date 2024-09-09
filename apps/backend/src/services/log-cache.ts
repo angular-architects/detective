@@ -14,14 +14,9 @@ export function isStale(): boolean {
 }
 
 export async function updateLogCache(): Promise<void> {
-  const start = new Date();
-
   const log = await getGitLog();
   saveCachedLog(log);
 
   const hash = calcTreeHash();
   saveTreeHash(hash);
-
-  const end = new Date();
-  console.log(end.getTime() - start.getTime(), ' msec');
 }
