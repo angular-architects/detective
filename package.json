@@ -13,7 +13,7 @@
     "@angular/platform-browser": "~18.2.0",
     "@angular/platform-browser-dynamic": "~18.2.0",
     "@angular/router": "~18.2.0",
-    "@softarc/sheriff-core": "^0.16.4",
+    "@softarc/sheriff-core": "^0.17.1",
     "axios": "^1.6.0",
     "chart.js": "^4.4.4",
     "cytoscape": "^3.30.2",
