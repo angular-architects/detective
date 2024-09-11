@@ -1,6 +1,5 @@
 import { emptyConfig } from '../model/config';
-import { Limits } from '../model/limits';
-import { LogEntry, parseGitLog } from './git-parser';
+import { LogEntry, parseGitLog, ParseOptions } from './git-parser';
 import { getToday, subtractMonths, subtractSeconds } from '../utils/date-utils';
 import { loadCachedLog } from '../infrastructure/log';
 
@@ -16,7 +15,7 @@ jest.mock('../infrastructure/config', () => ({
   })),
 }));
 
-const logWithoutRenames = `"John Doe <john.doe@acme.com>,${today.toISOString()}"
+const logWithoutRenames = `"John Doe <john.doe@acme.com>,${today.toISOString()}\t123456,ci: format with prettier"
 1\t0\t/booking/feature-manage/my.component.ts
 1\t0\t/booking/feature-manage/my-other.component.ts
 0\t1\t/checkin/feature-checkin/my.component.ts
@@ -65,16 +64,19 @@ describe('git parser', () => {
     });
 
     it('returns all log entries', async () => {
-      const limits: Limits = {
-        limitCommits: 0,
-        limitMonths: 0,
+      const parseOptions: ParseOptions = {
+        limits: {
+          limitCommits: 0,
+          limitMonths: 0,
+        },
+        filter: [],
       };
 
       const entries: LogEntry[] = [];
 
       parseGitLog((entry) => {
         entries.push(entry);
-      }, limits);
+      }, parseOptions);
 
       expect(entries).toEqual([
         {
@@ -167,16 +169,19 @@ describe('git parser', () => {
     });
 
     it('returns last 2 log entries', async () => {
-      const limits: Limits = {
-        limitCommits: 2,
-        limitMonths: 0,
+      const parseOptions: ParseOptions = {
+        limits: {
+          limitCommits: 2,
+          limitMonths: 0,
+        },
+        filter: null,
       };
 
       const entries: LogEntry[] = [];
 
       parseGitLog((entry) => {
         entries.push(entry);
-      }, limits);
+      }, parseOptions);
 
       expect(entries).toEqual([
         {
@@ -230,17 +235,134 @@ describe('git parser', () => {
       ]);
     });
 
-    it("returns last month's log entries", async () => {
-      const limits: Limits = {
-        limitCommits: 0,
-        limitMonths: 1,
+    it('returns last 2 log entries after filtering', async () => {
+      const parseOptions: ParseOptions = {
+        limits: {
+          limitCommits: 2,
+          limitMonths: 0,
+        },
+        filter: ['format with prettier'],
       };
 
       const entries: LogEntry[] = [];
 
       parseGitLog((entry) => {
         entries.push(entry);
-      }, limits);
+      }, parseOptions);
+
+      expect(entries).toEqual([
+        {
+          header: {
+            userName: 'Jane Doe',
+            email: 'jane.doe@acme.com',
+            date: today,
+          },
+          body: [
+            {
+              linesAdded: 10,
+              linesRemoved: 0,
+              path: '/booking/feature-manage/my.component.ts',
+            },
+            {
+              linesAdded: 0,
+              linesRemoved: 1,
+              path: '/checkin/feature-checkin/my.component.ts',
+            },
+          ],
+        },
+        {
+          header: {
+            userName: 'John Doe',
+            email: 'john.doe@acme.com',
+            date: past,
+          },
+          body: [
+            {
+              linesAdded: 10,
+              linesRemoved: 0,
+              path: '/booking/feature-manage/my.component.ts',
+            },
+            {
+              linesAdded: 0,
+              linesRemoved: 1,
+              path: '/shared/feature-checkin/my.component.ts',
+            },
+          ],
+        },
+      ]);
+    });
+
+    it('returns last 2 log entries after filtering with multiple filters', async () => {
+      const parseOptions: ParseOptions = {
+        limits: {
+          limitCommits: 2,
+          limitMonths: 0,
+        },
+        filter: ['does not match', 'format with prettier'],
+      };
+
+      const entries: LogEntry[] = [];
+
+      parseGitLog((entry) => {
+        entries.push(entry);
+      }, parseOptions);
+
+      expect(entries).toEqual([
+        {
+          header: {
+            userName: 'Jane Doe',
+            email: 'jane.doe@acme.com',
+            date: today,
+          },
+          body: [
+            {
+              linesAdded: 10,
+              linesRemoved: 0,
+              path: '/booking/feature-manage/my.component.ts',
+            },
+            {
+              linesAdded: 0,
+              linesRemoved: 1,
+              path: '/checkin/feature-checkin/my.component.ts',
+            },
+          ],
+        },
+        {
+          header: {
+            userName: 'John Doe',
+            email: 'john.doe@acme.com',
+            date: past,
+          },
+          body: [
+            {
+              linesAdded: 10,
+              linesRemoved: 0,
+              path: '/booking/feature-manage/my.component.ts',
+            },
+            {
+              linesAdded: 0,
+              linesRemoved: 1,
+              path: '/shared/feature-checkin/my.component.ts',
+            },
+          ],
+        },
+      ]);
+    });
+
+    it("returns last month's log entries", async () => {
+      const parseOptions: ParseOptions = {
+        limits: {
+          limitCommits: 0,
+          limitMonths: 1,
+        },
+        filter: [],
+      };
+
+      const entries: LogEntry[] = [];
+
+      parseGitLog((entry) => {
+        entries.push(entry);
+      }, parseOptions);
 
       expect(entries).toEqual([
         {
@@ -318,16 +440,19 @@ describe('git parser', () => {
       mocks.loadCachedLog.mockImplementation(() => logWithRenames);
     });
     it('returns all log entries', async () => {
-      const limits: Limits = {
-        limitCommits: 0,
-        limitMonths: 0,
+      const parseOptions: ParseOptions = {
+        limits: {
+          limitCommits: 0,
+          limitMonths: 0,
+        },
+        filter: [],
       };
 
       const entries: LogEntry[] = [];
 
       parseGitLog((entry) => {
         entries.push(entry);
-      }, limits);
+      }, parseOptions);
 
       expect(entries).toEqual([
         {

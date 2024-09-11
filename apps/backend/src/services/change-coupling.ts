@@ -1,7 +1,7 @@
 import { loadConfig } from '../infrastructure/config';
 import { Limits } from '../model/limits';
 import { Options } from '../options/options';
-import { parseGitLog } from '../utils/git-parser';
+import { parseGitLog, ParseOptions } from '../utils/git-parser';
 import { getEmptyMatrix } from '../utils/matrix';
 import { normalizeFolder } from '../utils/normalize-folder';
 
@@ -27,6 +27,11 @@ export async function calcChangeCoupling(
 
   const commitsPerModule: number[] = new Array(matrix.length).fill(0);
 
+  const parseOptions: ParseOptions = {
+    limits,
+    filter: config.filter,
+  };
+
   await parseGitLog((entry) => {
     const touchedModules = new Set<number>();
     for (const change of entry.body) {
@@ -39,7 +44,7 @@ export async function calcChangeCoupling(
       }
     }
     addToMatrix(touchedModules, matrix);
-  }, limits);
+  }, parseOptions);
 
   return {
     matrix,

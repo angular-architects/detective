@@ -51,7 +51,11 @@ export function getCommitCount(): string {
 export function getGitLog(limits = noLimits): Promise<string> {
   return new Promise<string>((resolve, reject) => {
     try {
-      const args = ['log', '--numstat', '--pretty=format:"%an <%ae>,%ad"'];
+      const args = [
+        'log',
+        '--numstat',
+        '--pretty=format:"%an <%ae>,%ad%x09%H,%s"',
+      ];
 
       if (limits.limitCommits) {
         args.push('-n ' + limits.limitCommits);

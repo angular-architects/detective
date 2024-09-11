@@ -1,5 +1,5 @@
 import * as path from 'path';
-import { noLimits } from '../model/limits';
+import { Limits, noLimits } from '../model/limits';
 import { loadCachedLog } from '../infrastructure/log';
 import { getToday, subtractMonths } from '../utils/date-utils';
 
@@ -30,7 +30,22 @@ const initHeader: LogHeader = {
   date: new Date(0),
 };
 
-export async function parseGitLog(callback: ParserCallback, limits = noLimits) {
+export type ParseOptions = {
+  limits: Limits;
+  filter: string[];
+};
+
+export const defaultParseOptions: ParseOptions = {
+  limits: noLimits,
+  filter: [],
+};
+
+export async function parseGitLog(
+  callback: ParserCallback,
+  options = defaultParseOptions
+) {
+  const limits = options.limits;
+
   let pos = 0;
   const log = loadCachedLog();
 
@@ -52,7 +67,9 @@ export async function parseGitLog(callback: ParserCallback, limits = noLimits) {
     const [line, next] = getNextLine(log, pos);
     pos = next;
 
-    if (state === 'header') {
+    if (checkExclude(line, options.filter)) {
+      state = 'skip';
+    } else if (state === 'header') {
       count++;
 
       if (limits.limitCommits && count > limits.limitCommits) {
@@ -88,6 +105,16 @@ export async function parseGitLog(callback: ParserCallback, limits = noLimits) {
   if (body.length > 0) {
     callback({ header, body });
   }
+}
+
+function checkExclude(line: string, filter: string[] | undefined): boolean {
+  if (!filter) return false;
+  for (const entry of filter) {
+    if (line.includes(entry)) {
+      return true;
+    }
+  }
+  return false;
 }
 
 function parseBodyEntry(
@@ -130,7 +157,9 @@ function handleRenames(filePath: string, renameMap: Map<string, string>) {
 }
 
 function parseHeader(line: string): LogHeader {
-  const parts = line.split(',');
+  const overviewAndDetail = line.split('\t');
+  const info = overviewAndDetail[0];
+  const parts = info.split(',');
   const isoString = parts.pop() as string;
   const date = toDate(isoString);
   const fullUserName = parts.join(',');

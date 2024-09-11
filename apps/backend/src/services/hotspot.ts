@@ -2,13 +2,14 @@ import path from 'path';
 import * as fs from 'fs';
 
 import { Options } from '../options/options';
-import { LogBodyEntry, parseGitLog } from '../utils/git-parser';
+import { LogBodyEntry, parseGitLog, ParseOptions } from '../utils/git-parser';
 import { loadConfig } from '../infrastructure/config';
 import { normalizeFolder, toDisplayFolder } from '../utils/normalize-folder';
 import { Limits } from '../model/limits';
 
 import { calcCyclomaticComplexity } from '../utils/complexity';
 import { countLinesInFile } from '../utils/count-lines';
+import { Config } from '../model/config';
 
 export type ComplexityMetric = 'McCabe' | 'Length';
 
@@ -51,10 +52,13 @@ export async function findHotspotFiles(
   limits: Limits,
   options: Options
 ): Promise<HotspotResult> {
+  const config = loadConfig(options);
+
   const hotspots: Record<string, Hotspot> = await analyzeLogs(
     criteria,
     limits,
-    options
+    options,
+    config.filter
   );
 
   const filtered: FlatHotspot[] = [];
@@ -79,8 +83,8 @@ export async function aggregateHotspots(
 ): Promise<AggregatedHotspotsResult> {
   const hotspotResult = await findHotspotFiles(criteria, limits, options);
   const hotspots = hotspotResult.hotspots;
-  const config = loadConfig(options);
 
+  const config = loadConfig(options);
   const modules = config.scopes.map((m) => normalizeFolder(m));
 
   const result: AggregatedHotspot[] = [];
@@ -104,9 +108,15 @@ export async function aggregateHotspots(
 async function analyzeLogs(
   criteria: HotspotCriteria,
   limits: Limits,
-  options: Options
+  options: Options,
+  filter: string[]
 ) {
   const hotspots: Record<string, Hotspot> = {};
+
+  const parseOptions: ParseOptions = {
+    limits,
+    filter,
+  };
 
   await parseGitLog((entry) => {
     for (const change of entry.body) {
@@ -134,7 +144,7 @@ async function analyzeLogs(
       hotspot.commits++;
       hotspot.changedLines += change.linesAdded + change.linesRemoved;
     }
-  }, limits);
+  }, parseOptions);
   return hotspots;
 }
 

@@ -1,7 +1,7 @@
 import { loadConfig } from '../infrastructure/config';
 import { Limits } from '../model/limits';
 import { Options } from '../options/options';
-import { parseGitLog } from '../utils/git-parser';
+import { parseGitLog, ParseOptions } from '../utils/git-parser';
 import { normalizeFolder } from '../utils/normalize-folder';
 
 const UNKNOWN_TEAM = 'unknown';
@@ -29,6 +29,11 @@ export async function calcTeamAlignment(
   const result = initResult(displayModules, Object.keys(teams));
 
   const users = new Set<string>();
+
+  const parseOptions: ParseOptions = {
+    limits,
+    filter: config.filter,
+  };
 
   let count = 0;
   await parseGitLog((entry) => {
@@ -63,7 +68,7 @@ export async function calcTeamAlignment(
         }
       }
     }
-  }, limits);
+  }, parseOptions);
 
   if (byUser) {
     result.teams = Array.from(users);
