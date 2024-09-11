@@ -1,3 +1,22 @@
+## 1.1.0 (2024-09-11)
+
+### 🚀 Features
+
+- allow to filter git log ([111d02a](https://github.com/angular-architects/forensic/commit/111d02a))
+- add sum of coupling ([dba3f46](https://github.com/angular-architects/forensic/commit/dba3f46))
+- add file filter ([26b8c66](https://github.com/angular-architects/forensic/commit/26b8c66))
+- use version together with git hash as cache key ([83d45dc](https://github.com/angular-architects/forensic/commit/83d45dc))
+- link readme for defining teams ([c76dcde](https://github.com/angular-architects/forensic/commit/c76dcde))
+
+### 🩹 Fixes
+
+- remove unneeded console logs ([9a25dcb](https://github.com/angular-architects/forensic/commit/9a25dcb))
+- normalize path for hotspot analysis ([7ee2005](https://github.com/angular-architects/forensic/commit/7ee2005))
+
+### ❤️ Thank You
+
+- Manfred Steyer
+
 ## 1.0.3 (2024-09-09)
 
 - update to sheriff-core 0.17.1
