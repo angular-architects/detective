@@ -45,13 +45,54 @@ For the Team Alignment Analysis, you need to map team names to the names of your
 
 ```json
 {
-  [...].
+  [...]
   "teams": {
     "alpha": ["John Doe", "Jane Doe"],
     "beta": ["Max Muster", "Susi Sorglos"]
   }
+  [...]
 }
 ```
+
+## Defining Entrypoints
+
+Detective probes a set of default entry points by looking at files with the names `index.ts` and `main.ts` in several directories. If your project structure is different, you can add this entry with respective globs to your `.detectice/config.json`:
+
+```json
+{
+  [...]
+  "entries": [
+    "packages/*/index.ts"
+  ],
+  [...]
+}
+```
+
+## Filtering the Git Log
+
+By default, Detective uses all the entries in the git log and analyzes all `.ts` files. You can change this by filtering log entries out that contain a given string and by defining globs pointing to the files you want to analyze.
+
+In the following example, commit messages containing the substring `prettier formatting` will be skipped and also files ending with `*.spec.ts` are not looked at.
+
+```json
+{
+  [...]
+  "filter": {
+    "logs": [
+      "prettier formatting"
+    ],
+    "files": [
+      "**/*.ts",
+      "!**/*.spec.ts"
+    ]
+  },
+  [...]
+}
+```
+
+Please note that excluding tests can help to regarding to your goals. However, there are situations where you also want to analze the coupling between tests and the tested code.
+
+To keep the git log cache small, only the first line of git commit messages, the user name and their email address, the commit hash and the date is respected by the filter.
 
 ## Nx Support
 

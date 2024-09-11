@@ -6,6 +6,7 @@ import { getEntryGlobs, inferDeps } from './infrastructure/deps';
 import { isRepo } from './infrastructure/git';
 import { openSync } from './utils/open';
 import { setupExpress } from './express';
+import { DETECTIVE_VERSION } from './infrastructure/version';
 
 const options = parseOptions(process.argv.slice(2));
 
@@ -35,7 +36,7 @@ const app = setupExpress(options);
 
 app.listen(options.port, () => {
   const url = `http://localhost:${options.port}`;
-  console.log(`Detective runs at ${url}`);
+  console.log(`Detective v${DETECTIVE_VERSION} runs at ${url}`);
   if (options.open) {
     openSync(url);
   }
