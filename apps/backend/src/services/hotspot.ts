@@ -92,8 +92,8 @@ export async function aggregateHotspots(
     let count = 0;
     for (const hotspot of hotspots) {
       if (
-        hotspot.fileName.startsWith(module) &&
-        hotspot.score >= criteria.minScore
+        hotspot.fileName.startsWith(module)
+        //&& hotspot.score >= criteria.minScore
       ) {
         count++;
       }
@@ -118,11 +118,13 @@ async function analyzeLogs(
     filter,
   };
 
+  const module = criteria.module ? normalizeFolder(criteria.module) : '';
+
   await parseGitLog((entry) => {
     for (const change of entry.body) {
       let hotspot: Hotspot;
 
-      if (!change.path.startsWith(criteria.module)) {
+      if (!change.path.startsWith(module)) {
         continue;
       }
 

@@ -261,10 +261,7 @@ describe('git parser', () => {
           limitMonths: 0,
         },
         filter: {
-          logs: [
-            'does not match',
-            'format with prettier'
-          ],
+          logs: ['does not match', 'format with prettier'],
         },
       };
 
@@ -577,7 +574,6 @@ describe('git parser', () => {
       ]);
     });
 
-
     it('filters files', async () => {
       const parseOptions: ParseOptions = {
         limits: {
@@ -585,7 +581,7 @@ describe('git parser', () => {
           limitMonths: 0,
         },
         filter: {
-          files: ['**/*.ts', '!**/*.spec.ts']
+          files: ['**/*.ts', '!**/*.spec.ts'],
         },
       };
 
@@ -594,7 +590,6 @@ describe('git parser', () => {
       parseGitLog((entry) => {
         entries.push(entry);
       }, parseOptions);
-
     });
-  })
+  });
 });

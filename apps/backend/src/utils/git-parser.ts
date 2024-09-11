@@ -34,15 +34,15 @@ const initHeader: LogHeader = {
 
 export type ParseOptions = {
   limits: Limits;
-  filter?: Filter
+  filter?: Filter;
 };
 
 export const defaultParseOptions: ParseOptions = {
   limits: noLimits,
   filter: {
     files: [],
-    logs: []
-  }
+    logs: [],
+  },
 };
 
 export async function parseGitLog(
@@ -50,7 +50,9 @@ export async function parseGitLog(
   options = defaultParseOptions
 ) {
   const limits = options.limits;
-  const fileFilter = (options.filter?.files?.length) ? options.filter.files : ['**/*.ts'];
+  const fileFilter = options.filter?.files?.length
+    ? options.filter.files
+    : ['**/*.ts'];
 
   let pos = 0;
   const log = loadCachedLog();

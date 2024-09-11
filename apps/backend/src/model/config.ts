@@ -6,7 +6,7 @@ export type Filter = {
 export type Config = {
   scopes: string[];
   groups: string[];
-  filter: Filter,
+  filter: Filter;
   teams: Record<string, string[]>;
   entries: [];
 };
@@ -18,6 +18,6 @@ export const emptyConfig: Config = {
   entries: [],
   filter: {
     logs: [],
-    files: []
-  }
+    files: [],
+  },
 };

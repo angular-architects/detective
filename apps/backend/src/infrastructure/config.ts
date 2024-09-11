@@ -11,7 +11,7 @@ const initConfig: Config = {
   entries: [],
   filter: {
     files: [],
-    logs: []
+    logs: [],
   },
   teams: {
     'example-team-a': ['John Doe', 'Jane Doe'],
