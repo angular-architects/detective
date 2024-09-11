@@ -9,6 +9,7 @@ export type ChangeCouplingResult = {
   matrix: number[][];
   dimensions: string[];
   groups: string[];
+  sumOfCoupling: number[];
 
   fileCount: number[];
   cohesion: number[];
@@ -26,6 +27,7 @@ export async function calcChangeCoupling(
   const matrix = getEmptyMatrix(modules.length);
 
   const commitsPerModule: number[] = new Array(matrix.length).fill(0);
+  const sumOfCoupling: number[] = new Array(matrix.length).fill(0);
 
   const parseOptions: ParseOptions = {
     limits,
@@ -43,6 +45,8 @@ export async function calcChangeCoupling(
         }
       }
     }
+
+    updateSumOfCoupling(touchedModules, sumOfCoupling);
     addToMatrix(touchedModules, matrix);
   }, parseOptions);
 
@@ -50,10 +54,23 @@ export async function calcChangeCoupling(
     matrix,
     dimensions: displayModules,
     groups: config.groups,
-
+    sumOfCoupling,
     fileCount: commitsPerModule,
     cohesion: new Array(matrix.length).fill(-1),
   };
+}
+
+function updateSumOfCoupling(
+  touchedModules: Set<number>,
+  sumOfCoupling: number[]
+) {
+  const count = touchedModules.size;
+  if (count > 1) {
+    const otherModules = count - 1;
+    for (const module of touchedModules) {
+      sumOfCoupling[module] += otherModules;
+    }
+  }
 }
 
 function addToMatrix(touchedModules: Set<number>, matrix: number[][]) {

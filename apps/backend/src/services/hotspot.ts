@@ -9,7 +9,6 @@ import { Limits } from '../model/limits';
 
 import { calcCyclomaticComplexity } from '../utils/complexity';
 import { countLinesInFile } from '../utils/count-lines';
-import { Config } from '../model/config';
 
 export type ComplexityMetric = 'McCabe' | 'Length';
 
@@ -123,6 +122,10 @@ async function analyzeLogs(
       let hotspot: Hotspot;
 
       if (!change.path.startsWith(criteria.module)) {
+        continue;
+      }
+
+      if (!change.path.endsWith('.ts')) {
         continue;
       }
 

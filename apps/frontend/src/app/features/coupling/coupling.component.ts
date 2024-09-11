@@ -96,6 +96,8 @@ export class CouplingComponent {
   toGraph(result: CouplingResult): Graph {
     result.matrix = this.clearSelfLinks(result.matrix);
 
+    console.log('result', result);
+
     const groupNodes: CouplingNodeDefinition[] = this.groupByFolder()
       ? createGroups(result.dimensions)
       : [];

@@ -1,6 +1,5 @@
 import {
   Component,
-  effect,
   ElementRef,
   input,
   OnChanges,

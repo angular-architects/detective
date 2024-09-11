@@ -71,6 +71,9 @@ export function createNodes(
   for (let i = 0; i < result.dimensions.length; i++) {
     const label = result.dimensions[i];
 
+    const soc = result.sumOfCoupling ? result.sumOfCoupling[i] : -1;
+    const relSoc = soc !== null ? soc / result.fileCount[i] : -1;
+
     const node: CouplingNodeDefinition = {
       data: {
         id: '' + i,
@@ -85,8 +88,8 @@ export function createNodes(
   `
             : `${label}
   <br><br>${result.fileCount[i]} commits
-  <br>Outgoing Deps: ${sumRow(result.matrix, i)}
-  <br>Incoming Deps: ${sumCol(result.matrix, i)}
+  <br>Sum of Coupling (SoC): ${soc}
+  <br>SoC per Commit: ${Math.round(relSoc * 100)}%
   `,
         dimension: label,
       },

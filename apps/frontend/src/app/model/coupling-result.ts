@@ -4,6 +4,7 @@ export interface CouplingResult {
   cohesion: number[];
   matrix: number[][];
   groups: string[];
+  sumOfCoupling: [];
 }
 
 export const initCouplingResult: CouplingResult = {
@@ -12,4 +13,5 @@ export const initCouplingResult: CouplingResult = {
   cohesion: [],
   matrix: [[]],
   groups: [],
+  sumOfCoupling: [],
 };

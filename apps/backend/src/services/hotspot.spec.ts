@@ -41,6 +41,7 @@ jest.mock('../infrastructure/log', () => ({
 "Jane Doe <jane.doe@acme.com>,${now.toISOString()}"
 10\t0\t/booking/feature-manage/my.component.ts
 0\t1\t/checkin/feature-checkin/my.component.ts
+0\t1\t/shared/feature-checkin/my.component.md
 
 "John Doe <john.doe@acme.com>,${now.toISOString()}"
 10\t0\t/booking/feature-manage/my.component.ts

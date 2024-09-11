@@ -54,6 +54,7 @@ describe('change coupling service', () => {
       [0, 0, 0],
     ]);
 
+    expect(result.sumOfCoupling).toEqual([4, 3, 3]);
     expect(result.fileCount).toEqual([3, 2, 2]);
   });
 });
