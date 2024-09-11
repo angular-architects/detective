@@ -1,2 +1,3 @@
-nx run-many --target=lint --all --fix
+nx run-many --target=lint --all --fix || exit 1
 nx format:write --all
+git add .
