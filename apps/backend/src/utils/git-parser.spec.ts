@@ -35,6 +35,27 @@ const logWithoutRenames = `"John Doe <john.doe@acme.com>,${today.toISOString()}\
 0\t1\t/shell/my-other.component.ts
 `;
 
+const logWithSpecFiles = `"John Doe <john.doe@acme.com>,${today.toISOString()}\t123456,ci: format with prettier"
+1\t0\t/booking/feature-manage/my.component.ts
+1\t0\t/booking/feature-manage/my-other.component.ts
+0\t1\t/checkin/feature-checkin/my.component.ts
+0\t1\t/shared/feature-checkin/my.component.ts
+0\t1\t/shared/feature-checkin/my.component.spec.ts
+
+"Jane Doe <jane.doe@acme.com>,${today.toISOString()}"
+10\t0\t/booking/feature-manage/my.component.ts
+0\t1\t/checkin/feature-checkin/my.component.ts
+
+"Jane Doe <john.doe@acme.com>,${past.toISOString()}"
+"John Doe <john.doe@acme.com>,${past.toISOString()}"
+10\t0\t/booking/feature-manage/my.component.ts
+0\t1\t/shared/feature-checkin/my.component.ts
+
+"Jane Doe <john.doe@acme.com>,${today.toISOString()}"
+10\t0\t/shell/my.component.ts
+0\t1\t/shell/my-other.component.ts
+`;
+
 const logWithRenames = `"John Doe <john.doe@acme.com>,${today.toISOString()}"
 1\t0\t/booking/feature-manage/{my.renamed.component.ts => my.renamed.again.component.ts}
 1\t0\t/booking/feature-manage/my-other.component.ts
@@ -69,7 +90,6 @@ describe('git parser', () => {
           limitCommits: 0,
           limitMonths: 0,
         },
-        filter: [],
       };
 
       const entries: LogEntry[] = [];
@@ -174,7 +194,6 @@ describe('git parser', () => {
           limitCommits: 2,
           limitMonths: 0,
         },
-        filter: null,
       };
 
       const entries: LogEntry[] = [];
@@ -235,70 +254,18 @@ describe('git parser', () => {
       ]);
     });
 
-    it('returns last 2 log entries after filtering', async () => {
-      const parseOptions: ParseOptions = {
-        limits: {
-          limitCommits: 2,
-          limitMonths: 0,
-        },
-        filter: ['format with prettier'],
-      };
-
-      const entries: LogEntry[] = [];
-
-      parseGitLog((entry) => {
-        entries.push(entry);
-      }, parseOptions);
-
-      expect(entries).toEqual([
-        {
-          header: {
-            userName: 'Jane Doe',
-            email: 'jane.doe@acme.com',
-            date: today,
-          },
-          body: [
-            {
-              linesAdded: 10,
-              linesRemoved: 0,
-              path: '/booking/feature-manage/my.component.ts',
-            },
-            {
-              linesAdded: 0,
-              linesRemoved: 1,
-              path: '/checkin/feature-checkin/my.component.ts',
-            },
-          ],
-        },
-        {
-          header: {
-            userName: 'John Doe',
-            email: 'john.doe@acme.com',
-            date: past,
-          },
-          body: [
-            {
-              linesAdded: 10,
-              linesRemoved: 0,
-              path: '/booking/feature-manage/my.component.ts',
-            },
-            {
-              linesAdded: 0,
-              linesRemoved: 1,
-              path: '/shared/feature-checkin/my.component.ts',
-            },
-          ],
-        },
-      ]);
-    });
-
     it('returns last 2 log entries after filtering with multiple filters', async () => {
       const parseOptions: ParseOptions = {
         limits: {
           limitCommits: 2,
           limitMonths: 0,
         },
-        filter: ['does not match', 'format with prettier'],
+        filter: {
+          logs: [
+            'does not match',
+            'format with prettier'
+          ],
+        },
       };
 
       const entries: LogEntry[] = [];
@@ -355,7 +322,10 @@ describe('git parser', () => {
           limitCommits: 0,
           limitMonths: 1,
         },
-        filter: [],
+        filter: {
+          files: [],
+          logs: [],
+        },
       };
 
       const entries: LogEntry[] = [];
@@ -445,7 +415,6 @@ describe('git parser', () => {
           limitCommits: 0,
           limitMonths: 0,
         },
-        filter: [],
       };
 
       const entries: LogEntry[] = [];
@@ -544,4 +513,88 @@ describe('git parser', () => {
       ]);
     });
   });
+
+  describe('with filter configured', () => {
+    beforeAll(() => {
+      mocks.loadCachedLog.mockImplementation(() => logWithSpecFiles);
+    });
+    it('returns last 2 log entries after filtering', async () => {
+      const parseOptions: ParseOptions = {
+        limits: {
+          limitCommits: 2,
+          limitMonths: 0,
+        },
+        filter: {
+          logs: ['format with prettier'],
+        },
+      };
+
+      const entries: LogEntry[] = [];
+
+      parseGitLog((entry) => {
+        entries.push(entry);
+      }, parseOptions);
+
+      expect(entries).toEqual([
+        {
+          header: {
+            userName: 'Jane Doe',
+            email: 'jane.doe@acme.com',
+            date: today,
+          },
+          body: [
+            {
+              linesAdded: 10,
+              linesRemoved: 0,
+              path: '/booking/feature-manage/my.component.ts',
+            },
+            {
+              linesAdded: 0,
+              linesRemoved: 1,
+              path: '/checkin/feature-checkin/my.component.ts',
+            },
+          ],
+        },
+        {
+          header: {
+            userName: 'John Doe',
+            email: 'john.doe@acme.com',
+            date: past,
+          },
+          body: [
+            {
+              linesAdded: 10,
+              linesRemoved: 0,
+              path: '/booking/feature-manage/my.component.ts',
+            },
+            {
+              linesAdded: 0,
+              linesRemoved: 1,
+              path: '/shared/feature-checkin/my.component.ts',
+            },
+          ],
+        },
+      ]);
+    });
+
+
+    it('filters files', async () => {
+      const parseOptions: ParseOptions = {
+        limits: {
+          limitCommits: 2,
+          limitMonths: 0,
+        },
+        filter: {
+          files: ['**/*.ts', '!**/*.spec.ts']
+        },
+      };
+
+      const entries: LogEntry[] = [];
+
+      parseGitLog((entry) => {
+        entries.push(entry);
+      }, parseOptions);
+
+    });
+  })
 });

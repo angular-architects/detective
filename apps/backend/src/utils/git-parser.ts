@@ -2,6 +2,8 @@ import * as path from 'path';
 import { Limits, noLimits } from '../model/limits';
 import { loadCachedLog } from '../infrastructure/log';
 import { getToday, subtractMonths } from '../utils/date-utils';
+import { Filter } from '../model/config';
+import microMatch from 'micromatch';
 
 type State = 'header' | 'body' | 'skip';
 
@@ -32,12 +34,15 @@ const initHeader: LogHeader = {
 
 export type ParseOptions = {
   limits: Limits;
-  filter: string[];
+  filter?: Filter
 };
 
 export const defaultParseOptions: ParseOptions = {
   limits: noLimits,
-  filter: [],
+  filter: {
+    files: [],
+    logs: []
+  }
 };
 
 export async function parseGitLog(
@@ -45,6 +50,7 @@ export async function parseGitLog(
   options = defaultParseOptions
 ) {
   const limits = options.limits;
+  const fileFilter = (options.filter?.files?.length) ? options.filter.files : ['**/*.ts'];
 
   let pos = 0;
   const log = loadCachedLog();
@@ -67,7 +73,7 @@ export async function parseGitLog(
     const [line, next] = getNextLine(log, pos);
     pos = next;
 
-    if (checkExclude(line, options.filter)) {
+    if (checkExclude(line, options?.filter?.logs)) {
       state = 'skip';
     } else if (state === 'header') {
       count++;
@@ -92,7 +98,9 @@ export async function parseGitLog(
         header = parseHeader(line);
       } else {
         const bodyEntry = parseBodyEntry(line, renameMap);
-        body.push(bodyEntry);
+        if (microMatch.match([bodyEntry.path], fileFilter).length > 0) {
+          body.push(bodyEntry);
+        }
       }
     } else if (state === 'skip') {
       if (!line.trim()) {

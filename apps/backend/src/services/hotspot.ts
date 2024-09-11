@@ -9,6 +9,7 @@ import { Limits } from '../model/limits';
 
 import { calcCyclomaticComplexity } from '../utils/complexity';
 import { countLinesInFile } from '../utils/count-lines';
+import { Filter } from '../model/config';
 
 export type ComplexityMetric = 'McCabe' | 'Length';
 
@@ -108,7 +109,7 @@ async function analyzeLogs(
   criteria: HotspotCriteria,
   limits: Limits,
   options: Options,
-  filter: string[]
+  filter: Filter
 ) {
   const hotspots: Record<string, Hotspot> = {};
 
@@ -122,10 +123,6 @@ async function analyzeLogs(
       let hotspot: Hotspot;
 
       if (!change.path.startsWith(criteria.module)) {
-        continue;
-      }
-
-      if (!change.path.endsWith('.ts')) {
         continue;
       }
 

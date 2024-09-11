@@ -9,7 +9,10 @@ const initConfig: Config = {
   scopes: [],
   groups: [],
   entries: [],
-  filter: [],
+  filter: {
+    files: [],
+    logs: []
+  },
   teams: {
     'example-team-a': ['John Doe', 'Jane Doe'],
     'example-team-b': ['Max Muster', 'Susi Sorglos'],
