@@ -26,6 +26,7 @@ import { injectShowError } from '../../utils/error-handler';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { DoughnutComponent } from '../../ui/doughnut/doughnut.component';
+import { MatButtonModule } from '@angular/material/button';
 
 type LoadTeamAlignmentOptions = {
   limits: Limits;
@@ -41,6 +42,7 @@ type LoadTeamAlignmentOptions = {
     FormsModule,
     MatIconModule,
     MatTooltipModule,
+    MatButtonModule,
     DoughnutComponent,
   ],
   templateUrl: './team-alignment.component.html',
