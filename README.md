@@ -43,7 +43,7 @@ npx detective
 
 For the Team Alignment Analysis, you need to map team names to the names of your team members as found in `git log`. This is done in the file `.detective/config.json` created the first time detective runs:
 
-```json
+```json5
 {
   [...]
   "teams": {
@@ -58,7 +58,7 @@ For the Team Alignment Analysis, you need to map team names to the names of your
 
 Detective probes a set of default entry points by looking at files with the names `index.ts` and `main.ts` in several directories. If your project structure is different, you can add this entry with respective globs to your `.detectice/config.json`:
 
-```json
+```json5
 {
   [...]
   "entries": [
@@ -74,7 +74,7 @@ By default, Detective uses all the entries in the git log and analyzes all `.ts`
 
 In the following example, commit messages containing the substring `prettier formatting` will be skipped and also files ending with `*.spec.ts` are not looked at.
 
-```json
+```json5
 {
   [...]
   "filter": {
