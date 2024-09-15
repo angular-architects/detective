@@ -50,6 +50,8 @@ export async function calcTeamAlignment(
       }
     }
 
+    userName = config.aliases?.[userName] || userName;
+
     users.add(userName);
 
     const key = calcKey(byUser, userName, userToTeam);

@@ -39,6 +39,21 @@ npm i @softarc/detective -D
 npx detective
 ```
 
+## Defining aliases
+
+In case users have used multiple names, as appearing in the `git log`, use the `aliases` option in the file `.detective/config.json` created the first time detective runs:
+
+```json
+{
+  [...]
+  "aliases": {
+    "jdoe": "John Doe", 
+    "janedoe": "Jane Doe"
+  }
+  [...]
+}
+```
+
 ## Defining Teams
 
 For the Team Alignment Analysis, you need to map team names to the names of your team members as found in `git log`. This is done in the file `.detective/config.json` created the first time detective runs:

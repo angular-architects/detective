@@ -8,6 +8,7 @@ export type Config = {
   groups: string[];
   filter: Filter;
   teams: Record<string, string[]>;
+  aliases: Record<string, string>;
   entries: [];
 };
 
@@ -15,6 +16,7 @@ export const emptyConfig: Config = {
   scopes: [],
   groups: [],
   teams: {},
+  aliases: {},
   entries: [],
   filter: {
     logs: [],
