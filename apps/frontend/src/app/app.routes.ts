@@ -1,7 +1,7 @@
 import { Routes } from '@angular/router';
 import { CouplingComponent } from './features/coupling/coupling.component';
 import { GraphTypeData } from './model/graph-type';
-import { ensureCache } from './utils/cache.guard';
+import { ensureCache } from './shell/cache.guard';
 import { HotspotComponent } from './features/hotspot/hotspot.component';
 import { TeamAlignmentComponent } from './features/team-alignment/team-alignment.component';
 import { AboutComponent } from './shell/about/about.component';

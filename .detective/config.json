@@ -1,0 +1,19 @@
+{
+  "scopes": [
+    "apps/backend/src/services",
+    "apps/backend/src/utils",
+    "apps/backend/src/options",
+    "apps/backend/src/model",
+    "apps/backend/src/infrastructure"
+  ],
+  "groups": ["apps/backend/src", "apps/backend", "apps"],
+  "entries": [],
+  "filter": {
+    "files": [],
+    "logs": []
+  },
+  "teams": {
+    "example-team-a": ["John Doe", "Jane Doe"],
+    "example-team-b": ["Max Muster", "Susi Sorglos"]
+  }
+}

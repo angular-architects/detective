@@ -12,12 +12,7 @@
       "options": {
         "buildTarget": "backend:build",
         "runBuildTargetDependencies": false,
-        "args": [
-          "--path",
-          "/Users/manfredsteyer/tmp/angular",
-          "--open",
-          "false"
-        ]
+        "args": ["--path", ".", "--open", "false"]
       },
       "configurations": {
         "development": {

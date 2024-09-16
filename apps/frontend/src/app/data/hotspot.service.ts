@@ -5,7 +5,7 @@ import {
   AggregatedHotspotsResult,
   HotspotCriteria,
   HotspotResult,
-} from '../features/hotspot/hotspot-result';
+} from '../model/hotspot-result';
 import { initLimits } from '../model/limits';
 
 @Injectable({ providedIn: 'root' })

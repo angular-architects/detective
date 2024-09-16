@@ -16,7 +16,7 @@ import {
   HotspotResult,
   initAggregatedHotspotsResult,
   initHotspotResult,
-} from './hotspot-result';
+} from '../../model/hotspot-result';
 import { MatSortModule } from '@angular/material/sort';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 import { lastSegments } from '../../utils/segments';
