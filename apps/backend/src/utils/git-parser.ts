@@ -96,7 +96,7 @@ export async function parseGitLog(
         callback({ header, body });
         body = [];
         state = 'header';
-      } else if (!line.includes('\t')) {
+      } else if (line.split('\t').length < 3) {
         header = parseHeader(line);
       } else {
         const bodyEntry = parseBodyEntry(line, renameMap);
