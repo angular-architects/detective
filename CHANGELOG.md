@@ -1,3 +1,13 @@
+## 1.1.1 (2024-09-16)
+
+### 🚀 Features
+
+- support aliases for git log usernames ([5f033a7](https://github.com/angular-architects/forensic/commit/5f033a7))
+
+### ❤️ Thank You
+
+- John van Leeuwen
+
 ## 1.1.0 (2024-09-11)
 
 ### 🚀 Features
