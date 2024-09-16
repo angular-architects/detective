@@ -1,3 +1,11 @@
+---
+name: Issue
+about: Report an issue
+title: ''
+labels:
+assignees:
+---
+
 # Issue
 
 Please describe the steps necessary to reproduce the error.
