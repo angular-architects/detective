@@ -1,13 +1,11 @@
 import { Component, computed, inject, input, signal } from '@angular/core';
-import { CouplingService } from '../../data/coupling.service';
-import { EventService } from '../../utils/event.service';
 import { toObservable, toSignal } from '@angular/core/rxjs-interop';
-
-import { MatCheckboxModule } from '@angular/material/checkbox';
 import { FormsModule } from '@angular/forms';
-import { GraphType } from '../../model/graph-type';
+import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import {
   catchError,
   combineLatest,
@@ -16,20 +14,23 @@ import {
   startWith,
   switchMap,
 } from 'rxjs';
-import { initLimits, Limits } from '../../model/limits';
-import { LimitsComponent } from '../../ui/limits/limits.component';
+
+import { CouplingService } from '../../data/coupling.service';
 import { StatusStore } from '../../data/status.store';
 import {
   CouplingResult,
   initCouplingResult,
 } from '../../model/coupling-result';
+import { GraphType } from '../../model/graph-type';
+import { initLimits, Limits } from '../../model/limits';
 import { Graph, CouplingNodeDefinition } from '../../ui/graph/graph';
-import { createGroups, createNodes, createEdges } from './graph.adapter';
+import { GraphComponent } from '../../ui/graph/graph.component';
+import { LimitsComponent } from '../../ui/limits/limits.component';
 import { debounceTimeSkipFirst } from '../../utils/debounce';
 import { injectShowError } from '../../utils/error-handler';
-import { MatIconModule } from '@angular/material/icon';
-import { MatTooltipModule } from '@angular/material/tooltip';
-import { GraphComponent } from '../../ui/graph/graph.component';
+import { EventService } from '../../utils/event.service';
+
+import { createGroups, createNodes, createEdges } from './graph.adapter';
 
 const STRUCTURE_TIP =
   'Select the modules in the tree on the left to visualize them and the depencencies of their files.';

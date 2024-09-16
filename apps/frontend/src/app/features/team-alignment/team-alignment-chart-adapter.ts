@@ -1,6 +1,6 @@
 import { TeamAlignmentResult } from '../../model/team-alignment-result';
-import { lastSegments } from '../../utils/segments';
 import { DoughnutChartConfig } from '../../ui/doughnut/doughnut.component';
+import { lastSegments } from '../../utils/segments';
 
 export function toAlignmentChartConfigs(
   result: TeamAlignmentResult,

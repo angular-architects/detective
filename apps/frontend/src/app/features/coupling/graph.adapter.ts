@@ -1,7 +1,8 @@
 import { EdgeDefinition } from 'cytoscape';
+
 import { CouplingResult } from '../../model/coupling-result';
-import { CouplingNodeDefinition } from '../../ui/graph/graph';
 import { GraphType } from '../../model/graph-type';
+import { CouplingNodeDefinition } from '../../ui/graph/graph';
 
 export function createEdges(
   result: CouplingResult,

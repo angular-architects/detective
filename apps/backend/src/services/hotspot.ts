@@ -1,15 +1,14 @@
-import path from 'path';
 import * as fs from 'fs';
+import path from 'path';
 
-import { Options } from '../options/options';
-import { LogBodyEntry, parseGitLog, ParseOptions } from '../utils/git-parser';
 import { loadConfig } from '../infrastructure/config';
-import { normalizeFolder, toDisplayFolder } from '../utils/normalize-folder';
+import { Filter } from '../model/config';
 import { Limits } from '../model/limits';
-
+import { Options } from '../options/options';
 import { calcCyclomaticComplexity } from '../utils/complexity';
 import { countLinesInFile } from '../utils/count-lines';
-import { Filter } from '../model/config';
+import { LogBodyEntry, parseGitLog, ParseOptions } from '../utils/git-parser';
+import { normalizeFolder, toDisplayFolder } from '../utils/normalize-folder';
 
 export type ComplexityMetric = 'McCabe' | 'Length';
 

@@ -1,9 +1,11 @@
 import * as path from 'path';
-import { Limits, noLimits } from '../model/limits';
-import { loadCachedLog } from '../infrastructure/log';
-import { getToday, subtractMonths } from '../utils/date-utils';
-import { Filter } from '../model/config';
+
 import microMatch from 'micromatch';
+
+import { loadCachedLog } from '../infrastructure/log';
+import { Filter } from '../model/config';
+import { Limits, noLimits } from '../model/limits';
+import { getToday, subtractMonths } from '../utils/date-utils';
 
 type State = 'header' | 'body' | 'skip';
 

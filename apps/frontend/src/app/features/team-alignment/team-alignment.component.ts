@@ -1,7 +1,10 @@
 import { Component, inject, signal, computed } from '@angular/core';
 import { toObservable, toSignal } from '@angular/core/rxjs-interop';
 import { FormsModule } from '@angular/forms';
+import { MatButtonModule } from '@angular/material/button';
 import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MatIconModule } from '@angular/material/icon';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { quantize, interpolateRainbow } from 'd3';
 import {
   combineLatest,
@@ -11,6 +14,7 @@ import {
   catchError,
   of,
 } from 'rxjs';
+
 import { StatusStore } from '../../data/status.store';
 import { TeamAlignmentService } from '../../data/team-alignment.service';
 import { initLimits, Limits } from '../../model/limits';
@@ -18,15 +22,13 @@ import {
   initTeamAlignmentResult,
   TeamAlignmentResult,
 } from '../../model/team-alignment-result';
+import { DoughnutComponent } from '../../ui/doughnut/doughnut.component';
 import { LimitsComponent } from '../../ui/limits/limits.component';
 import { debounceTimeSkipFirst } from '../../utils/debounce';
-import { EventService } from '../../utils/event.service';
-import { toAlignmentChartConfigs } from './team-alignment-chart-adapter';
 import { injectShowError } from '../../utils/error-handler';
-import { MatIconModule } from '@angular/material/icon';
-import { MatTooltipModule } from '@angular/material/tooltip';
-import { DoughnutComponent } from '../../ui/doughnut/doughnut.component';
-import { MatButtonModule } from '@angular/material/button';
+import { EventService } from '../../utils/event.service';
+
+import { toAlignmentChartConfigs } from './team-alignment-chart-adapter';
 
 type LoadTeamAlignmentOptions = {
   limits: Limits;

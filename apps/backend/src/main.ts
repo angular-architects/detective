@@ -1,12 +1,12 @@
 #!/usr/bin/env node
 
-import { parseOptions } from './options/parse-options';
+import { setupExpress } from './express';
 import { ensureConfig } from './infrastructure/config';
 import { getEntryGlobs, inferDeps } from './infrastructure/deps';
 import { isRepo } from './infrastructure/git';
-import { openSync } from './utils/open';
-import { setupExpress } from './express';
 import { DETECTIVE_VERSION } from './infrastructure/version';
+import { parseOptions } from './options/parse-options';
+import { openSync } from './utils/open';
 
 const options = parseOptions(process.argv.slice(2));
 

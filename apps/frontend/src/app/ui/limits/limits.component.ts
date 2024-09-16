@@ -1,3 +1,4 @@
+import { DecimalPipe } from '@angular/common';
 import {
   Component,
   computed,
@@ -6,13 +7,13 @@ import {
   model,
   signal,
 } from '@angular/core';
-import { Limits } from '../../model/limits';
+import { FormsModule } from '@angular/forms';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
-import { FormsModule } from '@angular/forms';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { DecimalPipe } from '@angular/common';
+
+import { Limits } from '../../model/limits';
 
 type OptionId = 'COMMITS' | 'MONTHS';
 

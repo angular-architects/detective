@@ -1,3 +1,4 @@
+import { CommonModule } from '@angular/common';
 import {
   Component,
   ElementRef,
@@ -6,7 +7,7 @@ import {
   SimpleChanges,
   viewChild,
 } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { drawGraph, Graph } from './graph';
 
 @Component({

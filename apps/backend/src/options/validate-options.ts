@@ -1,5 +1,6 @@
-import { Options } from './options';
 import fs from 'fs';
+
+import { Options } from './options';
 
 export function validateOptions(options: Options) {
   try {

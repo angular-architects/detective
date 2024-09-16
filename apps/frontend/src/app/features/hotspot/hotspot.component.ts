@@ -6,23 +6,17 @@ import {
   signal,
   viewChild,
 } from '@angular/core';
-import { HotspotService } from '../../data/hotspot.service';
-import {
-  AggregatedHotspot,
-  AggregatedHotspotsResult,
-  ComplexityMetric,
-  FlatHotspot,
-  HotspotCriteria,
-  HotspotResult,
-  initAggregatedHotspotsResult,
-  initHotspotResult,
-} from '../../model/hotspot-result';
+import { toObservable, toSignal } from '@angular/core/rxjs-interop';
+import { FormsModule } from '@angular/forms';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatIconModule } from '@angular/material/icon';
+import { MatInputModule } from '@angular/material/input';
+import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
+import { MatProgressBarModule } from '@angular/material/progress-bar';
+import { MatSelectModule } from '@angular/material/select';
 import { MatSortModule } from '@angular/material/sort';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
-import { lastSegments } from '../../utils/segments';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatInputModule } from '@angular/material/input';
-import { FormsModule } from '@angular/forms';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import {
   catchError,
   combineLatest,
@@ -33,18 +27,25 @@ import {
   switchMap,
   tap,
 } from 'rxjs';
-import { EventService } from '../../utils/event.service';
-import { toObservable, toSignal } from '@angular/core/rxjs-interop';
-import { LimitsComponent } from '../../ui/limits/limits.component';
-import { initLimits, Limits } from '../../model/limits';
-import { MatSelectModule } from '@angular/material/select';
+
+import { HotspotService } from '../../data/hotspot.service';
 import { StatusStore } from '../../data/status.store';
-import { MatProgressBarModule } from '@angular/material/progress-bar';
-import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
+import {
+  AggregatedHotspot,
+  AggregatedHotspotsResult,
+  ComplexityMetric,
+  FlatHotspot,
+  HotspotCriteria,
+  HotspotResult,
+  initAggregatedHotspotsResult,
+  initHotspotResult,
+} from '../../model/hotspot-result';
+import { initLimits, Limits } from '../../model/limits';
+import { LimitsComponent } from '../../ui/limits/limits.component';
 import { debounceTimeSkipFirst } from '../../utils/debounce';
 import { injectShowError } from '../../utils/error-handler';
-import { MatIconModule } from '@angular/material/icon';
-import { MatTooltipModule } from '@angular/material/tooltip';
+import { EventService } from '../../utils/event.service';
+import { lastSegments } from '../../utils/segments';
 
 interface Option {
   id: ComplexityMetric;

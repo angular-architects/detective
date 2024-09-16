@@ -1,6 +1,7 @@
-import * as fs from 'fs';
-import { noLimits } from '../model/limits';
 import { spawn, spawnSync } from 'child_process';
+import * as fs from 'fs';
+
+import { noLimits } from '../model/limits';
 
 export function isRepo(): boolean {
   return fs.existsSync('.git');

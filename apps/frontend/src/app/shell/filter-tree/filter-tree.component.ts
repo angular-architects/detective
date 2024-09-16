@@ -1,17 +1,18 @@
-import { Component, inject, OnInit, viewChild } from '@angular/core';
-import { Folder } from '../../model/folder';
 import { CdkTree } from '@angular/cdk/tree';
-import { MatTreeModule, MatTreeNestedDataSource } from '@angular/material/tree';
-import { FolderService } from '../../data/folder.service';
-import { combineLatest, of } from 'rxjs';
-import { MatIconModule } from '@angular/material/icon';
+import { Component, inject, OnInit, viewChild } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import {
   MatCheckboxChange,
   MatCheckboxModule,
 } from '@angular/material/checkbox';
+import { MatIconModule } from '@angular/material/icon';
+import { MatTreeModule, MatTreeNestedDataSource } from '@angular/material/tree';
+import { combineLatest, of } from 'rxjs';
+
 import { ConfigService } from '../../data/config.service';
+import { FolderService } from '../../data/folder.service';
 import { initConfig } from '../../model/config';
+import { Folder } from '../../model/folder';
 import { EventService } from '../../utils/event.service';
 
 const MIN_OPEN_LEVEL = 2;

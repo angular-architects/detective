@@ -1,5 +1,5 @@
-import { Options } from '../options/options';
 import { loadDeps } from '../infrastructure/deps';
+import { Options } from '../options/options';
 
 export type Folder = {
   name: string;

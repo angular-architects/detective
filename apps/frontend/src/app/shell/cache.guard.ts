@@ -1,7 +1,8 @@
 import { inject } from '@angular/core';
-import { Observable, of, switchMap, tap } from 'rxjs';
-import { CacheService } from '../data/cache.service';
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
+import { Observable, of, switchMap, tap } from 'rxjs';
+
+import { CacheService } from '../data/cache.service';
 import { LoadingComponent } from '../ui/loading/loading.component';
 
 export function ensureCache(): Observable<void> {

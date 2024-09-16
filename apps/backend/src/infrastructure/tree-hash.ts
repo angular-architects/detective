@@ -1,5 +1,6 @@
 import * as fs from 'fs';
 import * as path from 'path';
+
 import { DETECTIVE_DIR, HASH_FILE } from './paths';
 
 const hashFile = path.join(DETECTIVE_DIR, HASH_FILE);

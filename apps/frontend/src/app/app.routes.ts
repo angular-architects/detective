@@ -1,10 +1,11 @@
-import { Routes, ActivatedRoute } from '@angular/router';
+import { Routes } from '@angular/router';
+
 import { CouplingComponent } from './features/coupling/coupling.component';
-import { GraphTypeData } from './model/graph-type';
-import { ensureCache } from './shell/cache.guard';
 import { HotspotComponent } from './features/hotspot/hotspot.component';
 import { TeamAlignmentComponent } from './features/team-alignment/team-alignment.component';
+import { GraphTypeData } from './model/graph-type';
 import { AboutComponent } from './shell/about/about.component';
+import { ensureCache } from './shell/cache.guard';
 
 export const routes: Routes = [
   {

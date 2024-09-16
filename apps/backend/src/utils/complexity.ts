@@ -1,5 +1,6 @@
-import * as ts from 'typescript';
 import * as fs from 'fs';
+
+import * as ts from 'typescript';
 
 export function calcCyclomaticComplexity(fileName: string): number {
   const code = fs.readFileSync(fileName, 'utf-8');

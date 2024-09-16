@@ -1,7 +1,8 @@
 import { Component, inject, OnInit } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
-import { NavComponent } from './shell/nav/nav.component';
+
 import { StatusStore } from './data/status.store';
+import { NavComponent } from './shell/nav/nav.component';
 
 @Component({
   selector: 'app-root',

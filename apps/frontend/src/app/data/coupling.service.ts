@@ -1,6 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
+
 import { CouplingResult } from '../model/coupling-result';
 import { GraphType } from '../model/graph-type';
 import { initLimits } from '../model/limits';

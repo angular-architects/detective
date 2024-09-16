@@ -1,8 +1,10 @@
+import fs from 'fs';
 import path from 'path';
 import { cwd } from 'process';
+
 import { Config } from '../model/config';
 import { Options } from '../options/options';
-import fs from 'fs';
+
 import { DETECTIVE_DIR } from './paths';
 
 const initConfig: Config = {

@@ -1,5 +1,6 @@
 import * as fs from 'fs';
 import * as path from 'path';
+
 import { DETECTIVE_DIR, LOG_FILE } from './paths';
 
 const logFile = path.join(DETECTIVE_DIR, LOG_FILE);

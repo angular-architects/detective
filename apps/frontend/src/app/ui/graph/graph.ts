@@ -6,10 +6,9 @@ import cytoscape, {
   NodeDefinition,
   NodeSingular,
 } from 'cytoscape';
-
 import cola from 'cytoscape-cola';
-import qtip from 'cytoscape-qtip';
 import dagre from 'cytoscape-dagre';
+import qtip from 'cytoscape-qtip';
 
 cytoscape.use(dagre);
 cytoscape.use(cola);

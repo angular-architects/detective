@@ -47,7 +47,7 @@ In case users have used multiple names, as appearing in the `git log`, use the `
 {
   [...]
   "aliases": {
-    "jdoe": "John Doe", 
+    "jdoe": "John Doe",
     "janedoe": "Jane Doe"
   }
   [...]

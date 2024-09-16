@@ -1,7 +1,8 @@
 import { emptyConfig } from '../model/config';
-import { defaultOptions } from '../options/options';
-import { inferFolders } from './folders';
 import { Deps } from '../model/deps';
+import { defaultOptions } from '../options/options';
+
+import { inferFolders } from './folders';
 
 const scopes = ['/booking', '/checkin', '/shared'];
 

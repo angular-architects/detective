@@ -1,8 +1,9 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import { TeamAlignmentResult } from '../model/team-alignment-result';
+
 import { Limits } from '../model/limits';
+import { TeamAlignmentResult } from '../model/team-alignment-result';
 
 @Injectable({ providedIn: 'root' })
 export class TeamAlignmentService {

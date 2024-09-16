@@ -1,6 +1,6 @@
-import { loadTreeHash, saveTreeHash } from '../infrastructure/tree-hash';
 import { calcTreeHash, getGitLog } from '../infrastructure/git';
 import { saveCachedLog } from '../infrastructure/log';
+import { loadTreeHash, saveTreeHash } from '../infrastructure/tree-hash';
 import { DETECTIVE_VERSION } from '../infrastructure/version';
 
 export function isStale(): boolean {

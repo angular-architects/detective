@@ -1,11 +1,12 @@
-import { Deps } from '../model/deps';
-import { Options } from '../options/options';
 import { loadConfig } from '../infrastructure/config';
 import { loadDeps } from '../infrastructure/deps';
-import { calcModuleInfo, ModuleInfo } from './module-info';
-import { toPercent } from '../utils/to-percent';
+import { Deps } from '../model/deps';
+import { Options } from '../options/options';
 import { getEmptyMatrix } from '../utils/matrix';
 import { normalizeFolder } from '../utils/normalize-folder';
+import { toPercent } from '../utils/to-percent';
+
+import { calcModuleInfo, ModuleInfo } from './module-info';
 
 export type CouplingResult = {
   groups: string[];

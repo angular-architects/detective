@@ -1,15 +1,14 @@
+import { provideHttpClient } from '@angular/common/http';
 import {
   ApplicationConfig,
   importProvidersFrom,
   provideZoneChangeDetection,
 } from '@angular/core';
+import { MatDialogModule } from '@angular/material/dialog';
+import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 import { provideRouter, withComponentInputBinding } from '@angular/router';
 
-import { MatDialogModule } from '@angular/material/dialog';
-
 import { routes } from './app.routes';
-import { provideHttpClient } from '@angular/common/http';
-import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 import { AppErrorHandler, provideErrorHandler } from './utils/error-handler';
 
 export const appConfig: ApplicationConfig = {

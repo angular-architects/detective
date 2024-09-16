@@ -1,10 +1,13 @@
-import { Options } from '../options/options';
-import { Deps } from '../model/deps';
 import fs from 'fs';
+import { cwd } from 'process';
+
 import { getProjectData } from '@softarc/sheriff-core';
 import { globSync } from 'fast-glob';
+
+import { Deps } from '../model/deps';
+import { Options } from '../options/options';
+
 import { loadConfig } from './config';
-import { cwd } from 'process';
 
 const DEFAULT_ENTRIES = [
   'src/main.ts',

@@ -1,7 +1,8 @@
 import { emptyConfig } from '../model/config';
-import { defaultOptions } from '../options/options';
-import { calcCoupling } from './coupling';
 import { Deps } from '../model/deps';
+import { defaultOptions } from '../options/options';
+
+import { calcCoupling } from './coupling';
 
 const scopes = ['/booking', '/checkin', '/shared'];
 

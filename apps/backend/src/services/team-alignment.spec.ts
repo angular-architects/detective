@@ -1,6 +1,7 @@
 import { emptyConfig } from '../model/config';
 import { Limits } from '../model/limits';
 import { defaultOptions, Options } from '../options/options';
+
 import { calcTeamAlignment } from './team-alignment';
 
 const now = new Date();

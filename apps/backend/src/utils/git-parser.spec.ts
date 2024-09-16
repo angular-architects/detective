@@ -1,7 +1,8 @@
-import { emptyConfig } from '../model/config';
-import { LogEntry, parseGitLog, ParseOptions } from './git-parser';
-import { getToday, subtractMonths, subtractSeconds } from '../utils/date-utils';
 import { loadCachedLog } from '../infrastructure/log';
+import { emptyConfig } from '../model/config';
+import { getToday, subtractMonths, subtractSeconds } from '../utils/date-utils';
+
+import { LogEntry, parseGitLog, ParseOptions } from './git-parser';
 
 const today = getToday();
 const past = subtractSeconds(subtractMonths(today, 1), 1);

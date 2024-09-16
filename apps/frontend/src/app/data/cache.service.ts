@@ -1,7 +1,8 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
-import { CacheStatus } from '../model/cache-status';
 import { Observable } from 'rxjs';
+
+import { CacheStatus } from '../model/cache-status';
 
 @Injectable({ providedIn: 'root' })
 export class CacheService {

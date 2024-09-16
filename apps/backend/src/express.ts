@@ -1,22 +1,24 @@
-import express from 'express';
-import path from 'path';
 import fs from 'fs';
-import { calcCoupling } from './services/coupling';
+import path from 'path';
 import { cwd } from 'process';
+
+import express from 'express';
+
+import { getCommitCount } from './infrastructure/git';
+import { Limits } from './model/limits';
+import { Options } from './options/options';
+import { calcChangeCoupling } from './services/change-coupling';
+import { calcCoupling } from './services/coupling';
 import { inferFolders } from './services/folders';
-import { calcModuleInfo } from './services/module-info';
-import { calcTeamAlignment } from './services/team-alignment';
 import {
   aggregateHotspots,
   ComplexityMetric,
   findHotspotFiles,
   HotspotCriteria,
 } from './services/hotspot';
-import { calcChangeCoupling } from './services/change-coupling';
-import { Options } from './options/options';
-import { Limits } from './model/limits';
 import { isStale, updateLogCache } from './services/log-cache';
-import { getCommitCount } from './infrastructure/git';
+import { calcModuleInfo } from './services/module-info';
+import { calcTeamAlignment } from './services/team-alignment';
 
 export function setupExpress(options: Options) {
   const app = express();
