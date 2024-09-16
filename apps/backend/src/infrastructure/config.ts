@@ -13,6 +13,7 @@ const initConfig: Config = {
     files: [],
     logs: [],
   },
+  aliases: {},
   teams: {
     'example-team-a': ['John Doe', 'Jane Doe'],
     'example-team-b': ['Max Muster', 'Susi Sorglos'],
