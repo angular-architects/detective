@@ -1,4 +1,4 @@
-import { Routes } from '@angular/router';
+import { Routes, ActivatedRoute } from '@angular/router';
 import { CouplingComponent } from './features/coupling/coupling.component';
 import { GraphTypeData } from './model/graph-type';
 import { ensureCache } from './shell/cache.guard';

@@ -86,6 +86,9 @@
   },
   "scripts": {
     "prepare": "husky",
+    "lint": "nx run-many --target=lint --all --fix --max-warnings=0",
+    "test": "nx run-many --target=test --all",
+    "build": "nx run-many --target=build --all",
     "release": "nx release --skip-publish"
   }
 }
