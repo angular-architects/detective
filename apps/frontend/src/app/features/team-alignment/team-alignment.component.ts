@@ -15,6 +15,7 @@ import {
   of,
 } from 'rxjs';
 
+import { LimitsStore } from '../../data/limits.store';
 import { StatusStore } from '../../data/status.store';
 import { TeamAlignmentService } from '../../data/team-alignment.service';
 import { initLimits, Limits } from '../../model/limits';
@@ -51,13 +52,14 @@ type LoadTeamAlignmentOptions = {
   styleUrl: './team-alignment.component.css',
 })
 export class TeamAlignmentComponent {
+  private limitsStore = inject(LimitsStore);
   private taService = inject(TeamAlignmentService);
   private eventService = inject(EventService);
   private statusStore = inject(StatusStore);
   private showError = injectShowError();
 
   totalCommits = this.statusStore.commits;
-  limits = signal(initLimits);
+  limits = this.limitsStore.limits;
   byUser = signal(false);
 
   alignment$ = combineLatest({
@@ -75,6 +77,10 @@ export class TeamAlignmentComponent {
   chartConfigs = computed(() =>
     toAlignmentChartConfigs(this.teamAlignmentResult(), this.colors())
   );
+
+  updateLimits(limits: Limits) {
+    this.limitsStore.updateLimits(limits);
+  }
 
   private toColors(count: number): string[] {
     return quantize(interpolateRainbow, count + 1);

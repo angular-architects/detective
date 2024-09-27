@@ -1,12 +1,12 @@
-"Manfred Steyer <manfred.steyer@gmx.net>,Fri Sep 27 21:59:41 2024 +0200	719f061ae9dfba3795d03390d5e0e297f256cd71,feat: add store for limits"
+"Manfred Steyer <manfred.steyer@gmx.net>,Fri Sep 27 21:59:41 2024 +0200	2f9b490469e722542cea8ac38eeabe02c5ea78e1,feat: add store for limits"
 1	1	.detective/hash
-10	0	.detective/log
-19	0	apps/frontend/src/app/data/limits.store.ts
-8	1	apps/frontend/src/app/features/coupling/coupling.component.html
-21	8	apps/frontend/src/app/features/coupling/coupling.component.ts
-2	0	apps/frontend/src/app/model/limits.ts
-2	2	apps/frontend/src/app/ui/limits/limits.component.html
-5	7	apps/frontend/src/app/ui/limits/limits.component.ts
+22	0	.detective/log
+15	0	apps/frontend/src/app/data/limits.store.ts
+6	1	apps/frontend/src/app/features/coupling/coupling.component.html
+16	8	apps/frontend/src/app/features/coupling/coupling.component.ts
+4	0	apps/frontend/src/app/model/limits.ts
+5	2	apps/frontend/src/app/ui/limits/limits.component.html
+9	17	apps/frontend/src/app/ui/limits/limits.component.ts
 32	0	package-lock.json
 2	0	package.json
 

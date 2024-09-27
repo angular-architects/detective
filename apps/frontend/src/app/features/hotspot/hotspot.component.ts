@@ -29,6 +29,7 @@ import {
 } from 'rxjs';
 
 import { HotspotService } from '../../data/hotspot.service';
+import { LimitsStore } from '../../data/limits.store';
 import { StatusStore } from '../../data/status.store';
 import {
   AggregatedHotspot,
@@ -82,6 +83,8 @@ type LoadHotspotOptions = LoadAggregateOptions & {
   styleUrl: './hotspot.component.css',
 })
 export class HotspotComponent {
+  private limitsStore = inject(LimitsStore);
+
   private hotspotService = inject(HotspotService);
   private eventService = inject(EventService);
 
@@ -100,7 +103,7 @@ export class HotspotComponent {
 
   totalCommits = this.statusStore.commits;
   minScoreControl = signal(10);
-  limits = signal(initLimits);
+  limits = this.limitsStore.limits;
   metric = signal<ComplexityMetric>('Length');
 
   metricOptions: Option[] = [
@@ -162,6 +165,10 @@ export class HotspotComponent {
         this.detailDataSource.paginator = paginator;
       }
     });
+  }
+
+  updateLimits(limits: Limits) {
+    this.limitsStore.updateLimits(limits);
   }
 
   selectRow(row: AggregatedHotspot, index: number) {

@@ -18,7 +18,12 @@
       help_outline
     </mat-icon>
   </div>
-  <app-limits [(limits)]="limits" [totalCommits]="totalCommits()"></app-limits>
+  <app-limits
+    [limits]="limits()"
+    (limitsChange)="updateLimits($event)"
+    [totalCommits]="totalCommits()"
+  >
+  </app-limits>
 </div>
 
 <ul id="legend">
