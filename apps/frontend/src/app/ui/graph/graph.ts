@@ -168,6 +168,10 @@ function defineToolTipsForNodes(cy: cytoscape.Core) {
       return;
     }
 
+    node.on('tap', (event) => {
+      event.stopPropagation();
+    });
+
     const nodeWithQtip = node as NodeWithQtip;
     nodeWithQtip.qtip({
       content: tooltip,
