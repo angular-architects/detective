@@ -1,3 +1,25 @@
+"Manfred Steyer <manfred.steyer@gmx.net>,Fri Sep 27 21:59:41 2024 +0200	719f061ae9dfba3795d03390d5e0e297f256cd71,feat: add store for limits"
+1	1	.detective/hash
+10	0	.detective/log
+19	0	apps/frontend/src/app/data/limits.store.ts
+8	1	apps/frontend/src/app/features/coupling/coupling.component.html
+21	8	apps/frontend/src/app/features/coupling/coupling.component.ts
+2	0	apps/frontend/src/app/model/limits.ts
+2	2	apps/frontend/src/app/ui/limits/limits.component.html
+5	7	apps/frontend/src/app/ui/limits/limits.component.ts
+32	0	package-lock.json
+2	0	package.json
+
+"Manfred Steyer <manfred.steyer@gmx.net>,Fri Sep 27 21:19:56 2024 +0200	78933966b3593f52c81fe26a3472b0c7a46eee71,chore(frontend): remove unneeded linting directive"
+0	1	apps/frontend/src/app/ui/graph/graph.ts
+
+"Manfred Steyer <manfred.steyer@gmx.net>,Fri Sep 27 14:48:06 2024 +0200	bc87b324a60db023efb3bbeb2d82d5e193e1db35,chore(release): publish 1.1.2"
+5	14	.detective/config.json
+1	1	.detective/hash
+5	0	.detective/log
+14	0	CHANGELOG.md
+1	1	apps/backend/package.json
+
 "Manfred Steyer <manfred.steyer@gmx.net>,Fri Sep 27 14:46:09 2024 +0200	955828b34c0cfce98bbd78073d6fdeee761b7191,feat(frontend): show actual number of changed lines in team alignment"
 1	1	.detective/hash
 110	0	.detective/log

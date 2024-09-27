@@ -16,13 +16,14 @@ import {
 } from 'rxjs';
 
 import { CouplingService } from '../../data/coupling.service';
+import { LimitsStore } from '../../data/limits.store';
 import { StatusStore } from '../../data/status.store';
 import {
   CouplingResult,
   initCouplingResult,
 } from '../../model/coupling-result';
 import { GraphType } from '../../model/graph-type';
-import { initLimits, Limits } from '../../model/limits';
+import { initLimits, Limits, LimitType } from '../../model/limits';
 import { Graph, CouplingNodeDefinition } from '../../ui/graph/graph';
 import { GraphComponent } from '../../ui/graph/graph.component';
 import { LimitsComponent } from '../../ui/limits/limits.component';
@@ -54,6 +55,8 @@ const COUPLING_TIP =
   styleUrl: './coupling.component.css',
 })
 export class CouplingComponent {
+  private limitsStore = inject(LimitsStore);
+
   private couplingService = inject(CouplingService);
   private eventService = inject(EventService);
   private statusStore = inject(StatusStore);
@@ -66,7 +69,8 @@ export class CouplingComponent {
 
   totalCommits = this.statusStore.commits;
   groupByFolder = signal(false);
-  limits = signal(initLimits);
+
+  limits = this.limitsStore.limits;
   minConnections = signal(1);
 
   couplingResult$ = combineLatest({
@@ -94,8 +98,12 @@ export class CouplingComponent {
     );
   }
 
+  updateLimits(limits: Limits): void {
+    this.limitsStore.updateLimits(limits);
+  }
+
   toGraph(result: CouplingResult): Graph {
-    result.matrix = this.clearSelfLinks(result.matrix);
+    result.matrix = clearSelfLinks(result.matrix);
 
     console.log('result', result);
 
@@ -116,11 +124,11 @@ export class CouplingComponent {
 
     return graph;
   }
+}
 
-  private clearSelfLinks(matrix: number[][]): number[][] {
-    for (let i = 0; i < matrix.length; i++) {
-      matrix[i][i] = 0;
-    }
-    return matrix;
+function clearSelfLinks(matrix: number[][]): number[][] {
+  for (let i = 0; i < matrix.length; i++) {
+    matrix[i][i] = 0;
   }
+  return matrix;
 }

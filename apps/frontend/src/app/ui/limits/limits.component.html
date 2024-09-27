@@ -1,13 +1,16 @@
 <div class="form-container">
   <mat-form-field appearance="fill" class="form-field type">
-    <mat-select [ngModel]="selected()" (ngModelChange)="optionChanged($event)">
+    <mat-select
+      [ngModel]="limits().limitType"
+      (ngModelChange)="optionChanged($event)"
+    >
       @for (option of options; track option.id) {
       <mat-option value="{{ option.id }}">{{ option.label }}</mat-option>
       }
     </mat-select>
   </mat-form-field>
 
-  @if (selected() === 'COMMITS') {
+  @if (limits().limitType === 'COMMITS') {
   <mat-form-field appearance="outline" class="form-field commits">
     <mat-label>Max. Commits</mat-label>
     <input
