@@ -1,3 +1,113 @@
+"Manfred Steyer <manfred.steyer@gmx.net>,Fri Sep 27 14:28:59 2024 +0200	d5dbabd99f0fec965ff12158946bcc719fd3f632,fix(frontend): only show one tip tool text at once"
+14	5	.detective/config.json
+4	0	apps/frontend/src/app/ui/graph/graph.ts
+
+"Manfred Steyer <manfred.steyer@gmx.net>,Mon Sep 16 23:33:34 2024 +0200	72f00f123142e78af1c57c29d5c7b91f65095113,chore(release): publish 1.1.1"
+10	0	CHANGELOG.md
+1	1	apps/backend/package.json
+
+"Manfred Steyer <manfred.steyer@gmx.net>,Mon Sep 16 21:43:04 2024 +0200	8502f9211d181e0ebcee20d98c6c7f8b1e0e8b68,chore: add template for pull requests"
+19	0	.github/pull_request_template.md
+
+"Manfred Steyer <manfred.steyer@gmx.net>,Mon Sep 16 20:55:03 2024 +0200	4a3c3605aa11f6fc62a2df443cf4b1069676bb82,chore: add import lint plugin for sorting imports"
+19	1	.eslintrc.json
+1	1	.github/workflows/{pipeline.yaml => build.yaml}
+1	1	README.md
+11	9	apps/backend/src/express.ts
+3	1	apps/backend/src/infrastructure/config.ts
+6	3	apps/backend/src/infrastructure/deps.ts
+2	1	apps/backend/src/infrastructure/git.ts
+1	0	apps/backend/src/infrastructure/log.ts
+1	0	apps/backend/src/infrastructure/tree-hash.ts
+3	3	apps/backend/src/main.ts
+2	1	apps/backend/src/options/validate-options.ts
+1	0	apps/backend/src/services/change-coupling.spec.ts
+2	1	apps/backend/src/services/coupling.spec.ts
+5	4	apps/backend/src/services/coupling.ts
+2	1	apps/backend/src/services/folders.spec.ts
+1	1	apps/backend/src/services/folders.ts
+1	0	apps/backend/src/services/hotspot.spec.ts
+5	6	apps/backend/src/services/hotspot.ts
+1	1	apps/backend/src/services/log-cache.ts
+1	0	apps/backend/src/services/team-alignment.spec.ts
+2	1	apps/backend/src/utils/complexity.ts
+3	2	apps/backend/src/utils/git-parser.spec.ts
+5	3	apps/backend/src/utils/git-parser.ts
+0	31	apps/frontend/src/app/app.component.spec.ts
+2	1	apps/frontend/src/app/app.component.ts
+3	4	apps/frontend/src/app/app.config.ts
+4	3	apps/frontend/src/app/app.routes.ts
+2	1	apps/frontend/src/app/data/cache.service.ts
+1	0	apps/frontend/src/app/data/config.service.ts
+1	0	apps/frontend/src/app/data/coupling.service.ts
+1	0	apps/frontend/src/app/data/folder.service.ts
+1	0	apps/frontend/src/app/data/hotspot.service.ts
+1	0	apps/frontend/src/app/data/module.service.ts
+1	0	apps/frontend/src/app/data/status.service.ts
+3	1	apps/frontend/src/app/data/status.store.ts
+2	1	apps/frontend/src/app/data/team-alignment.service.ts
+0	21	apps/frontend/src/app/features/coupling/coupling.component.spec.ts
+12	11	apps/frontend/src/app/features/coupling/coupling.component.ts
+2	1	apps/frontend/src/app/features/coupling/graph.adapter.ts
+0	22	apps/frontend/src/app/features/hotspot/hotspot.component.spec.ts
+25	24	apps/frontend/src/app/features/hotspot/hotspot.component.ts
+1	1	apps/frontend/src/app/features/team-alignment/team-alignment-chart-adapter.ts
+0	22	apps/frontend/src/app/features/team-alignment/team-alignment.component.spec.ts
+7	5	apps/frontend/src/app/features/team-alignment/team-alignment.component.ts
+0	21	apps/frontend/src/app/shell/about/about.component.spec.ts
+1	1	apps/frontend/src/app/shell/about/about.component.ts
+2	1	apps/frontend/src/app/shell/cache.guard.ts
+0	22	apps/frontend/src/app/shell/filter-tree/filter-tree.component.spec.ts
+7	6	apps/frontend/src/app/shell/filter-tree/filter-tree.component.ts
+0	25	apps/frontend/src/app/shell/nav/nav.component.spec.ts
+7	6	apps/frontend/src/app/shell/nav/nav.component.ts
+0	21	apps/frontend/src/app/ui/doughnut/doughnut.component.spec.ts
+1	1	apps/frontend/src/app/ui/doughnut/doughnut.component.ts
+0	21	apps/frontend/src/app/ui/graph/graph.component.spec.ts
+2	1	apps/frontend/src/app/ui/graph/graph.component.ts
+1	2	apps/frontend/src/app/ui/graph/graph.ts
+0	22	apps/frontend/src/app/ui/limits/limits.component.spec.ts
+4	3	apps/frontend/src/app/ui/limits/limits.component.ts
+0	22	apps/frontend/src/app/ui/loading/loading.component.spec.ts
+2	1	apps/frontend/src/main.ts
+1212	40	package-lock.json
+1	0	package.json
+
+"Manfred Steyer <manfred.steyer@gmx.net>,Mon Sep 16 20:50:12 2024 +0200	671c2e7d8297917cb96461c9cd43e007aa1755f4,Merge branch 'main' of https://github.com/angular-architects/forensic"
+"Manfred Steyer <manfred.steyer@gmx.net>,Mon Sep 16 20:49:55 2024 +0200	19fbe527a119b1cd21c83b1cf3583cfcdd50fd7f,chore: add github action"
+34	0	.github/workflows/pipeline.yaml
+21	0	LICENSE
+1	1	apps/frontend/src/app/app.routes.ts
+3	0	package.json
+
+"Manfred Steyer <manfred.steyer@gmx.net>,Mon Sep 16 19:51:23 2024 +0200	1bae09cd79a031c850f7fff621b47f7884038a9e,Merge pull request #22 from wamasimba/feature/git-log-aliases"
+"Manfred Steyer <manfred.steyer@gmx.net>,Mon Sep 16 19:46:45 2024 +0200	9d2d38bb8ae990f2bce243387732e0452b7827bb,Merge branch 'main' of https://github.com/angular-architects/forensic"
+"Manfred Steyer <manfred.steyer@gmx.net>,Mon Sep 16 19:46:18 2024 +0200	8d4ab63c945cf76d2dc1e7f6c0a43f8a68335911,chore: add issue template for github"
+19	0	.detective/config.json
+1	0	.detective/hash
+5559	0	.detective/log
+15	0	.github/ISSUE_TEMPLATE/bug_report.md
+1	6	apps/backend/project.json
+1	1	apps/frontend/src/app/app.routes.ts
+1	1	apps/frontend/src/app/data/hotspot.service.ts
+1	1	apps/frontend/src/app/features/hotspot/hotspot.component.ts
+0	0	apps/frontend/src/app/{features/hotspot => model}/hotspot-result.ts
+0	0	apps/frontend/src/app/{utils => shell}/cache.guard.ts
+0	0	deps.txt
+
+"Manfred Steyer <manfred.steyer@gmx.net>,Mon Sep 16 19:12:11 2024 +0200	60f7fd584bd654d3cc8dc7229c14d82d41f0aa68,Merge pull request #20 from rainerhahnekamp/docs/json5"
+"John van Leeuwen <john.van.leeuwen@priva.com>,Sun Sep 15 15:58:29 2024 +0200	5f033a7b59238ceba1f906d11d8c2fa097918b96,feat: support aliases for git log usernames"
+15	0	README.md
+1	0	apps/backend/src/infrastructure/config.ts
+2	0	apps/backend/src/model/config.ts
+2	0	apps/backend/src/services/team-alignment.ts
+
+"John van Leeuwen <john.van.leeuwen@priva.com>,Sat Sep 14 10:10:04 2024 +0200	04ddb0761f3cf8e7abcdaad32c4ac1ff77d45abb,chore: check git log line for at least two tabs before treating as file line"
+1	1	apps/backend/src/utils/git-parser.ts
+
+"Rainer Hahnekamp <rainer.hahnekamp@gmail.com>,Thu Sep 12 18:18:49 2024 +0200	16f52f428c5a9b591c5cb97b1ba941c661068217,docs: use json5 instead json"
+3	3	README.md
+
 "Manfred Steyer <manfred.steyer@gmx.net>,Wed Sep 11 20:12:05 2024 +0200	8dc594f9d9b7e7fa74ae6e81c1a818055616d39f,chore(release): publish 1.1.0"
 19	0	CHANGELOG.md
 1	1	apps/backend/package.json

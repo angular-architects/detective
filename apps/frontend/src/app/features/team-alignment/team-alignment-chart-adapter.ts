@@ -53,8 +53,9 @@ export function toAlignmentChartConfigs(
                   label += ': ';
                 }
                 if (context.raw !== null) {
-                  label +=
-                    (((context.raw as number) / sum) * 100).toFixed(2) + '%';
+                  const changed = context.raw as number;
+                  label += changed + ' lines changed, ';
+                  label += ((changed / sum) * 100).toFixed(2) + '%\n';
                 }
                 return label;
               },
