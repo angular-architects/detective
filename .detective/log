@@ -1,3 +1,8 @@
+"Manfred Steyer <manfred.steyer@gmx.net>,Fri Sep 27 14:46:09 2024 +0200	955828b34c0cfce98bbd78073d6fdeee761b7191,feat(frontend): show actual number of changed lines in team alignment"
+1	1	.detective/hash
+110	0	.detective/log
+3	2	apps/frontend/src/app/features/team-alignment/team-alignment-chart-adapter.ts
+
 "Manfred Steyer <manfred.steyer@gmx.net>,Fri Sep 27 14:28:59 2024 +0200	d5dbabd99f0fec965ff12158946bcc719fd3f632,fix(frontend): only show one tip tool text at once"
 14	5	.detective/config.json
 4	0	apps/frontend/src/app/ui/graph/graph.ts

@@ -1,21 +1,12 @@
 {
   "scopes": [
     "apps/backend/src/model",
-    "apps/frontend/src/app/data",
-    "apps/frontend/src/app/features",
-    "apps/frontend/src/app/model",
-    "apps/frontend/src/app/shell",
-    "apps/frontend/src/app/ui",
-    "apps/frontend/src/app/utils"
+    "apps/backend/src/options",
+    "apps/backend/src/services",
+    "apps/backend/src/utils",
+    "apps/backend/src/infrastructure"
   ],
-  "groups": [
-    "apps/backend/src",
-    "apps/backend",
-    "apps/frontend/src/app",
-    "apps/frontend/src",
-    "apps/frontend",
-    "apps"
-  ],
+  "groups": ["apps/backend/src", "apps/backend", "apps"],
   "entries": [],
   "filter": {
     "files": [],

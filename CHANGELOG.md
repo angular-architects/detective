@@ -1,3 +1,17 @@
+## 1.1.2 (2024-09-27)
+
+### 🚀 Features
+
+- **frontend:** show actual number of changed lines in team alignment ([955828b](https://github.com/angular-architects/forensic/commit/955828b))
+
+### 🩹 Fixes
+
+- **frontend:** only show one tip tool text at once ([d5dbabd](https://github.com/angular-architects/forensic/commit/d5dbabd))
+
+### ❤️ Thank You
+
+- Manfred Steyer
+
 ## 1.1.1 (2024-09-16)
 
 ### 🚀 Features
