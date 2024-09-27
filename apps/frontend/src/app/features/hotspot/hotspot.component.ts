@@ -1,5 +1,6 @@
 import {
   Component,
+  computed,
   effect,
   inject,
   Signal,
@@ -94,8 +95,26 @@ export class HotspotComponent {
   dataSource = new MatTableDataSource<AggregatedHotspot>();
   detailDataSource = new MatTableDataSource<FlatHotspot>();
 
-  hotspotResult: Signal<HotspotResult>;
   aggregatedResult: Signal<AggregatedHotspotsResult>;
+  hotspotResult: Signal<HotspotResult>;
+
+  formattedAggregated = computed(() =>
+    this.formatAggregated(this.aggregatedResult().aggregated)
+  );
+  formattedHotspots = computed(() =>
+    this.formatHotspots(this.hotspotResult().hotspots)
+  );
+
+  // TODO: Decide on this vs the "rendering" effects below
+  // hotspotsDataSource = computed(() => {
+  //   const dataSource = new MatTableDataSource(this.formattedHotspots());
+  //   const paginator = this.paginator();
+  //   if (paginator) {
+  //     dataSource.paginator = paginator;
+  //   }
+  //   return dataSource;
+  // });
+
   selectedRow: AggregatedHotspot | null = null;
 
   columnsToDisplay = ['module', 'count'];
@@ -149,14 +168,14 @@ export class HotspotComponent {
       initialValue: initHotspotResult,
     });
 
-    effect(() => {
-      const result = this.aggregatedResult();
-      this.dataSource.data = this.formatAggregated(result.aggregated);
-    });
+    // effect(() => {
+    //   const aggregated = this.formattedAggregated();
+    //   this.dataSource.data = aggregated;
+    // });
 
     effect(() => {
-      const result = this.hotspotResult();
-      this.detailDataSource.data = this.formatHotspots(result.hotspots);
+      const hotspots = this.formattedHotspots();
+      this.detailDataSource.data = hotspots;
     });
 
     effect(() => {

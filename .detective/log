@@ -1,3 +1,12 @@
+"Manfred Steyer <manfred.steyer@gmx.net>,Fri Sep 27 22:20:25 2024 +0200	5547a7c4196a2ba80acb704250c0a76d9e1101c1,feat: add limits store to team alignment and hotspots"
+1	1	.detective/hash
+8	8	.detective/log
+6	1	apps/frontend/src/app/features/hotspot/hotspot.component.html
+8	1	apps/frontend/src/app/features/hotspot/hotspot.component.ts
+6	1	apps/frontend/src/app/features/team-alignment/team-alignment.component.html
+7	1	apps/frontend/src/app/features/team-alignment/team-alignment.component.ts
+1	1	apps/frontend/src/index.html
+
 "Manfred Steyer <manfred.steyer@gmx.net>,Fri Sep 27 21:59:41 2024 +0200	2f9b490469e722542cea8ac38eeabe02c5ea78e1,feat: add store for limits"
 1	1	.detective/hash
 22	0	.detective/log

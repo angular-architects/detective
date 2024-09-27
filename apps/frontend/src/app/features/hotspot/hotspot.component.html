@@ -43,7 +43,11 @@
     Determining Hotspots ...
     <mat-progress-bar mode="indeterminate"></mat-progress-bar>
     } @else {
-    <table mat-table [dataSource]="dataSource" class="mat-elevation-z8">
+    <table
+      mat-table
+      [dataSource]="formattedAggregated()"
+      class="mat-elevation-z8"
+    >
       <ng-container matColumnDef="module">
         <th mat-header-cell *matHeaderCellDef>Module</th>
         <td mat-cell *matCellDef="let element">{{ element.module }}</td>
