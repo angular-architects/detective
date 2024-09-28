@@ -1,3 +1,14 @@
+"Manfred Steyer <manfred.steyer@gmx.net>,Sat Sep 28 10:48:17 2024 +0200	ce7f9291f8db589484a10d04077ebab2c32253e7,chore: configure vscode to use single quotes"
+4	0	.vscode/settings.json
+1	1	apps/frontend/src/app/features/coupling/coupling.component.ts
+
+"Manfred Steyer <manfred.steyer@gmx.net>,Sat Sep 28 10:44:18 2024 +0200	28b7c31784b0353ad33a72f2e5cd6c8e7bcf6947,feat: add store to coupling feature"
+1	1	.detective/hash
+6	0	.detective/log
+11	2	apps/frontend/src/app/features/coupling/coupling.component.html
+26	47	apps/frontend/src/app/features/coupling/coupling.component.ts
+66	0	apps/frontend/src/app/features/coupling/coupling.store.ts
+
 "Manfred Steyer <manfred.steyer@gmx.net>,Fri Sep 27 22:48:19 2024 +0200	76656b36d327a6c9f45040294c99cc83a30d84b0,refactor(frontend): remove unnecessary rendering effect in hotspot component"
 1	1	.detective/hash
 9	0	.detective/log
