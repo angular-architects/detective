@@ -1,3 +1,19 @@
+"Manfred Steyer <manfred.steyer@gmx.net>,Sat Sep 28 23:22:37 2024 +0200	947a6f7933d93eeae42e53bbffd8d56f69486095,feat: add resizer for tree"
+1	1	.detective/hash
+16	0	.detective/log
+25	0	apps/frontend/src/app/shell/nav/nav.component.css
+10	6	apps/frontend/src/app/shell/nav/nav.component.html
+46	8	apps/frontend/src/app/shell/nav/nav.component.ts
+
+"Manfred Steyer <manfred.steyer@gmx.net>,Sat Sep 28 19:32:42 2024 +0200	06c8dfeb5e988f17bcf3699e8d3c1748981c7231,refactor: streamline dataflow for hotspot analysis"
+1	1	.detective/hash
+12	0	.detective/log
+2	6	apps/frontend/src/app/features/hotspot/hotspot.component.html
+14	16	apps/frontend/src/app/features/hotspot/hotspot.component.ts
+18	5	apps/frontend/src/app/features/hotspot/hotspot.store.ts
+1	1	apps/frontend/src/app/ui/graph/graph.ts
+14	1	apps/frontend/src/app/utils/{effects.ts => signal-helpers.ts}
+
 "Manfred Steyer <manfred.steyer@gmx.net>,Sat Sep 28 18:41:26 2024 +0200	fdc6882e65fb7a88afd40fb0850399808c6ed1d6,feat: add signal store to hotspot and team alignment analysis"
 1	1	.detective/hash
 3	2	.detective/log

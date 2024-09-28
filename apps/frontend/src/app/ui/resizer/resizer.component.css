@@ -1,0 +1,10 @@
+.resizer {
+  width: 5px;
+  height: 100%;
+  cursor: ew-resize;
+  background-color: white;
+  position: absolute;
+  right: 0;
+  top: 0;
+  z-index: 10;
+}

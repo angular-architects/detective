@@ -2,9 +2,9 @@
   height: 100%;
 }
 
-.sidenav {
+/* .sidenav {
   width: 350px;
-}
+} */
 
 .sidenav .mat-toolbar {
   background: inherit;
@@ -27,4 +27,18 @@
 
 .flex-spacer {
   flex: 1 1 auto;
+}
+
+.sidenav-container {
+  display: flex;
+  flex-direction: row;
+  height: 100vh;
+}
+
+mat-sidenav {
+  flex-shrink: 0;
+}
+
+mat-sidenav-content {
+  flex-grow: 1;
 }

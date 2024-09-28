@@ -2,19 +2,23 @@
   <mat-sidenav
     #drawer
     class="sidenav"
+    [style.width.px]="sidenavWidth()"
     fixedInViewport
-    [attr.role]="(isHandset$ | async) ? 'dialog' : 'navigation'"
-    [mode]="(isHandset$ | async) ? 'over' : 'side'"
-    [opened]="(isHandset$ | async) === false"
+    [attr.role]="isHandset() ? 'dialog' : 'navigation'"
+    [mode]="isHandset() ? 'over' : 'side'"
+    [opened]="isHandset() === false"
   >
     <mat-toolbar color="secondary">Filter</mat-toolbar>
     <mat-nav-list>
       <app-filter-tree></app-filter-tree>
     </mat-nav-list>
+
+    <app-resizer [(position)]="sidenavWidth"></app-resizer>
   </mat-sidenav>
-  <mat-sidenav-content>
+
+  <mat-sidenav-content [style.margin-left.px]="contentMarginLeft()">
     <mat-toolbar color="primary">
-      @if (isHandset$ | async) {
+      @if (isHandset()) {
       <button
         type="button"
         aria-label="Toggle sidenav"
@@ -55,7 +59,7 @@
         About
       </button>
     </mat-toolbar>
-    <!-- Add Content Here -->
+
     <div class="container">
       <router-outlet></router-outlet>
     </div>
