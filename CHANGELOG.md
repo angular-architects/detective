@@ -1,3 +1,17 @@
+## 1.1.3 (2024-09-28)
+
+### 🚀 Features
+
+- add store for limits ([2f9b490](https://github.com/angular-architects/forensic/commit/2f9b490))
+- add limits store to team alignment and hotspots ([5547a7c](https://github.com/angular-architects/forensic/commit/5547a7c))
+- add store to coupling feature ([28b7c31](https://github.com/angular-architects/forensic/commit/28b7c31))
+- add signal store to hotspot and team alignment analysis ([fdc6882](https://github.com/angular-architects/forensic/commit/fdc6882))
+- add resizer for tree ([7ef551c](https://github.com/angular-architects/forensic/commit/7ef551c))
+
+### ❤️ Thank You
+
+- Manfred Steyer
+
 ## 1.1.2 (2024-09-27)
 
 ### 🚀 Features
