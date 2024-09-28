@@ -85,7 +85,7 @@ function createGraph(container: HTMLElement, graph: Graph): cytoscape.Core {
           'min-zoomed-font-size': 8,
           'text-wrap': 'wrap',
           'text-max-width': '100px',
-        } as any,
+        } as never,
       },
       {
         selector: 'edge',

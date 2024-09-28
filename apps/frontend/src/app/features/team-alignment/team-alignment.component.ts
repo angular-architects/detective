@@ -1,40 +1,23 @@
-import { Component, inject, signal, computed } from '@angular/core';
-import { toObservable, toSignal } from '@angular/core/rxjs-interop';
+import { Component, inject, computed } from '@angular/core';
+import { takeUntilDestroyed, toObservable } from '@angular/core/rxjs-interop';
 import { FormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { quantize, interpolateRainbow } from 'd3';
-import {
-  combineLatest,
-  startWith,
-  switchMap,
-  Observable,
-  catchError,
-  of,
-} from 'rxjs';
+import { combineLatest, startWith } from 'rxjs';
 
 import { LimitsStore } from '../../data/limits.store';
 import { StatusStore } from '../../data/status.store';
-import { TeamAlignmentService } from '../../data/team-alignment.service';
-import { initLimits, Limits } from '../../model/limits';
-import {
-  initTeamAlignmentResult,
-  TeamAlignmentResult,
-} from '../../model/team-alignment-result';
+import { Limits } from '../../model/limits';
 import { DoughnutComponent } from '../../ui/doughnut/doughnut.component';
 import { LimitsComponent } from '../../ui/limits/limits.component';
 import { debounceTimeSkipFirst } from '../../utils/debounce';
-import { injectShowError } from '../../utils/error-handler';
 import { EventService } from '../../utils/event.service';
 
 import { toAlignmentChartConfigs } from './team-alignment-chart-adapter';
-
-type LoadTeamAlignmentOptions = {
-  limits: Limits;
-  byUser: boolean;
-};
+import { TeamAlignmentStore } from './team-alignment.store';
 
 @Component({
   selector: 'app-team-alignment',
@@ -53,47 +36,43 @@ type LoadTeamAlignmentOptions = {
 })
 export class TeamAlignmentComponent {
   private limitsStore = inject(LimitsStore);
-  private taService = inject(TeamAlignmentService);
-  private eventService = inject(EventService);
   private statusStore = inject(StatusStore);
-  private showError = injectShowError();
+  private taStore = inject(TeamAlignmentStore);
+
+  private eventService = inject(EventService);
 
   totalCommits = this.statusStore.commits;
   limits = this.limitsStore.limits;
-  byUser = signal(false);
+  byUser = this.taStore.filter.byUser;
 
-  alignment$ = combineLatest({
+  teamAlignmentResult = this.taStore.result;
+
+  teams = this.taStore.result.teams;
+  colors = computed(() => this.toColors(this.teams().length));
+
+  loadOptions$ = combineLatest({
     limits: toObservable(this.limits).pipe(debounceTimeSkipFirst(300)),
     byUser: toObservable(this.byUser),
     filterChanged: this.eventService.filterChanged.pipe(startWith(null)),
-  }).pipe(switchMap((combi) => this.loadTeamAlignment(combi)));
+  }).pipe(takeUntilDestroyed());
 
-  teamAlignmentResult = toSignal(this.alignment$, {
-    initialValue: initTeamAlignmentResult,
-  });
-
-  teams = computed(() => this.teamAlignmentResult().teams);
-  colors = computed(() => this.toColors(this.teams().length));
   chartConfigs = computed(() =>
     toAlignmentChartConfigs(this.teamAlignmentResult(), this.colors())
   );
 
-  updateLimits(limits: Limits) {
+  constructor() {
+    this.taStore.rxLoad(this.loadOptions$);
+  }
+
+  updateLimits(limits: Limits): void {
     this.limitsStore.updateLimits(limits);
+  }
+
+  updateFilter(byUser: boolean): void {
+    this.taStore.updateFilter(byUser);
   }
 
   private toColors(count: number): string[] {
     return quantize(interpolateRainbow, count + 1);
-  }
-
-  private loadTeamAlignment(
-    options: LoadTeamAlignmentOptions
-  ): Observable<TeamAlignmentResult> {
-    return this.taService.load(options.byUser, options.limits).pipe(
-      catchError((err) => {
-        this.showError(err);
-        return of(initTeamAlignmentResult);
-      })
-    );
   }
 }

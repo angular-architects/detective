@@ -1,6 +1,11 @@
 <div class="forensic-filter">
   <div>
-    <mat-checkbox class="mr30" [(ngModel)]="byUser">By User</mat-checkbox>
+    <mat-checkbox
+      class="mr30"
+      [ngModel]="byUser()"
+      (ngModelChange)="updateFilter($event)"
+      >By User</mat-checkbox
+    >
 
     <a
       mat-stroked-button

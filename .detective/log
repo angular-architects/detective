@@ -1,6 +1,7 @@
-"Manfred Steyer <manfred.steyer@gmx.net>,Sat Sep 28 10:48:17 2024 +0200	ce7f9291f8db589484a10d04077ebab2c32253e7,chore: configure vscode to use single quotes"
+"Manfred Steyer <manfred.steyer@gmx.net>,Sat Sep 28 10:48:17 2024 +0200	854bde8ff89203de89c8a8f667162cfb93f6a2c4,chore: configure vscode to use single quotes"
+1	1	.detective/hash
+11	0	.detective/log
 4	0	.vscode/settings.json
-1	1	apps/frontend/src/app/features/coupling/coupling.component.ts
 
 "Manfred Steyer <manfred.steyer@gmx.net>,Sat Sep 28 10:44:18 2024 +0200	28b7c31784b0353ad33a72f2e5cd6c8e7bcf6947,feat: add store to coupling feature"
 1	1	.detective/hash
