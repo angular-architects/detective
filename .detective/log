@@ -1,3 +1,9 @@
+"Manfred Steyer <manfred.steyer@gmx.net>,Fri Sep 27 22:48:19 2024 +0200	76656b36d327a6c9f45040294c99cc83a30d84b0,refactor(frontend): remove unnecessary rendering effect in hotspot component"
+1	1	.detective/hash
+9	0	.detective/log
+5	1	apps/frontend/src/app/features/hotspot/hotspot.component.html
+26	7	apps/frontend/src/app/features/hotspot/hotspot.component.ts
+
 "Manfred Steyer <manfred.steyer@gmx.net>,Fri Sep 27 22:20:25 2024 +0200	5547a7c4196a2ba80acb704250c0a76d9e1101c1,feat: add limits store to team alignment and hotspots"
 1	1	.detective/hash
 8	8	.detective/log

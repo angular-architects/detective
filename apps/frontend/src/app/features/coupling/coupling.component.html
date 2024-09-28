@@ -1,12 +1,21 @@
 <div class="forensic-filter">
   <div>
-    <mat-checkbox class="mr30" [(ngModel)]="groupByFolder"
+    <mat-checkbox
+      class="mr30"
+      [ngModel]="groupByFolder()"
+      (ngModelChange)="updateFilter({ groupByFolder: $event })"
       >Group by folder</mat-checkbox
     >
 
     <mat-form-field appearance="outline" class="connections">
       <mat-label>Min. Connections</mat-label>
-      <input type="number" matInput min="1" [(ngModel)]="minConnections" />
+      <input
+        type="number"
+        matInput
+        min="1"
+        [ngModel]="minConnections()"
+        (ngModelChange)="updateFilter({ minConnections: $event })"
+      />
     </mat-form-field>
 
     <mat-icon
