@@ -1,4 +1,4 @@
-import { Signal, effect, untracked } from '@angular/core';
+import { Signal, computed, effect, signal, untracked } from '@angular/core';
 
 export function explicitEffect<T>(
   source: Signal<T>,
@@ -18,5 +18,18 @@ export function onceEffect(action: () => void) {
       action();
       ref.destroy();
     });
+  });
+}
+
+export function mirror<T>(source: Signal<T>) {
+  const value = signal(source());
+  return computed(() => {
+    untracked(() => {
+      value.set(source());
+    });
+    return {
+      source: source(),
+      value: value,
+    };
   });
 }

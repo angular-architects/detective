@@ -31,8 +31,9 @@ import { LimitsComponent } from '../../ui/limits/limits.component';
 import { debounceTimeSkipFirst } from '../../utils/debounce';
 import { EventService } from '../../utils/event.service';
 import { lastSegments } from '../../utils/segments';
+import { mirror } from '../../utils/signal-helpers';
 
-import { HotspotFilter, HotspotStore } from './hotspot.store';
+import { HotspotStore } from './hotspot.store';
 
 interface Option {
   id: ComplexityMetric;
@@ -80,9 +81,9 @@ export class HotspotComponent {
   totalCommits = this.statusStore.commits;
   limits = this.limitsStore.limits;
 
-  minScore = this.hotspotStore.filter.minScore;
-  metric = this.hotspotStore.filter.metric;
-  selectedModule = this.hotspotStore.filter.selectedModule;
+  minScore = mirror(this.hotspotStore.filter.minScore);
+  metric = mirror(this.hotspotStore.filter.metric);
+  selectedModule = mirror(this.hotspotStore.filter.module);
 
   loadingAggregated = this.hotspotStore.loadingAggregated;
   loadingHotspots = this.hotspotStore.loadingHotspots;
@@ -97,21 +98,23 @@ export class HotspotComponent {
   formattedHotspots = computed(() =>
     formatHotspots(
       this.hotspotResult().hotspots,
-      untracked(() => this.selectedModule())
+      untracked(() => this.selectedModule().value())
     )
   );
 
   constructor() {
     const loadAggregatedEvents = {
       filterChanged: this.eventService.filterChanged.pipe(startWith(null)),
-      minScore: toObservable(this.minScore).pipe(debounceTimeSkipFirst(300)),
+      minScore: toObservable(this.minScore().value).pipe(
+        debounceTimeSkipFirst(300)
+      ),
       limits: toObservable(this.limits).pipe(debounceTimeSkipFirst(300)),
-      metric: toObservable(this.metric),
+      metric: toObservable(this.metric().value),
     };
 
     const loadHotspotEvent = {
       ...loadAggregatedEvents,
-      selectedModule: toObservable(this.selectedModule),
+      selectedModule: toObservable(this.selectedModule().value),
     };
 
     const loadAggregatedOptions$ = combineLatest(loadAggregatedEvents).pipe(
@@ -142,20 +145,15 @@ export class HotspotComponent {
     this.limitsStore.updateLimits(limits);
   }
 
-  updateFilter(filter: Partial<HotspotFilter>): void {
-    this.hotspotStore.updateFilter(filter);
-  }
-
   selectRow(row: AggregatedHotspot, index: number) {
     const selectedModule = this.aggregatedResult().aggregated[index].module;
-    this.hotspotStore.updateFilter({
-      selectedModule,
-    });
+    this.selectedModule().value.set(selectedModule);
   }
 
   isSelected(index: number) {
     const module = this.aggregatedResult().aggregated[index].module;
-    return module === this.selectedModule();
+    const result = module === this.selectedModule().value();
+    return result;
   }
 }
 

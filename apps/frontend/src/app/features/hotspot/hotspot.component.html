@@ -5,8 +5,7 @@
       <input
         matInput
         type="number"
-        [ngModel]="minScore()"
-        (ngModelChange)="updateFilter({ minScore: $event })"
+        [(ngModel)]="minScore().value"
         min="0"
         step="1"
       />
@@ -14,10 +13,7 @@
 
     <mat-form-field appearance="fill" class="form-field metric">
       <mat-label>Complexity Metric</mat-label>
-      <mat-select
-        [ngModel]="metric"
-        (ngModelChange)="updateFilter({ metric: $event })"
-      >
+      <mat-select [(ngModel)]="metric().value">
         @for (option of metricOptions; track option.id) {
         <mat-option value="{{ option.id }}">{{ option.label }}</mat-option>
         }

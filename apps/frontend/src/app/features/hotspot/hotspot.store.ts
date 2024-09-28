@@ -18,7 +18,7 @@ import { injectShowError } from '../../utils/error-handler';
 export type HotspotFilter = {
   minScore: number;
   metric: ComplexityMetric;
-  selectedModule: string;
+  module: string;
 };
 
 export type LoadAggregateOptions = {
@@ -37,7 +37,7 @@ export const HotspotStore = signalStore(
     filter: {
       minScore: 1,
       metric: 'Length',
-      selectedModule: '',
+      module: '',
     } as HotspotFilter,
     aggregatedResult: initAggregatedHotspotsResult,
     hotspotResult: initHotspotResult,
@@ -53,13 +53,23 @@ export const HotspotStore = signalStore(
       _loadAggregated(
         options: LoadAggregateOptions
       ): Observable<AggregatedHotspotsResult> {
-        const criteria: HotspotCriteria = {
+        const filter = {
           metric: options.metric,
           minScore: options.minScore,
+        };
+
+        const criteria: HotspotCriteria = {
+          ...filter,
           module: '',
         };
 
-        patchState(store, { loadingAggregated: true });
+        patchState(store, (state) => ({
+          loadingAggregated: true,
+          filter: {
+            ...state.filter,
+            ...filter,
+          },
+        }));
 
         return hotspotService.loadAggregated(criteria, options.limits).pipe(
           tap(() => {
@@ -80,7 +90,10 @@ export const HotspotStore = signalStore(
           module: options.selectedModule,
         };
 
-        patchState(store, { loadingHotspots: true });
+        patchState(store, {
+          loadingHotspots: true,
+          filter: criteria,
+        });
 
         return hotspotService.load(criteria, options.limits).pipe(
           tap(() => {

@@ -111,7 +111,7 @@ function createGraph(container: HTMLElement, graph: Graph): cytoscape.Core {
           'font-size': '14px',
           'font-weight': 'bold',
           color: 'black',
-        },
+        } as never,
       },
     ],
     elements: {
