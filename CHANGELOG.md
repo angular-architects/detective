@@ -1,3 +1,13 @@
+## 1.1.4 (2024-09-29)
+
+### 🩹 Fixes
+
+- always show resize cursor during resizing ([be5836b](https://github.com/angular-architects/forensic/commit/be5836b))
+
+### ❤️ Thank You
+
+- Manfred Steyer
+
 ## 1.1.3 (2024-09-28)
 
 ### 🚀 Features
