@@ -148,6 +148,11 @@ function parseBodyEntry(
   return bodyEntry;
 }
 
+// path.join replacement that does not depend on OS, and normalizes separators as used in a git log
+function pathJoin(...args) {
+  return args.join('/').replace(/\/{2,}/g, '/').replace(/\/$/g, '');
+}
+
 function handleRenames(filePath: string, renameMap: Map<string, string>) {
   const result = filePath.match(/(.*?)\{(.*?) => (.*?)\}(.*)/);
 
@@ -157,8 +162,8 @@ function handleRenames(filePath: string, renameMap: Map<string, string>) {
     const after = result[3];
     const end = result[4];
 
-    const from = path.join(start, before, end);
-    const to = path.join(start, after, end);
+    const from = pathJoin(start, before, end);
+    const to = pathJoin(start, after, end);
 
     renameMap.set(from, renameMap.get(to) || to);
     filePath = to;
