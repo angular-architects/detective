@@ -42,3 +42,7 @@ mat-sidenav {
 mat-sidenav-content {
   flex-grow: 1;
 }
+
+mat-nav-list {
+  overflow: hidden;
+}
