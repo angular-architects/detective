@@ -1,5 +1,3 @@
-import * as path from 'path';
-
 import microMatch from 'micromatch';
 
 import { loadCachedLog } from '../infrastructure/log';
