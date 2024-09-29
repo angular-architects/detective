@@ -149,7 +149,7 @@ function parseBodyEntry(
 }
 
 // path.join replacement that does not depend on OS, and normalizes separators as used in a git log
-function pathJoin(...args) {
+function pathJoin(...args: string[]) {
   return args.join('/').replace(/\/{2,}/g, '/').replace(/\/$/g, '');
 }
 
