@@ -19,6 +19,7 @@ export class ResizerComponent {
   onMouseDown(event: MouseEvent) {
     this.resizing = true;
     this.startX = event.clientX;
+    document.body.classList.add('resizing');
     event.preventDefault();
   }
 
@@ -38,5 +39,6 @@ export class ResizerComponent {
   @HostListener('document:mouseup')
   onMouseUp() {
     this.resizing = false;
+    document.body.classList.remove('resizing');
   }
 }
