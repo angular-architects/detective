@@ -1,3 +1,13 @@
+## 1.1.5 (2024-09-29)
+
+### 🩹 Fixes
+
+- don't wrap tree entries ([527ed58](https://github.com/angular-architects/forensic/commit/527ed58))
+
+### ❤️ Thank You
+
+- Manfred Steyer
+
 ## 1.1.4 (2024-09-29)
 
 ### 🩹 Fixes
