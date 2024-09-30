@@ -1,3 +1,13 @@
+## 1.1.6 (2024-09-29)
+
+### 🩹 Fixes
+
+- prevent word wrap in tree ([0130a55](https://github.com/angular-architects/forensic/commit/0130a55))
+
+### ❤️ Thank You
+
+- Manfred Steyer
+
 ## 1.1.5 (2024-09-29)
 
 ### 🩹 Fixes
