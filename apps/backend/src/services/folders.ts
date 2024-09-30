@@ -50,6 +50,11 @@ export function inferFolders(options: Options): Folder[] {
     }
   }
 
-  const converted = toFolder(root);
+  let converted = toFolder(root);
+  while (
+    converted.folders.length === 1 &&
+    converted.folders[0].folders.length === 1
+  )
+    converted = converted.folders[0];
   return converted.folders;
 }
