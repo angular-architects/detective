@@ -74,6 +74,7 @@ const logWithRenames = `"John Doe <john.doe@acme.com>,${today.toISOString()}"
 "Jane Doe <john.doe@acme.com>,${today.toISOString()}"
 10\t0\t/shell/my.component.ts
 0\t1\t/shell/my-other.component.ts
+20\t1\t/shared/feature-checkin/my.component.ts
 `;
 
 jest.mock('../infrastructure/log');
@@ -505,6 +506,11 @@ describe('git parser', () => {
               linesAdded: 0,
               linesRemoved: 1,
               path: '/shell/my-other.component.ts',
+            },
+            {
+              linesAdded: 20,
+              linesRemoved: 1,
+              path: '/shared/sub-features/feature-checkin/my.component.ts',
             },
           ],
         },
