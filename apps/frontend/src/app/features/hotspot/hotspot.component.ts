@@ -3,6 +3,8 @@ import {
   computed,
   effect,
   inject,
+  Injector,
+  Signal,
   untracked,
   viewChild,
 } from '@angular/core';
@@ -14,7 +16,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatSelectModule } from '@angular/material/select';
-import { MatSortModule } from '@angular/material/sort';
+import { MatSort, MatSortModule } from '@angular/material/sort';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { combineLatest, startWith } from 'rxjs';
@@ -38,6 +40,59 @@ import { HotspotStore } from './hotspot.store';
 interface Option {
   id: ComplexityMetric;
   label: string;
+}
+
+export type ReactiveDataSourceOptions<P extends MatPaginator> = {
+  paginator?: Signal<P | undefined>;
+  sort?: Signal<MatSort>;
+  injector?: Injector;
+};
+
+export class ReactiveDataSource<
+  T,
+  P extends MatPaginator = MatPaginator
+> extends MatTableDataSource<T, P> {
+  constructor(source: Signal<T[]>, options?: ReactiveDataSourceOptions<P>) {
+    super(source());
+
+    let first = true;
+
+    // TODO: Check if we need a separate effect per data, paginator, and sort
+    effect(
+      () => {
+        const data = source();
+        const paginator = options?.paginator?.();
+        const sort = options?.sort?.();
+
+        if (!first) {
+          super.data = data;
+        }
+
+        if (paginator) {
+          super.paginator = paginator;
+        }
+
+        if (sort) {
+          super.sort = sort;
+        }
+
+        first = false;
+      },
+      { injector: options?.injector }
+    );
+  }
+}
+
+export type Action = () => void;
+
+export function skipFirst(action: Action): Action {
+  let first = true;
+  return () => {
+    if (!first) {
+      action();
+    }
+    first = false;
+  };
 }
 
 @Component({
@@ -67,8 +122,6 @@ export class HotspotComponent {
   private eventService = inject(EventService);
 
   paginator = viewChild(MatPaginator);
-
-  detailDataSource = new MatTableDataSource<FlatHotspot>();
 
   columnsToDisplay = ['module', 'count'];
   detailColumns = ['fileName', 'commits', 'complexity', 'score'];
@@ -102,6 +155,13 @@ export class HotspotComponent {
     )
   );
 
+  detailDataSource = new ReactiveDataSource<FlatHotspot>(
+    this.formattedHotspots,
+    {
+      paginator: this.paginator,
+    }
+  );
+
   constructor() {
     const loadAggregatedEvents = {
       filterChanged: this.eventService.filterChanged.pipe(startWith(null)),
@@ -128,17 +188,20 @@ export class HotspotComponent {
     this.hotspotStore.rxLoadAggregated(loadAggregatedOptions$);
     this.hotspotStore.rxLoadHotspots(loadHotspotOptions$);
 
-    effect(() => {
-      const hotspots = this.formattedHotspots();
-      this.detailDataSource.data = hotspots;
-    });
+    //
+    // Thanks to the ReactiveDataSource, we can get rid of these effects here:
+    //
+    // effect(() => {
+    //   const hotspots = this.formattedHotspots();
+    //   this.detailDataSource.data = hotspots;
+    // });
 
-    effect(() => {
-      const paginator = this.paginator();
-      if (paginator) {
-        this.detailDataSource.paginator = paginator;
-      }
-    });
+    // effect(() => {
+    //   const paginator = this.paginator();
+    //   if (paginator) {
+    //     this.detailDataSource.paginator = paginator;
+    //   }
+    // });
   }
 
   updateLimits(limits: Limits): void {
