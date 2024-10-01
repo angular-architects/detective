@@ -28,7 +28,7 @@ export async function calcTeamAlignment(
   const userToTeam = initUserToTeam(teams);
   const result = initResult(displayModules, Object.keys(teams));
 
-  const users = new Set<string>();
+  const actualTeams = new Set<string>();
 
   const parseOptions: ParseOptions = {
     limits,
@@ -52,9 +52,8 @@ export async function calcTeamAlignment(
 
     userName = config.aliases?.[userName] || userName;
 
-    users.add(userName);
-
     const key = calcKey(byUser, userName, userToTeam);
+    actualTeams.add(key);
 
     for (const change of entry.body) {
       for (let i = 0; i < modules.length; i++) {
@@ -72,9 +71,7 @@ export async function calcTeamAlignment(
     }
   }, parseOptions);
 
-  if (byUser) {
-    result.teams = Array.from(users);
-  }
+  result.teams = Array.from(actualTeams).sort();
 
   return result;
 }

@@ -114,10 +114,10 @@ describe('team alignment service', () => {
     });
 
     expect(result.teams).toEqual([
-      'John Doe',
       'Jane Doe',
-      'Max Muster',
+      'John Doe',
       'Maria Muster',
+      'Max Muster',
     ]);
   });
 
