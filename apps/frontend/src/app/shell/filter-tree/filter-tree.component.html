@@ -8,6 +8,7 @@
     <mat-checkbox
       [checked]="isChecked(node)"
       (change)="onCheckChange(node, $event)"
+      (contextmenu)="noContextMenu($event)"
       >{{ node.name }}</mat-checkbox
     >
   </mat-tree-node>
@@ -22,10 +23,32 @@
         {{ tree.isExpanded(node) ? 'expand_more' : 'chevron_right' }}
       </mat-icon>
     </button>
+    <div
+      #contextMenuTrigger="matMenuTrigger"
+      [matMenuTriggerFor]="folderMenu"
+    ></div>
     <mat-checkbox
       [checked]="isChecked(node)"
       (change)="onCheckChange(node, $event)"
+      (contextmenu)="onContextMenu($event, contextMenuTrigger)"
       >{{ node.name }}</mat-checkbox
     >
+    <mat-menu #folderMenu="matMenu">
+      @if (hasFocus(node)) {
+      <button mat-menu-item (click)="focusTree(undefined)">
+        <mat-icon>open_in_full</mat-icon>
+        <span>Unfocus</span>
+      </button>
+      } @else {
+      <button mat-menu-item (click)="focusTree(node)">
+        <mat-icon>start</mat-icon>
+        <span>Focus</span>
+      </button>
+      }
+      <button mat-menu-item (click)="selectChildren(node)">
+        <mat-icon>checklist</mat-icon>
+        <span>Select the children</span>
+      </button>
+    </mat-menu>
   </mat-tree-node>
 </mat-tree>
