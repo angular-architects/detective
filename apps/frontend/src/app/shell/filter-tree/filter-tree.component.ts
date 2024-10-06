@@ -105,6 +105,11 @@ export class FilterTreeComponent implements OnInit {
   onContextMenu(event: MouseEvent, trigger: MatMenuTrigger) {
     event.preventDefault();
     trigger.openMenu();
+    document
+      .querySelector('div.cdk-overlay-backdrop')
+      ?.addEventListener('mousedown', () => {
+        trigger.closeMenu();
+      });
   }
 
   selectChildren(folder: Folder) {
