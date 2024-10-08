@@ -35,7 +35,7 @@ export const HotspotStore = signalStore(
   { providedIn: 'root' },
   withState({
     filter: {
-      minScore: 1,
+      minScore: 33,
       metric: 'Length',
       module: '',
     } as HotspotFilter,

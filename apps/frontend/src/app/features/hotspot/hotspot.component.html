@@ -1,15 +1,13 @@
 <div class="forensic-filter">
   <div>
-    <mat-form-field class="min-score">
-      <mat-label>Min. Score</mat-label>
-      <input
-        matInput
-        type="number"
-        [(ngModel)]="minScore().value"
-        min="0"
-        step="1"
-      />
-    </mat-form-field>
+    <mat-label>Min. Score: (%)</mat-label>
+
+    <mat-slider min="0" max="100" step="1" style="width: 150px">
+      <input matSliderThumb value="1" [(ngModel)]="minScore().value" />
+    </mat-slider>
+    <mat-label style="margin-right: 20px; margin-left: 10px"
+      >{{ minScore().value() }} %</mat-label
+    >
 
     <mat-form-field appearance="fill" class="form-field metric">
       <mat-label>Complexity Metric</mat-label>

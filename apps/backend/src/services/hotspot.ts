@@ -38,12 +38,23 @@ export type HotspotCriteria = {
 };
 
 export type AggregatedHotspot = {
+  parent: string;
   module: string;
   count: number;
+  countBelow: number;
 };
 
 export type AggregatedHotspotsResult = {
   aggregated: AggregatedHotspot[];
+  minScore: number;
+  maxScore: number;
+  boundary: number;
+};
+
+type Stats = {
+  maxScore: number;
+  scores: Map<string, number[]>;
+  minScore: number;
 };
 
 export async function findHotspotFiles(
@@ -80,28 +91,76 @@ export async function aggregateHotspots(
   limits: Limits,
   options: Options
 ): Promise<AggregatedHotspotsResult> {
-  const hotspotResult = await findHotspotFiles(criteria, limits, options);
+  const phase1Criteria = {
+    ...criteria,
+    minScore: 0,
+  };
+
+  const hotspotResult = await findHotspotFiles(phase1Criteria, limits, options);
   const hotspots = hotspotResult.hotspots;
 
   const config = loadConfig(options);
   const modules = config.scopes.map((m) => normalizeFolder(m));
 
-  const result: AggregatedHotspot[] = [];
-  for (const module of modules) {
-    let count = 0;
-    for (const hotspot of hotspots) {
-      if (
-        hotspot.fileName.startsWith(module)
-        //&& hotspot.score >= criteria.minScore
-      ) {
-        count++;
-      }
-    }
-    result.push({ module: toDisplayFolder(module), count });
-  }
+  const stats = collectStats(modules, hotspots);
+
+  const boundary = stats.maxScore * (criteria.minScore / 100);
+  const result = aggregateStats(modules, stats, boundary);
 
   result.sort((a, b) => b.count - a.count);
-  return { aggregated: result };
+
+  return {
+    aggregated: result,
+    maxScore: stats.maxScore,
+    minScore: stats.minScore,
+    boundary,
+  };
+}
+
+function aggregateStats(
+  modules: string[],
+  stats: Stats,
+  boundary: number
+): AggregatedHotspot[] {
+  const result: AggregatedHotspot[] = [];
+  for (const module of modules) {
+    const moduleStats = stats.scores.get(module);
+    const count = moduleStats.reduce(
+      (acc, v) => (v > boundary ? acc + 1 : acc),
+      0
+    );
+    const countBelow = moduleStats.length - count;
+
+    const displayFolder = toDisplayFolder(module);
+    const parent = path.dirname(displayFolder);
+
+    result.push({
+      parent,
+      module: displayFolder,
+      count,
+      countBelow,
+    });
+  }
+  return result;
+}
+
+function collectStats(modules: string[], hotspots: FlatHotspot[]) {
+  let minScore = Number.MAX_VALUE;
+  let maxScore = 0;
+  const scores = new Map<string, number[]>();
+
+  for (const module of modules) {
+    const moduleScores = [];
+    for (const hotspot of hotspots) {
+      if (hotspot.fileName.startsWith(module)) {
+        minScore = Math.min(minScore, hotspot.score);
+        maxScore = Math.max(maxScore, hotspot.score);
+        moduleScores.push(hotspot.score);
+      }
+    }
+    scores.set(module, moduleScores);
+  }
+  return { maxScore, scores, minScore };
 }
 
 async function analyzeLogs(
