@@ -41,14 +41,17 @@ export type AggregatedHotspot = {
   parent: string;
   module: string;
   count: number;
-  countBelow: number;
+  countWarning: number;
+  countHotspot: number;
+  countOk: number;
 };
 
 export type AggregatedHotspotsResult = {
   aggregated: AggregatedHotspot[];
   minScore: number;
   maxScore: number;
-  boundary: number;
+  warningBoundary: number;
+  hotspotBoundary: number;
 };
 
 type Stats = {
@@ -104,8 +107,16 @@ export async function aggregateHotspots(
 
   const stats = collectStats(modules, hotspots);
 
-  const boundary = stats.maxScore * (criteria.minScore / 100);
-  const result = aggregateStats(modules, stats, boundary);
+  const warningBoundary = stats.maxScore * (criteria.minScore / 100);
+  const hotspotBoundary =
+    warningBoundary + (stats.maxScore - warningBoundary) / 2;
+
+  const result = aggregateStats(
+    modules,
+    stats,
+    warningBoundary,
+    hotspotBoundary
+  );
 
   result.sort((a, b) => b.count - a.count);
 
@@ -113,23 +124,36 @@ export async function aggregateHotspots(
     aggregated: result,
     maxScore: stats.maxScore,
     minScore: stats.minScore,
-    boundary,
+    hotspotBoundary,
+    warningBoundary,
   };
 }
 
 function aggregateStats(
   modules: string[],
   stats: Stats,
-  boundary: number
+  warningBoundary: number,
+  hotspotBoundary: number
 ): AggregatedHotspot[] {
   const result: AggregatedHotspot[] = [];
   for (const module of modules) {
     const moduleStats = stats.scores.get(module);
-    const count = moduleStats.reduce(
-      (acc, v) => (v > boundary ? acc + 1 : acc),
-      0
-    );
-    const countBelow = moduleStats.length - count;
+
+    let countWarning = 0;
+    let countHotspot = 0;
+    let countOk = 0;
+
+    for (const stat of moduleStats) {
+      if (stat > hotspotBoundary) {
+        countHotspot++;
+      } else if (stat < warningBoundary) {
+        countOk++;
+      } else {
+        countWarning++;
+      }
+    }
+
+    // const countBelow = moduleStats.length - count;
 
     const displayFolder = toDisplayFolder(module);
     const parent = path.dirname(displayFolder);
@@ -137,8 +161,10 @@ function aggregateStats(
     result.push({
       parent,
       module: displayFolder,
-      count,
-      countBelow,
+      count: countOk,
+      countOk,
+      countWarning,
+      countHotspot,
     });
   }
   return result;

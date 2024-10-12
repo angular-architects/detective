@@ -1,3 +1,11 @@
+"Manfred Steyer <manfred.steyer@gmx.net>,Tue Oct 8 17:44:47 2024 +0200	6ed670acc998f83279713bc9c2a16ef7a79f66a1,feat: filter hotspots using slider and percent"
+1	1	.detective/hash
+33	3	.detective/log
+70	11	apps/backend/src/services/hotspot.ts
+8	10	apps/frontend/src/app/features/hotspot/hotspot.component.html
+2	0	apps/frontend/src/app/features/hotspot/hotspot.component.ts
+1	1	apps/frontend/src/app/features/hotspot/hotspot.store.ts
+
 "Manfred Steyer <manfred.steyer@gmx.net>,Sun Sep 29 12:41:39 2024 +0200	4ee102065cca1a50063a871b078ec87680116efb,chore(release): publish 1.1.6"
 10	0	CHANGELOG.md
 1	1	apps/backend/package.json

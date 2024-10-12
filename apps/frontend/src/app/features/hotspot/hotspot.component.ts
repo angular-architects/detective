@@ -29,11 +29,13 @@ import {
 } from '../../model/hotspot-result';
 import { Limits } from '../../model/limits';
 import { LimitsComponent } from '../../ui/limits/limits.component';
+import { TreeMapComponent } from '../../ui/treemap/treemap.component';
 import { debounceTimeSkipFirst } from '../../utils/debounce';
 import { EventService } from '../../utils/event.service';
 import { lastSegments } from '../../utils/segments';
 import { mirror } from '../../utils/signal-helpers';
 
+import { toTreeMapConfig } from './hotspot-adapter';
 import { HotspotStore } from './hotspot.store';
 
 interface Option {
@@ -57,6 +59,7 @@ interface Option {
     FormsModule,
     MatIconModule,
     MatTooltipModule,
+    TreeMapComponent,
   ],
   templateUrl: './hotspot.component.html',
   styleUrl: './hotspot.component.css',
@@ -96,6 +99,8 @@ export class HotspotComponent {
   formattedAggregated = computed(() =>
     formatAggregated(this.aggregatedResult().aggregated)
   );
+
+  treeMapConfig = computed(() => toTreeMapConfig(this.formattedAggregated()));
 
   formattedHotspots = computed(() =>
     formatHotspots(
@@ -162,7 +167,7 @@ export class HotspotComponent {
 function formatAggregated(hotspot: AggregatedHotspot[]): AggregatedHotspot[] {
   return hotspot.map((hs) => ({
     ...hs,
-    module: lastSegments(hs.module, 3),
+    module: lastSegments(hs.module, 1),
   }));
 }
 

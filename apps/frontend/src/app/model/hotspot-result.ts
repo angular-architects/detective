@@ -30,14 +30,26 @@ export interface HotspotCriteria {
 }
 
 export interface AggregatedHotspot {
+  parent: string;
   module: string;
   count: number;
+  countWarning: number;
+  countHotspot: number;
+  countOk: number;
 }
 
 export interface AggregatedHotspotsResult {
   aggregated: AggregatedHotspot[];
+  maxScore: number;
+  minScore: number;
+  warningBoundary: number;
+  hotspotBoundary: number;
 }
 
 export const initAggregatedHotspotsResult: AggregatedHotspotsResult = {
   aggregated: [],
+  maxScore: 0,
+  minScore: 0,
+  warningBoundary: 0,
+  hotspotBoundary: 0,
 };
