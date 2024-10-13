@@ -15,6 +15,8 @@ import {
 import { Limits } from '../../model/limits';
 import { injectShowError } from '../../utils/error-handler';
 
+import { ScoreType } from './hotspot-adapter';
+
 export type HotspotFilter = {
   minScore: number;
   metric: ComplexityMetric;
@@ -27,8 +29,22 @@ export type LoadAggregateOptions = {
   limits: Limits;
 };
 
-export type LoadHotspotOptions = LoadAggregateOptions & {
+export type LoadHotspotOptions = {
   selectedModule: string;
+  scoreRange: ScoreRange;
+  metric: ComplexityMetric;
+  limits: Limits;
+  scoreType: ScoreType;
+};
+
+export type ScoreRange = {
+  from: number;
+  to: number;
+};
+
+const initScoreRange: ScoreRange = {
+  from: 0,
+  to: 0,
 };
 
 export const HotspotStore = signalStore(
@@ -38,7 +54,9 @@ export const HotspotStore = signalStore(
       minScore: 33,
       metric: 'Length',
       module: '',
+      scoreRange: initScoreRange,
     } as HotspotFilter,
+    scoreType: 'fine' as ScoreType,
     aggregatedResult: initAggregatedHotspotsResult,
     hotspotResult: initHotspotResult,
     loadingAggregated: false,
@@ -86,14 +104,20 @@ export const HotspotStore = signalStore(
       _loadHotspots(options: LoadHotspotOptions): Observable<HotspotResult> {
         const criteria: HotspotCriteria = {
           metric: options.metric,
-          minScore: options.minScore,
+          minScore: 0,
           module: options.selectedModule,
         };
 
-        patchState(store, {
+        patchState(store, (state) => ({
           loadingHotspots: true,
-          filter: criteria,
-        });
+          filter: {
+            ...state.filter,
+            module: options.selectedModule,
+            minScore: state.filter.minScore,
+            scoreRange: options.scoreRange,
+          },
+          scoreType: options.scoreType,
+        }));
 
         return hotspotService.load(criteria, options.limits).pipe(
           tap(() => {

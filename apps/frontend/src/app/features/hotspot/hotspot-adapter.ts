@@ -5,8 +5,9 @@ import { ChartEvent, InteractionItem } from 'chart.js';
 import { AggregatedHotspot } from '../../model/hotspot-result';
 import { TreeMapChartConfig } from '../../ui/treemap/treemap.component';
 
-type HotspotDataSet = {
-  tree: AggregatedHotspot[];
+export type ScoreType = 'hotspot' | 'warning' | 'fine';
+export type AggregatedHotspotWithType = AggregatedHotspot & {
+  type: ScoreType;
 };
 
 export function toTreeMapConfig(
@@ -19,16 +20,6 @@ export function toTreeMapConfig(
   ]);
 
   const options = {
-    onClick: (_event: ChartEvent, elements: InteractionItem[]) => {
-      if (elements.length > 0) {
-        const element = elements[elements.length - 1];
-        const dataIndex = element.index;
-        const dataset = config.data.datasets[0] as unknown as HotspotDataSet;
-        const tree = dataset.tree;
-        const item = tree[dataIndex];
-        console.log('item', item);
-      }
-    },
     onHover: (event: ChartEvent, elements: InteractionItem[]) => {
       const chartElement = event.native?.target as HTMLCanvasElement;
       if (elements.length >= 2) {
@@ -66,24 +57,12 @@ export function toTreeMapConfig(
           spacing: 1,
           borderWidth: 0.5,
           borderColor: '#EFEFEF',
-          // backgroundColor: 'rgba(220,230,220,0.3)',
           backgroundColor: (ctx) => {
             if (typeof ctx.raw?.l !== 'undefined' && ctx.raw?.l < 2) {
               return '#EFEFEF';
             }
-
-            switch (ctx.raw?.g) {
-              case 'hotspot':
-                return '#E74C3C';
-              case 'warning':
-                return '#F1C40F';
-              case 'fine':
-                return '#2ECC71';
-            }
-
-            return 'gray';
+            return getScoreTypeColor(ctx.raw?.g as ScoreType);
           },
-          // hoverBackgroundColor: 'rgba(220,230,220,0.5)',
           captions: {
             align: 'center',
             display: true,
@@ -108,4 +87,15 @@ export function toTreeMapConfig(
   };
 
   return config;
+}
+
+export function getScoreTypeColor(scoreType: ScoreType) {
+  switch (scoreType) {
+    case 'hotspot':
+      return '#E74C3C';
+    case 'warning':
+      return '#F1C40F';
+    case 'fine':
+      return '#2ECC71';
+  }
 }
