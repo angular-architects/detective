@@ -63,7 +63,7 @@ describe('hotspot service', () => {
 
     const criteria: HotspotCriteria = {
       metric: 'Length',
-      minScore: 200,
+      minScore: 50,
       module: '',
     };
 
@@ -71,16 +71,28 @@ describe('hotspot service', () => {
 
     expect(result.aggregated).toEqual([
       {
+        parent: '/',
         module: '/booking',
         count: 1,
+        countHotspot: 1,
+        countOk: 1,
+        countWarning: 0,
       },
       {
+        parent: '/',
         module: '/checkin',
-        count: 1,
+        count: 0,
+        countHotspot: 0,
+        countOk: 0,
+        countWarning: 1,
       },
       {
+        parent: '/',
         module: '/shared',
-        count: 1,
+        count: 0,
+        countHotspot: 0,
+        countOk: 0,
+        countWarning: 1,
       },
     ]);
   });
@@ -93,7 +105,7 @@ describe('hotspot service', () => {
 
     const criteria: HotspotCriteria = {
       metric: 'Length',
-      minScore: 201,
+      minScore: 34,
       module: '',
     };
 
@@ -101,16 +113,28 @@ describe('hotspot service', () => {
 
     expect(result.aggregated).toEqual([
       {
+        parent: '/',
         module: '/booking',
         count: 1,
+        countHotspot: 1,
+        countOk: 1,
+        countWarning: 0,
       },
       {
+        parent: '/',
         module: '/checkin',
         count: 0,
+        countHotspot: 0,
+        countOk: 0,
+        countWarning: 1,
       },
       {
+        parent: '/',
         module: '/shared',
         count: 0,
+        countHotspot: 0,
+        countOk: 0,
+        countWarning: 1,
       },
     ]);
   });
