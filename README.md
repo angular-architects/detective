@@ -42,7 +42,7 @@ When clicking on an region, the files in this region are displayed:
 
 The tree can be resized horizontally. Also, each entry has a context menu that allows to focus the current entry (making the current entry the root entry) and selecting all children:
 
-![Focus on subfolder and select all children](./docs/context-menu.png)
+<img src="./docs/context-menu.png" style="max-width:200px">
 
 ## Using
 
