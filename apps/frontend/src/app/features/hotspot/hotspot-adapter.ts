@@ -1,5 +1,3 @@
-import 'chartjs-chart-treemap';
-
 import { ChartEvent, InteractionItem } from 'chart.js';
 
 import { AggregatedHotspot } from '../../model/hotspot-result';
