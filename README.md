@@ -28,7 +28,21 @@ The Team Alignment Analysis shows whether your team structure and module/domain 
 
 A Hotspot is a complex file with that was previously changed quite often and hence comes with a higher risk for bugs.
 
-![Hotspots](./docs/hotspots.png)
+![Hotspots](./docs/hotspots-treemap.png)
+
+For each region, Detective calculates a hotspot score which is the product of the amount of changes and the complexity. You can see it as an sort index. Please keep in mind that this score is local to your analysis and hence cannot be compared with scores resulting from other analyses.
+
+The slider on the top left defines when a region is identified as a hotspot. For instance, 33% defines that each region having 33% or more of the maximum hotspot score is a hotspot. For a better overview, these hotspots are seperated into two equal areas: the lower half is displayed yellow and the upper half is red.
+
+When clicking on an region, the files in this region are displayed:
+
+![Details of a Hotspot](./docs/hotspot-details.png)
+
+## Tree
+
+The tree can be resized horizontally. Also, each entry has a context menu that allows to focus the current entry (making the current entry the root entry) and selecting all children:
+
+![Focus on subfolder and select all children](./docs/context-menu.png)
 
 ## Using
 

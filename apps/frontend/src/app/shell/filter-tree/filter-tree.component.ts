@@ -110,6 +110,7 @@ export class FilterTreeComponent implements OnInit {
       ?.addEventListener('mousedown', () => {
         trigger.closeMenu();
       });
+    removeFocus();
   }
 
   selectChildren(folder: Folder) {
@@ -199,5 +200,7 @@ export class FilterTreeComponent implements OnInit {
 }
 
 function removeFocus() {
-  (document.activeElement as HTMLElement).blur();
+  setTimeout(() => {
+    (document.activeElement as HTMLElement)?.blur();
+  });
 }
