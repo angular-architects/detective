@@ -71,9 +71,15 @@ export class TreeMapComponent implements OnChanges, OnDestroy {
     const ctx = canvas.getContext('2d');
     const config = this.chartConfig();
 
+    if (config.data.datasets[0].data.length === 0) {
+      return;
+    }
+
     if (!ctx) {
       throw new Error('2d context not found');
     }
+
+    console.log('config', config);
 
     this.chart?.destroy();
 

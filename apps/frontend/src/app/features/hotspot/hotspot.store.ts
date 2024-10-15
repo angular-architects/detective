@@ -1,5 +1,11 @@
-import { inject } from '@angular/core';
-import { patchState, signalStore, withMethods, withState } from '@ngrx/signals';
+import { computed, inject } from '@angular/core';
+import {
+  patchState,
+  signalStore,
+  withComputed,
+  withMethods,
+  withState,
+} from '@ngrx/signals';
 import { rxMethod } from '@ngrx/signals/rxjs-interop';
 import { catchError, filter, Observable, of, pipe, switchMap, tap } from 'rxjs';
 
@@ -21,6 +27,7 @@ export type HotspotFilter = {
   minScore: number;
   metric: ComplexityMetric;
   module: string;
+  scoreRange: ScoreRange;
 };
 
 export type LoadAggregateOptions = {
@@ -62,6 +69,16 @@ export const HotspotStore = signalStore(
     loadingAggregated: false,
     loadingHotspots: false,
   }),
+  withComputed((store) => ({
+    hotspotsInRange: computed(() =>
+      store.hotspotResult().hotspots.filter((h) => {
+        return (
+          h.score >= store.filter().scoreRange.from &&
+          h.score < store.filter().scoreRange.to
+        );
+      })
+    ),
+  })),
   withMethods(
     (
       store,
@@ -132,7 +149,15 @@ export const HotspotStore = signalStore(
       },
     })
   ),
+
   withMethods((store) => ({
+    resetResults(): void {
+      patchState(store, {
+        aggregatedResult: initAggregatedHotspotsResult,
+        hotspotResult: initHotspotResult,
+      });
+    },
+
     updateFilter(filter: Partial<HotspotFilter>) {
       patchState(store, (state) => ({
         filter: {

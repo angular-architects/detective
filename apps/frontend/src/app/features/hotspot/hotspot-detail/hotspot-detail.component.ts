@@ -45,11 +45,11 @@ export class HotspotDetailComponent {
   loadingHotspots = this.hotspotStore.loadingHotspots;
 
   aggregatedResult = this.hotspotStore.aggregatedResult;
-  hotspotResult = this.hotspotStore.hotspotResult;
+  hotspots = this.hotspotStore.hotspotsInRange;
 
   formattedHotspots = computed(() =>
     formatHotspots(
-      this.hotspotResult().hotspots,
+      this.hotspots(),
       untracked(() => this.hotspotStore.filter.module())
     )
   );

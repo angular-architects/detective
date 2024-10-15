@@ -98,6 +98,8 @@ export class HotspotComponent {
   treeMapConfig = computed(() => toTreeMapConfig(this.formattedAggregated()));
 
   constructor() {
+    this.hotspotStore.resetResults();
+
     const loadAggregatedEvents = {
       filterChanged: this.eventService.filterChanged.pipe(startWith(null)),
       minScore: toObservable(this.minScore().value).pipe(

@@ -144,16 +144,14 @@ function aggregateStats(
     let countOk = 0;
 
     for (const stat of moduleStats) {
-      if (stat > hotspotBoundary) {
+      if (stat >= hotspotBoundary) {
         countHotspot++;
-      } else if (stat < warningBoundary) {
-        countOk++;
-      } else {
+      } else if (stat >= warningBoundary) {
         countWarning++;
+      } else {
+        countOk++;
       }
     }
-
-    // const countBelow = moduleStats.length - count;
 
     const displayFolder = toDisplayFolder(module);
     const parent = path.dirname(displayFolder);
