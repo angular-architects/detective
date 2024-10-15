@@ -1,3 +1,26 @@
+## 1.2.0 (2024-10-15)
+
+### 🚀 Features
+
+- show actual teams/users in team alignment ([0f245be](https://github.com/angular-architects/forensic/commit/0f245be))
+- focus in tree ([b159d26](https://github.com/angular-architects/forensic/commit/b159d26))
+- filter hotspots using slider and percent ([6ed670a](https://github.com/angular-architects/forensic/commit/6ed670a))
+- add treemap for hotspots ([bfc6cd6](https://github.com/angular-architects/forensic/commit/bfc6cd6))
+- add detail view to hotspot treemap ([0292893](https://github.com/angular-architects/forensic/commit/0292893))
+- make treemap responsive ([5d7327b](https://github.com/angular-architects/forensic/commit/5d7327b))
+
+### 🩹 Fixes
+
+- correct separators in git log rename handling ([aae727f](https://github.com/angular-architects/forensic/commit/aae727f))
+- prod build did not worked bc of missing cdk ref. Also fix exec perms on scripts ([f63ce7d](https://github.com/angular-architects/forensic/commit/f63ce7d))
+- align material / cdk version and use npm ci inside pipeline ([7c30de9](https://github.com/angular-architects/forensic/commit/7c30de9))
+
+### ❤️ Thank You
+
+- John van Leeuwen
+- Manfred Steyer
+- Murat Sari
+
 ## 1.1.6 (2024-09-29)
 
 ### 🩹 Fixes
