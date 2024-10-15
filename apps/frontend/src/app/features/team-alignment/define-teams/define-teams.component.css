@@ -1,0 +1,42 @@
+.teams {
+  text-wrap: nowrap;
+
+  .teams__list {
+    display: inline-block;
+    overflow-x: auto;
+    text-wrap: nowrap;
+    max-width: calc(100vh - 200px);
+  }
+
+  .team {
+    display: inline-block;
+    vertical-align: top;
+    width: 200px;
+
+    h2 {
+      height: 48px;
+    }
+
+    span.team__name--fixed {
+      display: inline-block;
+      padding-top: 12px;
+    }
+
+    input.team__name {
+      width: 175px;
+      height: 48px;
+      font-size: 20px;
+      font-weight: 600;
+    }
+
+    .team__users {
+      list-style-type: none;
+      min-height: 280px;
+      padding: 0 10px 32px 10px;
+    }
+  }
+}
+
+button + button {
+  margin-left: 16px;
+}

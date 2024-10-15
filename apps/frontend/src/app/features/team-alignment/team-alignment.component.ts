@@ -1,12 +1,12 @@
-import { Component, inject, computed } from '@angular/core';
+import { Component, computed, inject } from '@angular/core';
 import { takeUntilDestroyed, toObservable } from '@angular/core/rxjs-interop';
 import { FormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { quantize, interpolateRainbow } from 'd3';
-import { combineLatest, startWith } from 'rxjs';
+import { interpolateRainbow, quantize } from 'd3';
+import { combineLatest, startWith, Subject } from 'rxjs';
 
 import { LimitsStore } from '../../data/limits.store';
 import { StatusStore } from '../../data/status.store';
@@ -16,6 +16,7 @@ import { LimitsComponent } from '../../ui/limits/limits.component';
 import { debounceTimeSkipFirst } from '../../utils/debounce';
 import { EventService } from '../../utils/event.service';
 
+import { DefineTeamsComponent } from './define-teams';
 import { toAlignmentChartConfigs } from './team-alignment-chart-adapter';
 import { TeamAlignmentStore } from './team-alignment.store';
 
@@ -30,6 +31,7 @@ import { TeamAlignmentStore } from './team-alignment.store';
     MatTooltipModule,
     MatButtonModule,
     DoughnutComponent,
+    DefineTeamsComponent,
   ],
   templateUrl: './team-alignment.component.html',
   styleUrl: './team-alignment.component.css',
@@ -45,15 +47,21 @@ export class TeamAlignmentComponent {
   limits = this.limitsStore.limits;
   byUser = this.taStore.filter.byUser;
 
+  defineTeams = false;
+
   teamAlignmentResult = this.taStore.result;
 
   teams = this.taStore.result.teams;
   colors = computed(() => this.toColors(this.teams().length));
 
+  showDefineTeams = false;
+  reload = new Subject<void>();
+
   loadOptions$ = combineLatest({
     limits: toObservable(this.limits).pipe(debounceTimeSkipFirst(300)),
     byUser: toObservable(this.byUser),
     filterChanged: this.eventService.filterChanged.pipe(startWith(null)),
+    reload: this.reload.pipe(startWith(null)),
   }).pipe(takeUntilDestroyed());
 
   chartConfigs = computed(() =>
@@ -74,5 +82,10 @@ export class TeamAlignmentComponent {
 
   private toColors(count: number): string[] {
     return quantize(interpolateRainbow, count + 1);
+  }
+
+  protected hideDefineTeams() {
+    this.reload.next();
+    this.showDefineTeams = false;
   }
 }
