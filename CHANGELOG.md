@@ -1,3 +1,13 @@
+## 1.2.1 (2024-10-15)
+
+### 🚀 Features
+
+- added UI to define teams ([0d2e734](https://github.com/angular-architects/forensic/commit/0d2e734))
+
+### ❤️ Thank You
+
+- John van Leeuwen
+
 ## 1.2.0 (2024-10-15)
 
 ### 🚀 Features
