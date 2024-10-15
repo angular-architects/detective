@@ -1,0 +1,83 @@
+.teams {
+  text-wrap: nowrap;
+  height: 100%;
+  overflow-x: hidden;
+  margin-left: 10px;
+
+  .teams__list {
+    display: inline-block;
+    overflow: scroll;
+    text-wrap: nowrap;
+    max-width: calc(100% - 220px);
+    height: calc(100% - 10px);
+  }
+
+  .team {
+    display: inline-block;
+    vertical-align: top;
+    width: 200px;
+
+    h2 {
+      height: 48px;
+    }
+
+    span.team__name--fixed {
+      display: inline-block;
+      padding-top: 12px;
+    }
+
+    input.team__name {
+      width: 175px;
+      height: 48px;
+      font-size: 20px;
+      font-weight: 600;
+    }
+
+    .team__users {
+      list-style-type: none;
+      min-height: 280px;
+      margin-left: 0px;
+      padding: 0 10px 32px 10px;
+    }
+  }
+}
+
+button + button {
+  margin-left: 16px;
+}
+
+li,
+ul {
+  list-style-type: none;
+  margin-left: 0 !important;
+  padding-left: 0 !important;
+  cursor: pointer;
+}
+
+.dialog-container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.dialog-content {
+  flex: 1;
+  overflow: auto;
+  display: flex;
+  flex-direction: column;
+  padding: 16px;
+}
+
+.dialog-actions {
+  display: flex;
+  justify-content: flex-end;
+  padding: 8px 16px;
+}
+
+.h-full {
+  height: 100%;
+}
+
+.delete-button {
+  padding: 10px !important;
+}
