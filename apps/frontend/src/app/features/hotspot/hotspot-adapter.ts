@@ -4,25 +4,34 @@ import { ChartEvent, InteractionItem } from 'chart.js';
 
 import { AggregatedHotspot } from '../../model/hotspot-result';
 import { TreeMapChartConfig } from '../../ui/treemap/treemap.component';
+import { lastSegments } from '../../utils/segments';
 
 export type ScoreType = 'hotspot' | 'warning' | 'fine';
-export type AggregatedHotspotWithType = AggregatedHotspot & {
+export type AggregatedHotspotVM = AggregatedHotspot & {
   type: ScoreType;
+  displayParent: string;
 };
 
 export function toTreeMapConfig(
   aggregated: AggregatedHotspot[]
 ): TreeMapChartConfig {
-  const values = aggregated.flatMap((v) => [
-    { ...v, count: v.countHotspot, type: 'hotspot' },
-    { ...v, count: v.countWarning, type: 'warning' },
-    { ...v, count: v.countOk, type: 'fine' },
-  ]);
+  const values = aggregated
+    .map((a) => ({
+      ...a,
+      displayParent: lastSegments(a.parent, 1),
+    }))
+    .flatMap((v) => [
+      { ...v, count: v.countHotspot, type: 'hotspot' },
+      { ...v, count: v.countWarning, type: 'warning' },
+      { ...v, count: v.countOk, type: 'fine' },
+    ]) as AggregatedHotspotVM[];
 
   const options = {
+    responsive: true,
+    maintainAspectRatio: false,
     onHover: (event: ChartEvent, elements: InteractionItem[]) => {
       const chartElement = event.native?.target as HTMLCanvasElement;
-      if (elements.length >= 2) {
+      if (elements.length > 2) {
         chartElement.style.cursor = 'pointer';
       } else {
         chartElement.style.cursor = 'default';
@@ -53,7 +62,7 @@ export function toTreeMapConfig(
         {
           data: values,
           key: 'count',
-          groups: ['parent', 'module', 'type'],
+          groups: ['displayParent', 'module', 'type'],
           spacing: 1,
           borderWidth: 0.5,
           borderColor: '#EFEFEF',

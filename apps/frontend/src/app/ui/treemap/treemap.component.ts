@@ -82,7 +82,7 @@ export class TreeMapComponent implements OnChanges, OnDestroy {
       _event: ChartEvent,
       elements: InteractionItem[]
     ) => {
-      if (elements.length > 0) {
+      if (elements.length > 2) {
         const element = elements[elements.length - 1];
         const dataIndex = element.index;
         const dataset = config.data.datasets[0];

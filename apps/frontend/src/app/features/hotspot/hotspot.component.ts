@@ -32,7 +32,7 @@ import { lastSegments } from '../../utils/segments';
 import { mirror } from '../../utils/signal-helpers';
 
 import {
-  AggregatedHotspotWithType,
+  AggregatedHotspotVM,
   ScoreType,
   toTreeMapConfig,
 } from './hotspot-adapter';
@@ -119,7 +119,7 @@ export class HotspotComponent {
   }
 
   selectModule(event: TreeMapEvent): void {
-    const selected = event.entry as AggregatedHotspotWithType;
+    const selected = event.entry as AggregatedHotspotVM;
     const selectedModule = [selected.parent, selected.module].join('/');
     const scoreRange = this.getScoreRange(selected);
 
@@ -137,7 +137,7 @@ export class HotspotComponent {
     });
   }
 
-  private getScoreRange(selected: AggregatedHotspotWithType) {
+  private getScoreRange(selected: AggregatedHotspotVM) {
     const range = this.getScoreBoundaries();
     const index = getScoreIndex(selected.type);
 
