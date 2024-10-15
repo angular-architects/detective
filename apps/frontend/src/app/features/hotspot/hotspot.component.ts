@@ -1,21 +1,16 @@
-import {
-  Component,
-  computed,
-  effect,
-  inject,
-  untracked,
-  viewChild,
-} from '@angular/core';
+import { Component, computed, inject } from '@angular/core';
 import { takeUntilDestroyed, toObservable } from '@angular/core/rxjs-interop';
 import { FormsModule } from '@angular/forms';
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
-import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
+import { MatPaginatorModule } from '@angular/material/paginator';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatSelectModule } from '@angular/material/select';
+import { MatSliderModule } from '@angular/material/slider';
 import { MatSortModule } from '@angular/material/sort';
-import { MatTableDataSource, MatTableModule } from '@angular/material/table';
+import { MatTableModule } from '@angular/material/table';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { combineLatest, startWith } from 'rxjs';
 
@@ -24,15 +19,24 @@ import { StatusStore } from '../../data/status.store';
 import {
   AggregatedHotspot,
   ComplexityMetric,
-  FlatHotspot,
 } from '../../model/hotspot-result';
 import { Limits } from '../../model/limits';
 import { LimitsComponent } from '../../ui/limits/limits.component';
+import {
+  TreeMapComponent,
+  TreeMapEvent,
+} from '../../ui/treemap/treemap.component';
 import { debounceTimeSkipFirst } from '../../utils/debounce';
 import { EventService } from '../../utils/event.service';
 import { lastSegments } from '../../utils/segments';
 import { mirror } from '../../utils/signal-helpers';
 
+import {
+  AggregatedHotspotWithType,
+  ScoreType,
+  toTreeMapConfig,
+} from './hotspot-adapter';
+import { HotspotDetailComponent } from './hotspot-detail/hotspot-detail.component';
 import { HotspotStore } from './hotspot.store';
 
 interface Option {
@@ -49,12 +53,15 @@ interface Option {
     MatFormFieldModule,
     MatInputModule,
     MatSelectModule,
+    MatSliderModule,
     MatProgressBarModule,
     MatPaginatorModule,
+    MatDialogModule,
     LimitsComponent,
     FormsModule,
     MatIconModule,
     MatTooltipModule,
+    TreeMapComponent,
   ],
   templateUrl: './hotspot.component.html',
   styleUrl: './hotspot.component.css',
@@ -66,12 +73,9 @@ export class HotspotComponent {
 
   private eventService = inject(EventService);
 
-  paginator = viewChild(MatPaginator);
-
-  detailDataSource = new MatTableDataSource<FlatHotspot>();
+  private dialog = inject(MatDialog);
 
   columnsToDisplay = ['module', 'count'];
-  detailColumns = ['fileName', 'commits', 'complexity', 'score'];
 
   metricOptions: Option[] = [
     { id: 'Length', label: 'File Length' },
@@ -83,24 +87,15 @@ export class HotspotComponent {
 
   minScore = mirror(this.hotspotStore.filter.minScore);
   metric = mirror(this.hotspotStore.filter.metric);
-  selectedModule = mirror(this.hotspotStore.filter.module);
 
   loadingAggregated = this.hotspotStore.loadingAggregated;
-  loadingHotspots = this.hotspotStore.loadingHotspots;
-
   aggregatedResult = this.hotspotStore.aggregatedResult;
-  hotspotResult = this.hotspotStore.hotspotResult;
 
   formattedAggregated = computed(() =>
     formatAggregated(this.aggregatedResult().aggregated)
   );
 
-  formattedHotspots = computed(() =>
-    formatHotspots(
-      this.hotspotResult().hotspots,
-      untracked(() => this.selectedModule().value())
-    )
-  );
+  treeMapConfig = computed(() => toTreeMapConfig(this.formattedAggregated()));
 
   constructor() {
     const loadAggregatedEvents = {
@@ -112,71 +107,78 @@ export class HotspotComponent {
       metric: toObservable(this.metric().value),
     };
 
-    const loadHotspotEvent = {
-      ...loadAggregatedEvents,
-      selectedModule: toObservable(this.selectedModule().value),
-    };
-
     const loadAggregatedOptions$ = combineLatest(loadAggregatedEvents).pipe(
       takeUntilDestroyed()
     );
 
-    const loadHotspotOptions$ = combineLatest(loadHotspotEvent).pipe(
-      takeUntilDestroyed()
-    );
-
     this.hotspotStore.rxLoadAggregated(loadAggregatedOptions$);
-    this.hotspotStore.rxLoadHotspots(loadHotspotOptions$);
-
-    effect(() => {
-      const hotspots = this.formattedHotspots();
-      this.detailDataSource.data = hotspots;
-    });
-
-    effect(() => {
-      const paginator = this.paginator();
-      if (paginator) {
-        this.detailDataSource.paginator = paginator;
-      }
-    });
   }
 
   updateLimits(limits: Limits): void {
     this.limitsStore.updateLimits(limits);
   }
 
-  selectRow(row: AggregatedHotspot, index: number) {
-    const selectedModule = this.aggregatedResult().aggregated[index].module;
-    this.selectedModule().value.set(selectedModule);
+  selectModule(event: TreeMapEvent): void {
+    const selected = event.entry as AggregatedHotspotWithType;
+    const selectedModule = [selected.parent, selected.module].join('/');
+    const scoreRange = this.getScoreRange(selected);
+
+    this.hotspotStore.rxLoadHotspots({
+      limits: this.limits(),
+      metric: this.metric().value(),
+      selectedModule,
+      scoreRange,
+      scoreType: selected.type,
+    });
+
+    this.dialog.open(HotspotDetailComponent, {
+      width: '95%',
+      height: '700px',
+    });
   }
 
-  isSelected(index: number) {
-    const module = this.aggregatedResult().aggregated[index].module;
-    const result = module === this.selectedModule().value();
-    return result;
+  private getScoreRange(selected: AggregatedHotspotWithType) {
+    const range = this.getScoreBoundaries();
+    const index = getScoreIndex(selected.type);
+
+    const scoreRange = {
+      from: range[index],
+      to: range[index + 1],
+    };
+    return scoreRange;
   }
+
+  private getScoreBoundaries() {
+    const result = this.aggregatedResult();
+    const range = [
+      0,
+      result.warningBoundary,
+      result.hotspotBoundary,
+      result.maxScore,
+    ];
+    return range;
+  }
+}
+
+function getScoreIndex(type: ScoreType) {
+  let index = 0;
+  switch (type) {
+    case 'fine':
+      index = 0;
+      break;
+    case 'warning':
+      index = 1;
+      break;
+    case 'hotspot':
+      index = 2;
+      break;
+  }
+  return index;
 }
 
 function formatAggregated(hotspot: AggregatedHotspot[]): AggregatedHotspot[] {
   return hotspot.map((hs) => ({
     ...hs,
-    module: lastSegments(hs.module, 3),
+    module: lastSegments(hs.module, 1),
   }));
-}
-
-function formatHotspots(
-  hotspot: FlatHotspot[],
-  selectedModule: string
-): FlatHotspot[] {
-  return hotspot.map((hs) => ({
-    ...hs,
-    fileName: trimSegments(hs.fileName, selectedModule),
-  }));
-}
-
-function trimSegments(fileName: string, prefix: string): string {
-  if (fileName.startsWith(prefix)) {
-    return fileName.substring(prefix.length + 1);
-  }
-  return fileName;
 }

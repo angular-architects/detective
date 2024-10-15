@@ -1,9 +1,47 @@
-"Manfred Steyer <manfred.steyer@gmx.net>,Sat Sep 28 23:22:37 2024 +0200	947a6f7933d93eeae42e53bbffd8d56f69486095,feat: add resizer for tree"
+"Manfred Steyer <manfred.steyer@gmx.net>,Tue Oct 8 17:44:47 2024 +0200	6ed670acc998f83279713bc9c2a16ef7a79f66a1,feat: filter hotspots using slider and percent"
+1	1	.detective/hash
+33	3	.detective/log
+70	11	apps/backend/src/services/hotspot.ts
+8	10	apps/frontend/src/app/features/hotspot/hotspot.component.html
+2	0	apps/frontend/src/app/features/hotspot/hotspot.component.ts
+1	1	apps/frontend/src/app/features/hotspot/hotspot.store.ts
+
+"Manfred Steyer <manfred.steyer@gmx.net>,Sun Sep 29 12:41:39 2024 +0200	4ee102065cca1a50063a871b078ec87680116efb,chore(release): publish 1.1.6"
+10	0	CHANGELOG.md
+1	1	apps/backend/package.json
+
+"Manfred Steyer <manfred.steyer@gmx.net>,Sun Sep 29 12:41:19 2024 +0200	0130a5533f0979c406e469c74305d8e214b4e0ee,fix: prevent word wrap in tree"
+5	0	apps/frontend/src/app/shell/filter-tree/filter-tree.component.css
+
+"Manfred Steyer <manfred.steyer@gmx.net>,Sun Sep 29 12:29:48 2024 +0200	0f519048ce8d0d999ea0a9fc7a1c8953513eccbf,chore(release): publish 1.1.5"
+10	0	CHANGELOG.md
+1	1	apps/backend/package.json
+
+"Manfred Steyer <manfred.steyer@gmx.net>,Sun Sep 29 12:29:29 2024 +0200	527ed589150ac81ee5bc251526644cfdc6eeb11e,fix: don't wrap tree entries"
+4	0	apps/frontend/src/app/shell/nav/nav.component.css
+
+"Manfred Steyer <manfred.steyer@gmx.net>,Sun Sep 29 12:12:29 2024 +0200	7a18a2d6fb97ea4d0d2bea59bd99b6b376862772,chore(release): publish 1.1.4"
+10	0	CHANGELOG.md
+1	1	apps/backend/package.json
+
+"Manfred Steyer <manfred.steyer@gmx.net>,Sun Sep 29 12:12:15 2024 +0200	be5836b768b8fc6d307496ace2d037cc7063c56d,fix: always show resize cursor during resizing"
+2	0	apps/frontend/src/app/ui/resizer/resizer.component.ts
+4	0	apps/frontend/src/styles.scss
+
+"Manfred Steyer <manfred.steyer@gmx.net>,Sun Sep 29 00:19:03 2024 +0200	567e19278e6204fd4b29ca9490043fe1fc8d7431,chore(release): publish 1.1.3"
+14	0	CHANGELOG.md
+1	1	apps/backend/package.json
+
+"Manfred Steyer <manfred.steyer@gmx.net>,Sat Sep 28 23:22:37 2024 +0200	7ef551cfee65bf6a037923eb6310ddf72a2a1e52,feat: add resizer for tree"
 1	1	.detective/hash
 16	0	.detective/log
-25	0	apps/frontend/src/app/shell/nav/nav.component.css
+16	2	apps/frontend/src/app/shell/nav/nav.component.css
 10	6	apps/frontend/src/app/shell/nav/nav.component.html
-46	8	apps/frontend/src/app/shell/nav/nav.component.ts
+15	8	apps/frontend/src/app/shell/nav/nav.component.ts
+10	0	apps/frontend/src/app/ui/resizer/resizer.component.css
+1	0	apps/frontend/src/app/ui/resizer/resizer.component.html
+22	0	apps/frontend/src/app/ui/resizer/resizer.component.spec.ts
+42	0	apps/frontend/src/app/ui/resizer/resizer.component.ts
 
 "Manfred Steyer <manfred.steyer@gmx.net>,Sat Sep 28 19:32:42 2024 +0200	06c8dfeb5e988f17bcf3699e8d3c1748981c7231,refactor: streamline dataflow for hotspot analysis"
 1	1	.detective/hash

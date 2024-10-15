@@ -25,19 +25,31 @@ export type ComplexityMetric = 'McCabe' | 'Length';
 
 export interface HotspotCriteria {
   module: string;
-  minScore: number;
   metric: ComplexityMetric;
+  minScore: number;
 }
 
 export interface AggregatedHotspot {
+  parent: string;
   module: string;
   count: number;
+  countWarning: number;
+  countHotspot: number;
+  countOk: number;
 }
 
 export interface AggregatedHotspotsResult {
   aggregated: AggregatedHotspot[];
+  maxScore: number;
+  minScore: number;
+  warningBoundary: number;
+  hotspotBoundary: number;
 }
 
 export const initAggregatedHotspotsResult: AggregatedHotspotsResult = {
   aggregated: [],
+  maxScore: 0,
+  minScore: 0,
+  warningBoundary: 0,
+  hotspotBoundary: 0,
 };

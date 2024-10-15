@@ -23,6 +23,7 @@
     "@softarc/sheriff-core": "^0.17.1",
     "axios": "^1.6.0",
     "chart.js": "^4.4.4",
+    "chartjs-chart-treemap": "^3.1.0",
     "cytoscape": "^3.30.2",
     "cytoscape-cola": "^2.5.1",
     "cytoscape-dagre": "^2.5.0",

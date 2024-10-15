@@ -38,12 +38,26 @@ export type HotspotCriteria = {
 };
 
 export type AggregatedHotspot = {
+  parent: string;
   module: string;
   count: number;
+  countWarning: number;
+  countHotspot: number;
+  countOk: number;
 };
 
 export type AggregatedHotspotsResult = {
   aggregated: AggregatedHotspot[];
+  minScore: number;
+  maxScore: number;
+  warningBoundary: number;
+  hotspotBoundary: number;
+};
+
+type Stats = {
+  maxScore: number;
+  scores: Map<string, number[]>;
+  minScore: number;
 };
 
 export async function findHotspotFiles(
@@ -80,28 +94,99 @@ export async function aggregateHotspots(
   limits: Limits,
   options: Options
 ): Promise<AggregatedHotspotsResult> {
-  const hotspotResult = await findHotspotFiles(criteria, limits, options);
+  const phase1Criteria = {
+    ...criteria,
+    minScore: 0,
+  };
+
+  const hotspotResult = await findHotspotFiles(phase1Criteria, limits, options);
   const hotspots = hotspotResult.hotspots;
 
   const config = loadConfig(options);
   const modules = config.scopes.map((m) => normalizeFolder(m));
 
-  const result: AggregatedHotspot[] = [];
-  for (const module of modules) {
-    let count = 0;
-    for (const hotspot of hotspots) {
-      if (
-        hotspot.fileName.startsWith(module)
-        //&& hotspot.score >= criteria.minScore
-      ) {
-        count++;
-      }
-    }
-    result.push({ module: toDisplayFolder(module), count });
-  }
+  const stats = collectStats(modules, hotspots);
+
+  const warningBoundary = stats.maxScore * (criteria.minScore / 100);
+  const hotspotBoundary =
+    warningBoundary + (stats.maxScore - warningBoundary) / 2;
+
+  const result = aggregateStats(
+    modules,
+    stats,
+    warningBoundary,
+    hotspotBoundary
+  );
 
   result.sort((a, b) => b.count - a.count);
-  return { aggregated: result };
+
+  return {
+    aggregated: result,
+    maxScore: stats.maxScore,
+    minScore: stats.minScore,
+    hotspotBoundary,
+    warningBoundary,
+  };
+}
+
+function aggregateStats(
+  modules: string[],
+  stats: Stats,
+  warningBoundary: number,
+  hotspotBoundary: number
+): AggregatedHotspot[] {
+  const result: AggregatedHotspot[] = [];
+  for (const module of modules) {
+    const moduleStats = stats.scores.get(module);
+
+    let countWarning = 0;
+    let countHotspot = 0;
+    let countOk = 0;
+
+    for (const stat of moduleStats) {
+      if (stat > hotspotBoundary) {
+        countHotspot++;
+      } else if (stat < warningBoundary) {
+        countOk++;
+      } else {
+        countWarning++;
+      }
+    }
+
+    // const countBelow = moduleStats.length - count;
+
+    const displayFolder = toDisplayFolder(module);
+    const parent = path.dirname(displayFolder);
+
+    result.push({
+      parent,
+      module: displayFolder,
+      count: countOk,
+      countOk,
+      countWarning,
+      countHotspot,
+    });
+  }
+  return result;
+}
+
+function collectStats(modules: string[], hotspots: FlatHotspot[]) {
+  let minScore = Number.MAX_VALUE;
+  let maxScore = 0;
+  const scores = new Map<string, number[]>();
+
+  for (const module of modules) {
+    const moduleScores = [];
+    for (const hotspot of hotspots) {
+      if (hotspot.fileName.startsWith(module)) {
+        minScore = Math.min(minScore, hotspot.score);
+        maxScore = Math.max(maxScore, hotspot.score);
+        moduleScores.push(hotspot.score);
+      }
+    }
+    scores.set(module, moduleScores);
+  }
+  return { maxScore, scores, minScore };
 }
 
 async function analyzeLogs(
