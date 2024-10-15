@@ -1,51 +1,58 @@
-<dialog #dialog (close)="done.emit()">
-  <h1>Teams</h1>
+<div class="dialog-container">
+  <h1 mat-dialog-title>Teams</h1>
 
-  <div cdkDropListGroup class="teams">
-    <ng-container
-      *ngTemplateOutlet="teamTmpl; context: { team: store.unknownTeam() }"
-    />
+  <div mat-dialog-content class="dialog-content">
+    <div cdkDropListGroup class="teams">
+      <div
+        *ngTemplateOutlet="teamTmpl; context: { team: store.unknownTeam() }"
+      ></div>
 
-    <div class="teams__list">
-      @for (team of store.teams(); track $index){
-      <ng-container *ngTemplateOutlet="teamTmpl; context: { team: team }" />
-      }
-    </div>
-
-    <ng-template #teamTmpl let-team="team">
-      <div class="team">
-        <h2>
-          @if (editing === team.name){
-          <input
-            class="team__name"
-            type="text"
-            [value]="team.name"
-            (mousemove)="autoFocusOnce($event)"
-            (blur)="doRename(team.name, $event)"
-          />
-          } @else if (team.mayBeEdited) {
-          <span (click)="editing = team.name">{{ team.name }}</span>
-          <button mat-icon-button (click)="store.removeTeam(team)">
-            <mat-icon>delete</mat-icon>
-          </button>
-          } @else { <span class="team__name--fixed">{{ team.name }}</span> }
-        </h2>
-
-        <ul
-          cdkDropList
-          [cdkDropListData]="team"
-          class="team__users"
-          cdkDropListSortingDisabled
-          (cdkDropListDropped)="droppedOnTeam($event)"
-        >
-          @for (user of team.users; track user) {
-          <li class="team__user" cdkDrag [cdkDragData]="user">{{ user }}</li>
-          }
-        </ul>
+      <div class="teams__list">
+        @for (team of store.teams(); track $index){
+        <ng-container *ngTemplateOutlet="teamTmpl; context: { team: team }" />
+        }
       </div>
-    </ng-template>
-  </div>
 
-  <button mat-stroked-button (click)="done.emit()">Done</button>
-  <button mat-stroked-button (click)="store.addTeam()">Add team</button>
-</dialog>
+      <ng-template #teamTmpl let-team="team">
+        <div class="team">
+          <h2>
+            @if (editing === team.name){
+            <input
+              class="team__name"
+              type="text"
+              [value]="team.name"
+              (mousemove)="autoFocusOnce($event)"
+              (blur)="doRename(team.name, $event)"
+            />
+            } @else if (team.mayBeEdited) {
+            <span (click)="editing = team.name">{{ team.name }}</span>
+            <button
+              mat-icon-button
+              style="vertical-align: middle; padding: 1px"
+              (click)="store.removeTeam(team)"
+            >
+              <mat-icon>delete</mat-icon>
+            </button>
+            } @else { <span class="team__name--fixed">{{ team.name }}</span> }
+          </h2>
+
+          <ul
+            cdkDropList
+            [cdkDropListData]="team"
+            class="simple team__users"
+            cdkDropListSortingDisabled
+            (cdkDropListDropped)="droppedOnTeam($event)"
+          >
+            @for (user of team.users; track user) {
+            <li class="team__user" cdkDrag [cdkDragData]="user">{{ user }}</li>
+            }
+          </ul>
+        </div>
+      </ng-template>
+    </div>
+  </div>
+  <div class="dialog-actions">
+    <button mat-stroked-button (click)="addTeam()">Add team</button>
+    <button mat-stroked-button (click)="close()">Close</button>
+  </div>
+</div>

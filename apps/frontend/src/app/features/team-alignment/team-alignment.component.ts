@@ -3,6 +3,7 @@ import { takeUntilDestroyed, toObservable } from '@angular/core/rxjs-interop';
 import { FormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { interpolateRainbow, quantize } from 'd3';
@@ -31,7 +32,7 @@ import { TeamAlignmentStore } from './team-alignment.store';
     MatTooltipModule,
     MatButtonModule,
     DoughnutComponent,
-    DefineTeamsComponent,
+    MatDialogModule,
   ],
   templateUrl: './team-alignment.component.html',
   styleUrl: './team-alignment.component.css',
@@ -43,18 +44,17 @@ export class TeamAlignmentComponent {
 
   private eventService = inject(EventService);
 
+  private dialog = inject(MatDialog);
+
   totalCommits = this.statusStore.commits;
   limits = this.limitsStore.limits;
   byUser = this.taStore.filter.byUser;
-
-  defineTeams = false;
 
   teamAlignmentResult = this.taStore.result;
 
   teams = this.taStore.result.teams;
   colors = computed(() => this.toColors(this.teams().length));
 
-  showDefineTeams = false;
   reload = new Subject<void>();
 
   loadOptions$ = combineLatest({
@@ -84,8 +84,19 @@ export class TeamAlignmentComponent {
     return quantize(interpolateRainbow, count + 1);
   }
 
-  protected hideDefineTeams() {
-    this.reload.next();
-    this.showDefineTeams = false;
+  showDefineDialog() {
+    const hash = location.hash ?? '';
+    if (hash.includes('define-teams')) {
+      this.dialog.open(DefineTeamsComponent, {
+        width: '80%',
+        height: '80%',
+      });
+    } else {
+      const a = document.createElement('a');
+      a.target = '_blank';
+      a.href =
+        'https://github.com/angular-architects/detective?tab=readme-ov-file#defining-teams';
+      a.click();
+    }
   }
 }

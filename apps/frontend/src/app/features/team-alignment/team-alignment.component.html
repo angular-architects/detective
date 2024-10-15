@@ -7,17 +7,9 @@
       >By User</mat-checkbox
     >
 
-    <button
-      mat-stroked-button
-      class="docu-link"
-      (click)="showDefineTeams = true"
-    >
+    <button mat-stroked-button class="docu-link" (click)="showDefineDialog()">
       Define Teams
     </button>
-
-    @if (showDefineTeams) {
-    <app-define-teams [limits]="limits()" (done)="hideDefineTeams()" />
-    }
 
     <mat-icon
       matTooltip="The Team Alignment Analysis shows whether your team structure and module/domain boundaries are aligned."

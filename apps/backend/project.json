@@ -14,7 +14,7 @@
         "runBuildTargetDependencies": false,
         "args": [
           "--path",
-          "/Users/manfredsteyer/projects/public/standalone-example-cli",
+          "/Users/manfredsteyer/tmp/angular",
           "--open",
           "false"
         ]

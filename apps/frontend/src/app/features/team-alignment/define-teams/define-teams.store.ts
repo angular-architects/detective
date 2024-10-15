@@ -15,13 +15,28 @@ import { TeamAlignmentService } from '../../../data/team-alignment.service';
 import { initConfig, Teams, Users } from '../../../model/config';
 import { Limits } from '../../../model/limits';
 
-const UNKNOWN_TEAM = 'unknown';
+const UNKNOWN_TEAM = 'Not Assigned';
 export type User = string;
 export type Team = { name: string; users: User[]; mayBeEdited?: boolean };
-const defaultTeamNames = [1, 2, 3, 4, 5, 6, 7, 8, 9].map((n) => `Team ${n}`);
 
 export const DefineTeamsStore = signalStore(
   withState({ users: [] as Users, config: initConfig }),
+  withComputed((store) => ({
+    teams: computed(() =>
+      Object.entries(store.config()?.teams || {}).map(
+        ([name, users]): Team => ({ name, users, mayBeEdited: true })
+      )
+    ),
+  })),
+  withComputed((store) => ({
+    unknownTeam: computed<Team>(() => {
+      const usersInTeams = store.teams().flatMap(({ users }) => users);
+      const users = store
+        .users()
+        .filter((user) => !usersInTeams.includes(user));
+      return { name: UNKNOWN_TEAM, users };
+    }),
+  })),
   withMethods(
     (
       store,
@@ -49,9 +64,8 @@ export const DefineTeamsStore = signalStore(
   ),
   withMethods((store) => ({
     addTeam: () => {
-      const newName = defaultTeamNames.find((name) => !store._existsTeam(name));
-      if (!newName) return;
       store._changeTeams((teams) => {
+        const newName = 'Team #' + (Object.keys(teams).length + 1);
         teams[newName] = [];
       });
     },
@@ -85,21 +99,6 @@ export const DefineTeamsStore = signalStore(
       });
     },
   })),
-  withComputed((store) => ({
-    teams: computed(() =>
-      Object.entries(store.config()?.teams || {}).map(
-        ([name, users]): Team => ({ name, users, mayBeEdited: true })
-      )
-    ),
-  })),
-  withComputed((store) => ({
-    unknownTeam: computed<Team>(() => {
-      const usersInTeams = store.teams().flatMap(({ users }) => users);
-      const users = store
-        .users()
-        .filter((user) => !usersInTeams.includes(user));
-      return { name: UNKNOWN_TEAM, users };
-    }),
-  })),
+
   withHooks((store) => ({ onDestroy: () => store._save() }))
 );
