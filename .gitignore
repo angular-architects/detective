@@ -43,3 +43,5 @@ Thumbs.db
 
 .angular
 apps/backend/package-lock.json
+
+.detective
