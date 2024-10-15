@@ -7,13 +7,17 @@
       >By User</mat-checkbox
     >
 
-    <a
+    <button
       mat-stroked-button
       class="docu-link"
-      href="https://github.com/angular-architects/detective/blob/main/README.md#defining-teams"
-      target="_blank"
-      >Define Teams</a
+      (click)="showDefineTeams = true"
     >
+      Define Teams
+    </button>
+
+    @if (showDefineTeams) {
+    <app-define-teams [limits]="limits()" (done)="hideDefineTeams()" />
+    }
 
     <mat-icon
       matTooltip="The Team Alignment Analysis shows whether your team structure and module/domain boundaries are aligned."
@@ -27,8 +31,7 @@
     [limits]="limits()"
     (limitsChange)="updateLimits($event)"
     [totalCommits]="totalCommits()"
-  >
-  </app-limits>
+  />
 </div>
 
 <ul id="legend">
@@ -41,5 +44,5 @@
 </ul>
 
 @for(config of chartConfigs(); track config) {
-<app-doughnut [chartConfig]="config"></app-doughnut>
+<app-doughnut [chartConfig]="config" />
 }
