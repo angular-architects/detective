@@ -1,3 +1,13 @@
+## 1.2.3 (2024-10-15)
+
+### 🩹 Fixes
+
+- remove treemap when no module is selected ([6593a8b](https://github.com/angular-architects/forensic/commit/6593a8b))
+
+### ❤️ Thank You
+
+- Manfred Steyer
+
 ## 1.2.2 (2024-10-15)
 
 ### 🩹 Fixes
