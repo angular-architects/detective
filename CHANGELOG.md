@@ -1,3 +1,13 @@
+## 1.2.2 (2024-10-15)
+
+### 🩹 Fixes
+
+- only show hotspots in current score range (green, yellow, red) ([65b1689](https://github.com/angular-architects/forensic/commit/65b1689))
+
+### ❤️ Thank You
+
+- Manfred Steyer
+
 ## 1.2.1 (2024-10-15)
 
 ### 🚀 Features
