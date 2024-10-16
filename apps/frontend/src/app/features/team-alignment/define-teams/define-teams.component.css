@@ -6,7 +6,7 @@
 
   .teams__list {
     display: inline-block;
-    overflow: scroll;
+    overflow-x: auto;
     text-wrap: nowrap;
     max-width: calc(100% - 220px);
     height: calc(100% - 10px);
@@ -16,6 +16,7 @@
     display: inline-block;
     vertical-align: top;
     width: 200px;
+    height: calc(100% - 96px);
 
     h2 {
       height: 48px;
@@ -23,7 +24,7 @@
 
     span.team__name--fixed {
       display: inline-block;
-      padding-top: 12px;
+      padding-top: 6px;
     }
 
     input.team__name {
@@ -36,8 +37,11 @@
     .team__users {
       list-style-type: none;
       min-height: 280px;
+      height: 100%;
       margin-left: 0px;
       padding: 0 10px 32px 10px;
+      overflow-x: hidden;
+      overflow-y: auto;
     }
   }
 }
