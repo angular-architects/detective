@@ -1,3 +1,13 @@
+## 1.3.0 (2024-11-08)
+
+### 🚀 Features
+
+- allow copying filenames into clipboard ([b76043e](https://github.com/angular-architects/forensic/commit/b76043e))
+
+### ❤️ Thank You
+
+- Manfred Steyer
+
 ## 1.2.3 (2024-10-15)
 
 ### 🩹 Fixes
