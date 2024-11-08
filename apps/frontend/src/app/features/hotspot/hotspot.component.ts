@@ -1,6 +1,7 @@
 import { Component, computed, inject } from '@angular/core';
 import { takeUntilDestroyed, toObservable } from '@angular/core/rxjs-interop';
 import { FormsModule } from '@angular/forms';
+import { MatButtonModule } from '@angular/material/button';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
@@ -62,6 +63,7 @@ interface Option {
     MatIconModule,
     MatTooltipModule,
     TreeMapComponent,
+    MatButtonModule,
   ],
   templateUrl: './hotspot.component.html',
   styleUrl: './hotspot.component.css',
@@ -156,7 +158,7 @@ export class HotspotComponent {
       0,
       result.warningBoundary,
       result.hotspotBoundary,
-      result.maxScore,
+      result.maxScore + 1,
     ];
     return range;
   }

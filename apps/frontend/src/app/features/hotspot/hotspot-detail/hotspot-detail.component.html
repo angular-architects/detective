@@ -16,7 +16,12 @@
       <table mat-table [dataSource]="detailDataSource">
         <ng-container matColumnDef="fileName">
           <th mat-header-cell *matHeaderCellDef>Module</th>
-          <td mat-cell *matCellDef="let element">{{ element.fileName }}</td>
+          <td mat-cell *matCellDef="let element">
+            <a class="copy-link" (click)="copy(element.fileName)">
+              <mat-icon class="copy-icon">content_copy</mat-icon>
+              {{ element.fileName }}
+            </a>
+          </td>
         </ng-container>
 
         <ng-container matColumnDef="commits">

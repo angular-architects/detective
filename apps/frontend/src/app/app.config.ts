@@ -1,3 +1,4 @@
+import { ClipboardModule } from '@angular/cdk/clipboard';
 import { provideHttpClient } from '@angular/common/http';
 import {
   ApplicationConfig,
@@ -5,6 +6,7 @@ import {
   provideZoneChangeDetection,
 } from '@angular/core';
 import { MatDialogModule } from '@angular/material/dialog';
+import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 import { provideRouter, withComponentInputBinding } from '@angular/router';
 
@@ -19,5 +21,7 @@ export const appConfig: ApplicationConfig = {
     provideErrorHandler(AppErrorHandler),
     provideAnimationsAsync(),
     importProvidersFrom(MatDialogModule),
+    importProvidersFrom(MatSnackBarModule),
+    importProvidersFrom(ClipboardModule),
   ],
 };

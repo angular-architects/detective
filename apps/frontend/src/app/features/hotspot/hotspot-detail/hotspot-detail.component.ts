@@ -1,3 +1,4 @@
+import { Clipboard } from '@angular/cdk/clipboard';
 import { CommonModule } from '@angular/common';
 import {
   Component,
@@ -8,8 +9,10 @@ import {
   viewChild,
 } from '@angular/core';
 import { MatDialogModule } from '@angular/material/dialog';
+import { MatIconModule } from '@angular/material/icon';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatProgressBar } from '@angular/material/progress-bar';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatSortModule } from '@angular/material/sort';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 
@@ -27,12 +30,16 @@ import { HotspotStore } from '../hotspot.store';
     MatPaginator,
     MatProgressBar,
     MatDialogModule,
+    MatIconModule,
   ],
   templateUrl: './hotspot-detail.component.html',
   styleUrl: './hotspot-detail.component.css',
 })
 export class HotspotDetailComponent {
   private hotspotStore = inject(HotspotStore);
+
+  private clipboard = inject(Clipboard);
+  private snackBar = inject(MatSnackBar);
 
   module = this.hotspotStore.filter.module;
   color = computed(() => getScoreTypeColor(this.hotspotStore.scoreType()));
@@ -66,6 +73,20 @@ export class HotspotDetailComponent {
         this.detailDataSource.paginator = paginator;
       }
     });
+  }
+
+  copy(fileName: string) {
+    if (this.clipboard.copy(fileName)) {
+      this.snackBar.open('Filename copied to clipboard', 'Ok', {
+        duration: 3000,
+      });
+    } else {
+      console.log('Error writing to clipboard');
+      this.snackBar.open(
+        'Writing the filename to the clipboard did not work',
+        'Ok'
+      );
+    }
   }
 }
 

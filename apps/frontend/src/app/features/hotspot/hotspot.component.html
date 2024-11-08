@@ -1,6 +1,15 @@
 <div class="forensic-filter">
   <div>
-    <mat-label>Min. Score: (%)</mat-label>
+    <a
+      mat-stroked-button
+      class="docu-link"
+      target="_blank"
+      href="https://github.com/angular-architects/detective?tab=readme-ov-file#filtering-the-git-log"
+    >
+      Filter
+    </a>
+
+    <mat-label>Tolerance</mat-label>
 
     <mat-slider min="0" max="100" step="1" style="width: 150px">
       <input matSliderThumb value="1" [(ngModel)]="minScore().value" />
@@ -19,7 +28,7 @@
     </mat-form-field>
 
     <mat-icon
-      matTooltip="A Hotspot is a complex file that was previously changed quite often and hence comes with a higher risk for bugs. The calculated hotspot score is the product of the amount of changes and the complexity. You can see it as an sort index and you cannot compare it with other hotspot analyses. The slider on the left defines when a region is identified as a hotspot. For instance, 33% defines that each region having 33% or more of the maximum hotspot score is a hotspot. For a better overview, these hotspots are seperated into two equal areas: the lower half is displayed yellow and the upper half is red."
+      matTooltip="A Hotspot is a complex file that was previously changed quite often and hence comes with a higher risk for bugs."
       matTooltipPosition="above"
       class="help-icon-hotspot"
     >

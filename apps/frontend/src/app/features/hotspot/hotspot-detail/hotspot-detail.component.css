@@ -2,3 +2,15 @@
   margin-left: 15px;
   margin-top: 10px;
 }
+
+.copy-icon {
+  font-size: 16px;
+  padding: 0px;
+  margin: 0px;
+  line-height: 1;
+  vertical-align: middle;
+}
+
+.copy-link {
+  cursor: pointer;
+}
