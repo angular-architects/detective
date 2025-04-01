@@ -1,10 +1,14 @@
-import { spawn, spawnSync } from 'child_process';
-import * as fs from 'fs';
+import { execSync, spawn, spawnSync } from 'child_process';
 
 import { noLimits } from '../model/limits';
 
 export function isRepo(): boolean {
-  return fs.existsSync('.git');
+  try {
+    execSync('git rev-parse --is-inside-work-tree', { stdio: 'ignore' });
+    return true;
+  } catch (error) {
+    return false;
+  }
 }
 
 export function calcTreeHash(): string {
