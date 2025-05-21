@@ -50,7 +50,7 @@ export async function calcTeamAlignment(
       }
     }
 
-    userName = config.aliases?.[userName] || userName;
+    userName = (config.aliases?.[userName] || userName).normalize('NFC');
 
     const key = calcKey(byUser, userName, userToTeam);
     actualTeams.add(key);
