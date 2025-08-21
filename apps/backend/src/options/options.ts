@@ -5,6 +5,7 @@ export type Options = {
   port: number;
   demoMode: boolean;
   open: boolean;
+  trendAnalysis: boolean;
 };
 
 export const defaultOptions: Options = {
@@ -14,4 +15,5 @@ export const defaultOptions: Options = {
   port: 3334,
   demoMode: false,
   open: true,
+  trendAnalysis: false,
 };

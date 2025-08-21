@@ -29,6 +29,7 @@ export async function calcTeamAlignment(
   const result = initResult(displayModules, Object.keys(teams));
 
   const actualTeams = new Set<string>();
+  const userKeyToDisplay: Record<string, string> = {};
 
   const parseOptions: ParseOptions = {
     limits,
@@ -52,7 +53,14 @@ export async function calcTeamAlignment(
 
     userName = config.aliases?.[userName] || userName;
 
-    const key = calcKey(byUser, userName, userToTeam);
+    const emailLower = (entry.header.email || '').toLowerCase();
+    const stableUserKey = byUser ? emailLower || userName : userName;
+
+    if (!userKeyToDisplay[stableUserKey]) {
+      userKeyToDisplay[stableUserKey] = userName;
+    }
+
+    const key = byUser ? stableUserKey : calcKey(false, userName, userToTeam);
     actualTeams.add(key);
 
     for (const change of entry.body) {
@@ -71,7 +79,21 @@ export async function calcTeamAlignment(
     }
   }, parseOptions);
 
-  result.teams = Array.from(actualTeams).sort();
+  if (byUser) {
+    for (const module of Object.keys(result.modules)) {
+      const changes = result.modules[module].changes;
+      const remapped: Record<string, number> = {};
+      for (const stableKey of Object.keys(changes)) {
+        const base = userKeyToDisplay[stableKey] || stableKey;
+        remapped[base] = (remapped[base] || 0) + changes[stableKey];
+      }
+      result.modules[module].changes = remapped;
+    }
+    const mapped = Array.from(actualTeams).map((k) => userKeyToDisplay[k] || k);
+    result.teams = Array.from(new Set(mapped)).sort();
+  } else {
+    result.teams = Array.from(actualTeams).sort();
+  }
 
   return result;
 }

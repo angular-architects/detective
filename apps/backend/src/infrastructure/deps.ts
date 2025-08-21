@@ -37,16 +37,17 @@ export function loadDeps(_options: Options): Deps {
 
 export function inferDeps(options: Options): boolean {
   const entryGlobs = getEntryGlobs(options);
-  const entries = globSync(entryGlobs);
+
+  const analysisDir = options.path || cwd();
+
+  const entries = globSync(entryGlobs, { cwd: analysisDir });
 
   if (entries.length === 0) {
     return false;
   }
 
-  const dir = cwd();
-
   const sheriffDump = entries
-    .map((e) => getProjectData(e, dir))
+    .map((e) => getProjectData(e, analysisDir))
     .reduce((acc, curr) => ({ ...acc, ...curr }));
 
   deps = normalizeObject(sheriffDump);

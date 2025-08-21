@@ -1,0 +1,131 @@
+.help-icon {
+  font-size: 1.125rem;
+  vertical-align: middle;
+  margin-left: 0.5rem;
+  cursor: help;
+  opacity: 0.7;
+}
+
+.dialog-grid {
+  display: grid;
+  grid-template-rows: 1fr auto;
+  height: 100%;
+  gap: 1rem;
+  overflow: hidden;
+}
+
+.table-container {
+  overflow-y: auto;
+  border: 0.0625rem solid #e0e0e0;
+  border-radius: 0.25rem;
+  min-height: 0;
+}
+
+.bus-factor-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.bus-factor-table thead {
+  position: sticky;
+  top: 0;
+  background: #f5f5f5;
+  z-index: 1;
+}
+
+.bus-factor-table th {
+  padding: 0.75rem 0.5rem;
+  text-align: left;
+  font-weight: 600;
+  border-bottom: 0.125rem solid #ddd;
+}
+
+.bus-factor-table td {
+  padding: 0.5rem;
+  border-bottom: 0.0625rem solid #eee;
+}
+
+.bus-factor-table tbody tr:hover {
+  background-color: #f9f9f9;
+}
+
+.percentage {
+  text-align: right;
+  font-weight: 500;
+}
+
+.bus-factor {
+  text-align: center;
+  font-weight: bold;
+}
+
+.risk-badge {
+  padding: 0.25rem 0.5rem;
+  border-radius: 0.25rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  display: inline-block;
+}
+
+.risk-badge.risk-critical {
+  background-color: #ff1744;
+  color: white;
+}
+
+.risk-badge.risk-high {
+  background-color: #ff9800;
+  color: white;
+}
+
+.risk-badge.risk-medium {
+  background-color: #ffc107;
+  color: #000;
+}
+
+.risk-badge.risk-low {
+  background-color: #4caf50;
+  color: white;
+}
+
+.risk-critical {
+  background-color: rgba(255, 23, 68, 0.05);
+}
+
+.risk-high {
+  background-color: rgba(255, 152, 0, 0.05);
+}
+
+.risk-medium {
+  background-color: rgba(255, 193, 7, 0.05);
+}
+
+.risk-low {
+  background-color: rgba(76, 175, 80, 0.05);
+}
+
+.legend {
+  padding: 0.5rem 0.75rem;
+  background-color: #f5f5f5;
+  border-radius: 0.25rem;
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+  font-size: 0.75rem;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+}
+
+.legend-item .risk-badge {
+  min-width: 3.75rem;
+  text-align: center;
+}
+
+mat-dialog-actions {
+  justify-content: space-between;
+  padding: 1rem 1.5rem;
+}

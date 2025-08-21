@@ -7,38 +7,39 @@ export function calcCyclomaticComplexity(fileName: string): number {
   return calcComplexityForCode(code);
 }
 
-function calcComplexityForCode(sourceCode: string): number {
+export function calcComplexityForCode(sourceCode: string): number {
   const sourceFile = ts.createSourceFile(
     'temp.ts',
     sourceCode,
     ts.ScriptTarget.Latest,
     true
   );
+  return calcComplexityForNode(sourceFile);
+}
 
+// Calculates cyclomatic complexity for a specific AST node
+// Mirrors the logic used for method-level complexity across analyzers
+export function calcComplexityForNode(node: ts.Node): number {
   let complexity = 1;
 
-  function visit(node: ts.Node) {
-    switch (node.kind) {
+  const visit = (n: ts.Node) => {
+    switch (n.kind) {
       case ts.SyntaxKind.IfStatement:
-      case ts.SyntaxKind.ConditionalExpression:
+      case ts.SyntaxKind.WhileStatement:
+      case ts.SyntaxKind.DoStatement:
       case ts.SyntaxKind.ForStatement:
       case ts.SyntaxKind.ForInStatement:
       case ts.SyntaxKind.ForOfStatement:
-      case ts.SyntaxKind.WhileStatement:
-      case ts.SyntaxKind.DoStatement:
-      case ts.SyntaxKind.CaseClause:
-      case ts.SyntaxKind.FunctionDeclaration:
-      case ts.SyntaxKind.MethodDeclaration:
-      case ts.SyntaxKind.Constructor:
-      case ts.SyntaxKind.ArrowFunction:
-      case ts.SyntaxKind.FunctionExpression:
+      case ts.SyntaxKind.SwitchStatement:
       case ts.SyntaxKind.CatchClause:
+      case ts.SyntaxKind.ConditionalExpression:
+      case ts.SyntaxKind.CaseClause:
         complexity++;
         break;
     }
-    ts.forEachChild(node, visit);
-  }
+    ts.forEachChild(n, visit);
+  };
 
-  visit(sourceFile);
+  visit(node);
   return complexity;
 }

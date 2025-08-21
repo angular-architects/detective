@@ -1,10 +1,25 @@
 import { spawn, spawnSync } from 'child_process';
 import * as fs from 'fs';
+import * as path from 'path';
 
 import { noLimits } from '../model/limits';
 
-export function isRepo(): boolean {
-  return fs.existsSync('.git');
+export function findGitRoot(startPath?: string): string | null {
+  let currentPath = startPath ? path.resolve(startPath) : process.cwd();
+
+  while (currentPath !== path.dirname(currentPath)) {
+    const gitPath = path.join(currentPath, '.git');
+    if (fs.existsSync(gitPath)) {
+      return currentPath;
+    }
+    currentPath = path.dirname(currentPath);
+  }
+
+  return null;
+}
+
+export function isRepo(startPath?: string): boolean {
+  return findGitRoot(startPath) !== null;
 }
 
 export function calcTreeHash(): string {

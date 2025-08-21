@@ -1,11 +1,19 @@
-<div class="forensic-filter">
+<div class="forensic-filter" #filter>
   <div>
+    <mat-checkbox
+      class="mr30"
+      [ngModel]="showChordDiagram()"
+      (ngModelChange)="onToggleView($event)"
+      >Chord Diagram</mat-checkbox
+    >
+    @if (!showChordDiagram()) {
     <mat-checkbox
       class="mr30"
       [ngModel]="groupByFolder()"
       (ngModelChange)="updateFilter({ groupByFolder: $event })"
       >Group by folder</mat-checkbox
     >
+    }
 
     <mat-form-field appearance="outline" class="connections">
       <mat-label>Min. Connections</mat-label>
@@ -13,6 +21,7 @@
         type="number"
         matInput
         min="1"
+        placeholder="Min. Connections"
         [ngModel]="minConnections()"
         (ngModelChange)="updateFilter({ minConnections: $event })"
       />
@@ -36,4 +45,14 @@
   }
 </div>
 
-<app-graph [graph]="graph()"></app-graph>
+<div class="chart-container">
+  @if (!showChordDiagram()) {
+  <app-graph [graph]="graph()"></app-graph>
+  } @else {
+  <app-chord-coupling-renderer
+    [result]="couplingResult()"
+    [type]="type()"
+    [minConnections]="minConnections()"
+  ></app-chord-coupling-renderer>
+  }
+</div>

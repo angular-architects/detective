@@ -1,0 +1,68 @@
+<div class="x-ray-container">
+  @if (store.error()) {
+  <div class="error-container">
+    <mat-icon color="warn">error</mat-icon>
+    <p>{{ store.error() }}</p>
+  </div>
+  } @if (store.vm(); as vm) {
+  <mat-tab-group animationDuration="0ms" class="metrics-tabs">
+    @for (tab of vm.tabs; track tab.id) {
+    <mat-tab>
+      <ng-template mat-tab-label>
+        <mat-icon>{{ tab.icon || 'label' }}</mat-icon>
+        {{ tab.title }}
+      </ng-template>
+      <div class="tab-content">
+        <div class="metrics-cards">
+          @for (card of tab.cards; track card.title) {
+          <div class="metric-card">
+            <div class="card-header">
+              <h5>{{ card.title }}</h5>
+            </div>
+            <div class="metrics-row">
+              @for (metric of card.metrics; track metric.label) {
+              <div
+                class="metric-item"
+                [class.warning]="metric.warn"
+                [matTooltip]="metric.tooltip"
+                matTooltipPosition="above"
+              >
+                <div class="metric-icon">
+                  <mat-icon>{{ metric.icon || 'label' }}</mat-icon>
+                </div>
+                <div class="metric-info">
+                  <div class="metric-label-row">
+                    <span class="metric-label">{{ metric.label }}</span>
+                    @if (metric.refLink) {
+                    <a
+                      [href]="metric.refLink"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      class="ref-icon"
+                      matTooltip="Open reference"
+                      matTooltipPosition="above"
+                      [attr.aria-label]="'Open reference for ' + metric.label"
+                    >
+                      <mat-icon>help_outline</mat-icon>
+                    </a>
+                    }
+                  </div>
+                  <span class="metric-value">{{ metric.value }}</span>
+                </div>
+              </div>
+              }
+            </div>
+          </div>
+          }
+        </div>
+      </div>
+    </mat-tab>
+    }
+  </mat-tab-group>
+  } @else if (store.loading()) {
+  <div class="loading-container">
+    <mat-spinner diameter="32"></mat-spinner>
+    <p>Loading metrics schema...</p>
+  </div>
+  }
+</div>

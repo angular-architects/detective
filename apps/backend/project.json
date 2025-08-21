@@ -12,12 +12,8 @@
       "options": {
         "buildTarget": "backend:build",
         "runBuildTargetDependencies": false,
-        "args": [
-          "--path",
-          "/Users/manfredsteyer/projects/public/standalone-example-cli",
-          "--open",
-          "false"
-        ]
+        "inspect": true,
+        "args": ["--path", "."]
       },
       "configurations": {
         "development": {

@@ -18,9 +18,12 @@
     "@angular/platform-browser": "~18.2.0",
     "@angular/platform-browser-dynamic": "~18.2.0",
     "@angular/router": "~18.2.0",
+    "@jscpd/core": "^4.0.1",
+    "@modelcontextprotocol/sdk": "^1.17.3",
     "@ngrx/operators": "^18.0.2",
     "@ngrx/signals": "^18.0.2",
     "@softarc/sheriff-core": "^0.17.1",
+    "@types/three": "0.180.0",
     "axios": "^1.6.0",
     "chart.js": "^4.4.4",
     "chartjs-chart-treemap": "^3.1.0",
@@ -32,12 +35,19 @@
     "cytoscape-qtip": "^2.8.0",
     "cytoscape-spread": "^3.0.0",
     "d3": "^7.9.0",
+    "echarts": "^6.0.0",
     "express": "^4.18.1",
     "fast-glob": "^3.3.2",
+    "isomorphic-git": "^1.33.0",
+    "jscpd": "^4.0.5",
     "micromatch": "^4.0.8",
     "qtip2": "^3.0.3",
     "rxjs": "~7.8.0",
+    "three": "0.180.0",
+    "ts-morph": "^26.0.0",
     "tslib": "^2.3.0",
+    "zod": "^3.23.8",
+    "zod-to-json-schema": "^3.23.5",
     "zone.js": "~0.14.3"
   },
   "devDependencies": {
@@ -52,6 +62,7 @@
     "@angular/language-service": "~18.2.0",
     "@commitlint/cli": "^19.4.1",
     "@commitlint/config-conventional": "^19.4.1",
+    "@modelcontextprotocol/inspector": "^0.16.5",
     "@nx/angular": "19.6.4",
     "@nx/eslint": "19.6.4",
     "@nx/eslint-plugin": "19.6.4",
@@ -98,6 +109,8 @@
     "lint": "nx run-many --target=lint --all --fix --max-warnings=0",
     "test": "nx run-many --target=test --all",
     "build": "nx run-many --target=build --all",
-    "release": "nx release --skip-publish"
+    "release": "nx release --skip-publish",
+    "mcp:build": "nx build backend",
+    "mcp:inspect": "npx @modelcontextprotocol/inspector http http://localhost:3334/mcp"
   }
 }

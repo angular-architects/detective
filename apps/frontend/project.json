@@ -48,7 +48,8 @@
     "serve": {
       "executor": "@angular-devkit/build-angular:dev-server",
       "options": {
-        "proxyConfig": "apps/frontend/proxy.conf.json"
+        "proxyConfig": "apps/frontend/proxy.conf.json",
+        "port": 4300
       },
       "configurations": {
         "production": {
@@ -80,7 +81,7 @@
       "executor": "@nx/web:file-server",
       "options": {
         "buildTarget": "frontend:build",
-        "port": 4200,
+        "port": 4300,
         "staticFilePath": "dist/apps/frontend/browser",
         "spa": true
       }
