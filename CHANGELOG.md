@@ -1,3 +1,13 @@
+# 2.0.0 (2025-09-22)
+
+### 🚀 Features
+
+- trend analysis ([7665e45](https://github.com/angular-architects/forensic/commit/7665e45))
+
+### ❤️ Thank You
+
+- Murat Sari
+
 ## 1.3.0 (2024-11-08)
 
 ### 🚀 Features
