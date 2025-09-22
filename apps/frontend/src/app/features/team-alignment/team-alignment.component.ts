@@ -17,6 +17,7 @@ import { LimitsComponent } from '../../ui/limits/limits.component';
 import { debounceTimeSkipFirst } from '../../utils/debounce';
 import { EventService } from '../../utils/event.service';
 
+import { BusFactorReportComponent } from './bus-factor-report';
 import { DefineTeamsComponent } from './define-teams';
 import { toAlignmentChartConfigs } from './team-alignment-chart-adapter';
 import { TeamAlignmentStore } from './team-alignment.store';
@@ -85,18 +86,21 @@ export class TeamAlignmentComponent {
   }
 
   showDefineDialog() {
-    const hash = location.hash ?? '';
-    if (hash.includes('define-teams')) {
-      this.dialog.open(DefineTeamsComponent, {
-        width: '80%',
-        height: '80%',
-      });
-    } else {
-      const a = document.createElement('a');
-      a.target = '_blank';
-      a.href =
-        'https://github.com/angular-architects/detective?tab=readme-ov-file#defining-teams';
-      a.click();
-    }
+    const dialogRef = this.dialog.open(DefineTeamsComponent, {
+      width: '80%',
+      height: '80%',
+    });
+
+    dialogRef.afterClosed().subscribe(() => {
+      this.reload.next();
+    });
+  }
+
+  showBusFactorReport() {
+    this.dialog.open(BusFactorReportComponent, {
+      width: '90%',
+      maxWidth: '1200px',
+      height: '80%',
+    });
   }
 }

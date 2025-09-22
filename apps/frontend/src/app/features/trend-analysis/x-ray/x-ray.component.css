@@ -1,0 +1,151 @@
+.x-ray-container {
+  background: #fafafa;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.loading-container {
+  text-align: center;
+  padding: 48px;
+  background: white;
+}
+
+.error-container {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 24px;
+  background: #ffebee;
+  color: #c62828;
+  border-radius: 8px;
+  margin: 16px;
+}
+
+.metrics-tabs {
+  background: white;
+}
+
+.tab-content {
+  padding: 24px;
+}
+
+.metrics-cards {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.metric-card {
+  background: white;
+  border: 1px solid #e0e0e0;
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+}
+
+.metric-card:hover {
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+  transform: translateY(-2px);
+}
+
+.card-header {
+  margin-bottom: 16px;
+}
+
+.card-header h5 {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 500;
+  color: #333;
+  font-family: monospace;
+}
+
+.metrics-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
+}
+
+.metric-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px;
+  background: #f8f9fa;
+  border-radius: 8px;
+  transition: all 0.2s;
+}
+
+.metric-item:hover {
+  background: #e9ecef;
+}
+.metric-item.warning {
+  background: #fff3e0;
+  border-left: 4px solid #ff9800;
+}
+.metric-item.warning:hover {
+  background: #ffe0b2;
+}
+
+.metric-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  background: #e3f2fd;
+  border-radius: 50%;
+  color: #1976d2;
+}
+
+.metric-item.warning .metric-icon {
+  background: #fff3e0;
+  color: #f57c00;
+}
+
+.metric-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.metric-label-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  line-height: 1;
+}
+
+.ref-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  color: #909090;
+  text-decoration: none;
+  transition: color 0.15s ease, transform 0.15s ease;
+}
+.ref-icon .mat-icon {
+  font-size: 18px;
+  width: 18px;
+  height: 18px;
+  line-height: 18px;
+}
+.ref-icon:hover {
+  color: #1976d2;
+  transform: translateY(-1px);
+}
+
+.metric-label {
+  font-size: 14px;
+  font-weight: 500;
+  color: #666;
+}
+.metric-value {
+  font-size: 18px;
+  font-weight: 600;
+  color: #333;
+}

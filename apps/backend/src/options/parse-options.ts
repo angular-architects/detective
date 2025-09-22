@@ -16,6 +16,8 @@ export function parseOptions(args: string[]): Options {
         state = 'open';
       } else if (arg === '--demo') {
         parsed.demoMode = true;
+      } else if (arg === '--trend-analysis') {
+        parsed.trendAnalysis = true;
       } else if (!parsed.sheriffDump) {
         parsed.sheriffDump = arg;
       }

@@ -1,40 +1,20 @@
 {
   "scopes": [
+    "apps/frontend",
+    "apps/backend/src/infrastructure",
+    "apps/backend/src/mcp",
     "apps/backend/src/model",
     "apps/backend/src/options",
     "apps/backend/src/services",
-    "apps/backend/src/utils",
-    "apps/backend/src/infrastructure",
-    "apps/frontend/src/app/features/coupling",
-    "apps/frontend/src/app/features/hotspot",
-    "apps/frontend/src/app/features/team-alignment",
-    "apps/frontend/src/app/shell/about",
-    "apps/frontend/src/app/shell/filter-tree",
-    "apps/frontend/src/app/shell/nav",
-    "apps/frontend/src/app/model",
-    "apps/frontend/src/app/ui/doughnut",
-    "apps/frontend/src/app/ui/graph",
-    "apps/frontend/src/app/ui/limits",
-    "apps/frontend/src/app/ui/loading",
-    "apps/frontend/src/app/ui/resizer",
-    "apps/frontend/src/app/ui/treemap"
+    "apps/backend/src/utils"
   ],
-  "groups": [
-    "apps/backend/src",
-    "apps/backend",
-    "apps/frontend/src/app/features",
-    "apps/frontend/src/app/shell",
-    "apps/frontend/src/app/ui",
-    "apps/frontend/src/app",
-    "apps/frontend/src",
-    "apps/frontend",
-    "apps"
-  ],
+  "groups": ["apps/backend/src", "apps/backend", "apps"],
   "entries": [],
   "filter": {
     "files": [],
     "logs": []
   },
+  "aliases": {},
   "teams": {
     "example-team-a": ["John Doe", "Jane Doe"],
     "example-team-b": ["Max Muster", "Susi Sorglos"]

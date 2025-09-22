@@ -4,6 +4,7 @@ import {
   CdkDragDrop,
   CdkDropList,
   CdkDropListGroup,
+  CdkDragHandle,
 } from '@angular/cdk/drag-drop';
 import { CommonModule } from '@angular/common';
 import { Component, inject, OnInit } from '@angular/core';
@@ -23,6 +24,7 @@ import { DefineTeamsStore, Team, User } from './define-teams.store';
     CdkDropListGroup,
     CdkDropList,
     CdkDrag,
+    CdkDragHandle,
     MatButtonModule,
     MatIcon,
     MatDialogModule,
@@ -66,12 +68,21 @@ export class DefineTeamsComponent implements OnInit {
     this.doneAutoFocus = true;
   }
 
-  doRename(name: string, event: FocusEvent) {
+  doRename(name: string, event: Event) {
     const inputElm = event.currentTarget as HTMLInputElement;
     const newName = inputElm.value;
     this.store.renameTeam(name, newName);
     this.editing = undefined;
     this.doneAutoFocus = false;
+  }
+
+  cancelRename() {
+    this.editing = undefined;
+    this.doneAutoFocus = false;
+  }
+
+  trackByUser(index: number, user: User): string {
+    return user;
   }
 
   close(): void {

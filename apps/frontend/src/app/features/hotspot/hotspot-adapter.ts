@@ -99,10 +99,10 @@ export function toTreeMapConfig(
 export function getScoreTypeColor(scoreType: ScoreType) {
   switch (scoreType) {
     case 'hotspot':
-      return '#E74C3C';
+      return '#F44336';
     case 'warning':
-      return '#F1C40F';
+      return '#FFC107';
     case 'fine':
-      return '#2ECC71';
+      return '#4CAF50';
   }
 }

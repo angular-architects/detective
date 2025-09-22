@@ -1,12 +1,12 @@
-<mat-sidenav-container class="sidenav-container">
+<mat-sidenav-container class="sidenav-container" [autosize]="true">
   <mat-sidenav
     #drawer
     class="sidenav"
     [style.width.px]="sidenavWidth()"
     fixedInViewport
-    [attr.role]="isHandset() ? 'dialog' : 'navigation'"
-    [mode]="isHandset() ? 'over' : 'side'"
-    [opened]="isHandset() === false"
+    [attr.role]="'navigation'"
+    [mode]="'side'"
+    [opened]="true"
   >
     <mat-toolbar color="secondary">Filter</mat-toolbar>
     <mat-nav-list>
@@ -16,18 +16,19 @@
     <app-resizer [(position)]="sidenavWidth"></app-resizer>
   </mat-sidenav>
 
-  <mat-sidenav-content [style.margin-left.px]="contentMarginLeft()">
+  <mat-sidenav-content>
     <mat-toolbar color="primary">
-      @if (isHandset()) {
       <button
         type="button"
-        aria-label="Toggle sidenav"
+        [attr.aria-label]="drawer.opened ? 'Hide filters' : 'Show filters'"
+        title="Filters"
         mat-icon-button
         (click)="drawer.toggle()"
       >
-        <mat-icon aria-label="Side nav toggle icon">menu</mat-icon>
+        <mat-icon aria-hidden="true">{{
+          drawer.opened ? 'close' : 'filter_alt'
+        }}</mat-icon>
       </button>
-      }
 
       <span class="app-title">Detective</span>
 
@@ -40,12 +41,18 @@
       <button mat-button routerLink="/hotspots" routerLinkActive="active">
         Hotspots
       </button>
+      <button mat-button routerLink="/hotspot-city" routerLinkActive="active">
+        Hotspot City
+      </button>
       <button
         mat-button
         routerLink="/change-coupling"
         routerLinkActive="active"
       >
         Change Coupling
+      </button>
+      <button mat-button routerLink="/trend-analysis" routerLinkActive="active">
+        Trend Analysis
       </button>
 
       <span class="flex-spacer"></span>

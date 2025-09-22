@@ -1,0 +1,85 @@
+<h2 mat-dialog-title>
+  Bus Factor Report
+  <mat-icon
+    matTooltip="The Bus Factor indicates how many contributors would need to leave before a module loses 50% of its knowledge. Lower numbers indicate higher risk."
+    matTooltipPosition="right"
+    class="help-icon"
+  >
+    help_outline
+  </mat-icon>
+</h2>
+
+<mat-dialog-content class="dialog-grid">
+  <div class="table-container">
+    <table class="bus-factor-table">
+      <thead>
+        <tr>
+          <th>Module</th>
+          <th>{{ isTeamMode() ? 'Primary Team' : 'Primary Contributor' }}</th>
+          <th>% of Changes</th>
+          <th>
+            {{ isTeamMode() ? 'Secondary Team' : 'Secondary Contributor' }}
+          </th>
+          <th>% of Changes</th>
+          <th>Bus Factor</th>
+          <th>Risk Level</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (entry of busFactorData(); track entry.module) {
+        <tr
+          [class.risk-critical]="entry.riskLevel === 'Critical'"
+          [class.risk-high]="entry.riskLevel === 'High'"
+          [class.risk-medium]="entry.riskLevel === 'Medium'"
+          [class.risk-low]="entry.riskLevel === 'Low'"
+        >
+          <td>{{ entry.module }}</td>
+          <td>{{ entry.primaryContributor }}</td>
+          <td class="percentage">{{ entry.primaryPercentage.toFixed(1) }}%</td>
+          <td>{{ entry.secondaryContributor }}</td>
+          <td class="percentage">
+            @if (entry.secondaryPercentage > 0) {
+            {{ entry.secondaryPercentage.toFixed(1) }}% } @else { - }
+          </td>
+          <td class="bus-factor">{{ entry.busFactor }}</td>
+          <td>
+            <span
+              class="risk-badge"
+              [class]="'risk-' + entry.riskLevel.toLowerCase()"
+            >
+              {{ entry.riskLevel }}
+            </span>
+          </td>
+        </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+
+  <div class="legend">
+    <div class="legend-item">
+      <span class="risk-badge risk-critical">Critical</span>
+      <span>Single point of failure (100%)</span>
+    </div>
+    <div class="legend-item">
+      <span class="risk-badge risk-high">High</span>
+      <span>Bus Factor 1 or >70%</span>
+    </div>
+    <div class="legend-item">
+      <span class="risk-badge risk-medium">Medium</span>
+      <span>Bus Factor 2</span>
+    </div>
+    <div class="legend-item">
+      <span class="risk-badge risk-low">Low</span>
+      <span>Bus Factor 3+</span>
+    </div>
+  </div>
+</mat-dialog-content>
+
+<mat-dialog-actions>
+  <button mat-stroked-button type="button" (click)="exportToCSV()">
+    <mat-icon>download</mat-icon>
+    Export to CSV
+  </button>
+  <button mat-button type="button" (click)="close()">Close</button>
+</mat-dialog-actions>

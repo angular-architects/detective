@@ -1,0 +1,74 @@
+<div class="controls">
+  <div class="controls-left">
+    <button
+      mat-stroked-button
+      type="button"
+      class="docu-link"
+      (click)="openFilterDocs()"
+    >
+      Filter
+    </button>
+
+    <mat-checkbox class="mr30" [(ngModel)]="byFile">By File</mat-checkbox>
+
+    <div class="tolerance-container">
+      <span>Tolerance</span>
+
+      <mat-slider
+        min="0"
+        max="100"
+        step="1"
+        class="tolerance-slider"
+        aria-label="Tolerance"
+      >
+        <input
+          matSliderThumb
+          [ngModel]="store.minScore()"
+          (ngModelChange)="store.setMinScore($event)"
+          title="Tolerance"
+          aria-label="Tolerance"
+        />
+      </mat-slider>
+      <span class="tolerance-value">{{ store.minScore() }} %</span>
+    </div>
+    <mat-icon
+      matTooltip="A Hotspot is a complex file that was previously changed quite often and hence comes with a higher risk for bugs."
+      matTooltipPosition="above"
+      class="help-icon-hotspot"
+    >
+      help_outline
+    </mat-icon>
+  </div>
+
+  <app-limits
+    [limits]="limits()"
+    (limitsChange)="updateLimits($event)"
+    [totalCommits]="totalCommits()"
+  >
+  </app-limits>
+</div>
+
+<div class="city-container" #containerEl>
+  <app-city3d
+    [items]="items()"
+    [mode]="byFile() ? 'file' : 'module'"
+    [boundaries]="boundaries()"
+    (hoverChange)="onHover($event)"
+    (buildingClick)="onBuildingClick($event)"
+  ></app-city3d>
+
+  <div
+    class="hover-info"
+    [class.visible]="hoverVisible()"
+    [style.left.px]="hoverX()"
+    [style.top.px]="hoverY()"
+    #hoverEl
+  >
+    <div class="filename" [attr.title]="hoverTitle()">{{ hoverTitle() }}</div>
+    <div class="metrics">
+      @for (m of hoverMetrics(); track m) {
+      <div class="metric">{{ m }}</div>
+      }
+    </div>
+  </div>
+</div>

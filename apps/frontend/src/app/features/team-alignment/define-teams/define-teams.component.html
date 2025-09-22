@@ -14,26 +14,42 @@
       </div>
 
       <ng-template #teamTmpl let-team="team">
-        <div class="team">
-          <h2>
+        <div class="team" [class.team--unknown]="!team.mayBeEdited">
+          <h2 class="team__header">
             @if (editing === team.name){
             <input
               class="team__name"
               type="text"
               [value]="team.name"
               (mousemove)="autoFocusOnce($event)"
+              (keydown.enter)="doRename(team.name, $event)"
+              (keydown.escape)="cancelRename()"
               (blur)="doRename(team.name, $event)"
+              aria-label="Team name"
             />
             } @else if (team.mayBeEdited) {
-            <span (click)="editing = team.name">{{ team.name }}</span>
+            <span class="team__name--editable" (click)="editing = team.name">{{
+              team.name
+            }}</span>
+            <span class="team__spacer"></span>
+            <span class="team__count" aria-label="Members count">{{
+              team.users.length
+            }}</span>
             <button
               mat-icon-button
-              style="vertical-align: middle; padding: 1px"
+              class="delete-button"
               (click)="store.removeTeam(team)"
+              aria-label="Delete team"
+              title="Delete team"
             >
               <mat-icon>delete</mat-icon>
             </button>
-            } @else { <span class="team__name--fixed">{{ team.name }}</span> }
+            } @else { <span class="team__name--fixed">{{ team.name }}</span>
+            <span class="team__spacer"></span>
+            <span class="team__count" aria-label="Members count">{{
+              team.users.length
+            }}</span>
+            }
           </h2>
 
           <ul
@@ -42,17 +58,36 @@
             class="simple team__users"
             cdkDropListSortingDisabled
             (cdkDropListDropped)="droppedOnTeam($event)"
+            aria-label="Team users list"
           >
-            @for (user of team.users; track user) {
-            <li class="team__user" cdkDrag [cdkDragData]="user">{{ user }}</li>
-            }
+            <li
+              class="team__user"
+              *ngFor="let user of team.users; trackBy: trackByUser"
+              cdkDrag
+              [cdkDragData]="user"
+            >
+              <mat-icon class="drag-handle" cdkDragHandle
+                >drag_indicator</mat-icon
+              >
+              <span class="team__user-name">{{ user }}</span>
+            </li>
+            <li
+              *ngIf="team.users.length === 0 && team.mayBeEdited"
+              class="team__empty"
+              aria-live="polite"
+            >
+              Drop users here
+            </li>
           </ul>
         </div>
       </ng-template>
     </div>
   </div>
   <div class="dialog-actions">
-    <button mat-stroked-button (click)="addTeam()">Add team</button>
+    <button mat-stroked-button class="add-team-button" (click)="addTeam()">
+      <mat-icon>add</mat-icon>
+      Add team
+    </button>
     <button mat-stroked-button (click)="close()">Close</button>
   </div>
 </div>

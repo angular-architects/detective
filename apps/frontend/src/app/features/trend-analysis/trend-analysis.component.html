@@ -1,0 +1,277 @@
+<div class="trend-analysis-container">
+  <div class="trend-analysis-header">
+    <h2>Trend Analysis</h2>
+    <div class="controls">
+      <button
+        mat-stroked-button
+        (click)="toggleLeftPanel()"
+        [matTooltip]="showLeftPanel() ? 'Hide file tree' : 'Show file tree'"
+      >
+        <mat-icon>{{
+          showLeftPanel() ? 'chevron_left' : 'chevron_right'
+        }}</mat-icon>
+        {{ showLeftPanel() ? 'Hide Tree' : 'Show Tree' }}
+      </button>
+      <button
+        mat-raised-button
+        color="primary"
+        (click)="openHotspotsDialog()"
+        matTooltip="Show top 10 complexity spikes"
+      >
+        <mat-icon>whatshot</mat-icon>
+        Complexity Spikes
+      </button>
+      <mat-form-field appearance="outline">
+        <mat-label>Max. Commits</mat-label>
+        <mat-select
+          [value]="fileTreeStore.maxCommits()"
+          (selectionChange)="fileTreeStore.updateMaxCommits($event.value)"
+        >
+          <mat-option [value]="25">25</mat-option>
+          <mat-option [value]="50">50</mat-option>
+          <mat-option [value]="100">100</mat-option>
+          <mat-option [value]="250">250</mat-option>
+          <mat-option [value]="500">500</mat-option>
+          <mat-option [value]="1000">1000</mat-option>
+          <mat-option [value]="2000">2000</mat-option>
+          <mat-option [value]="5000">5000</mat-option>
+          <mat-option [value]="10000">10000</mat-option>
+        </mat-select>
+      </mat-form-field>
+    </div>
+  </div>
+
+  <!-- Progress Section -->
+  @if (fileTreeStore.progress()) { @let progressData = fileTreeStore.progress();
+  <div class="progress-section">
+    <div class="progress-header">
+      <span class="progress-message">{{ progressData?.message }}</span>
+      <span class="progress-percent">{{ progressData?.progress }}%</span>
+    </div>
+    <mat-progress-bar
+      mode="determinate"
+      [value]="progressData?.progress || 0"
+    ></mat-progress-bar>
+
+    @if (progressData?.commitsProcessed && progressData?.totalCommits) {
+    <div class="progress-details">
+      <span
+        >Commits: {{ progressData?.commitsProcessed }}/{{
+          progressData?.totalCommits
+        }}</span
+      >
+      @if (progressData?.filesAnalyzed) {
+      <span>Files: {{ progressData?.filesAnalyzed }}</span>
+      } @if (progressData?.currentCommit && progressData?.currentAuthor) {
+      <span
+        >Current: {{ progressData?.currentCommit?.substring(0, 8) }} ({{
+          progressData?.currentAuthor
+        }})</span
+      >
+      }
+    </div>
+    }
+  </div>
+  }
+
+  <div class="content-layout">
+    <!-- Left Panel: File Tree -->
+    @if (showLeftPanel()) {
+    <div class="left-panel" [style.width.px]="leftPanelWidth()">
+      <div class="panel-header">
+        <h3>File Tree</h3>
+        @let counts = fileTreeStore.fileCountDisplay(); @if (!counts.isEmpty) {
+        @if (counts.isFiltered) {
+        <span class="file-count"
+          >{{ counts.displayedFiles }} / {{ counts.totalFiles }} files
+          (filtered)</span
+        >
+        } @else {
+        <span class="file-count">{{ counts.totalFiles }} files</span>
+        } }
+      </div>
+
+      <div class="file-tree">
+        @if (fileTreeStore.hasTreeData()) {
+        <mat-tree
+          [dataSource]="fileTreeStore.flattenedTreeData()"
+          [levelAccessor]="levelAccessor"
+          class="file-tree-control"
+        >
+          <!-- File nodes (check files first - more specific) -->
+          <mat-tree-node *matTreeNodeDef="let node; when: isFile">
+            <div [style.margin-left.px]="(node.level || 0) * 24">
+              <app-file-tree-node
+                [nodeData]="{
+                  name: node.name,
+                  fullPath: node.fullPath,
+                  isFile: node.isFile,
+                  changeFreq: node.changeFreq,
+                  avgComplexity: node.avgComplexity
+                }"
+                [isSelected]="fileTreeStore.selectedFile() === node.fullPath"
+                (nodeClick)="selectNode($event)"
+              >
+              </app-file-tree-node>
+            </div>
+          </mat-tree-node>
+
+          <!-- Folder nodes -->
+          <mat-tree-node *matTreeNodeDef="let node; when: isFolder">
+            <div [style.margin-left.px]="(node.level || 0) * 24">
+              <app-folder-tree-node
+                [nodeData]="{
+                  name: node.name,
+                  fullPath: node.fullPath,
+                  isFile: node.isFile,
+                  fileCount: node.fileCount,
+                  isExpanded: isExpanded(node)
+                }"
+                [isSelected]="fileTreeStore.selectedFolder() === node.fullPath"
+                (nodeClick)="selectNode($event)"
+                (toggleClick)="fileTreeStore.toggleNode($event)"
+              >
+              </app-folder-tree-node>
+            </div>
+          </mat-tree-node>
+        </mat-tree>
+        } @else {
+        <div class="empty-state">
+          <mat-icon>folder_open</mat-icon>
+          <p>No trend data available</p>
+          <p class="hint">Start an analysis to see file trends</p>
+        </div>
+        }
+      </div>
+    </div>
+    <!-- Resizer -->
+    <app-resizer
+      class="resizer-container"
+      [(position)]="leftPanelWidth"
+    ></app-resizer>
+    }
+
+    <!-- Right Panel: Trend Details -->
+    <div class="right-panel">
+      @let folderMetrics = fileTreeStore.selectedFolderMetrics(); @if
+      (fileTreeStore.hasSelectedFolder() && folderMetrics) {
+      <div class="trend-details">
+        <div class="trend-header">
+          <h3>📁 {{ folderMetrics?.folderName || 'Unknown' }}</h3>
+          <p class="file-path">{{ folderMetrics?.folderPath || '' }}</p>
+        </div>
+
+        <app-trend-metrics-card
+          [folderMetrics]="folderMetrics"
+        ></app-trend-metrics-card>
+
+        <!-- Aggregated Complexity Trend Chart -->
+        <app-trend-chart
+          chartType="folder-complexity"
+          [folderTrendData]="{
+            complexityTrend: folderMetrics?.complexityTrend || [],
+            sizeTrend: folderMetrics?.sizeTrend || [],
+            fileCount: folderMetrics?.fileCount || 0
+          }"
+          title="📊 Folder Average Complexity Trend"
+          description="Average complexity across all {{
+            folderMetrics?.fileCount || 0
+          }} files in this folder"
+          [height]="300"
+          [folderFileCount]="folderMetrics?.fileCount"
+        >
+        </app-trend-chart>
+
+        <!-- Aggregated Size Trend Chart -->
+        <app-trend-chart
+          chartType="folder-size"
+          [folderTrendData]="{
+            complexityTrend: folderMetrics?.complexityTrend || [],
+            sizeTrend: folderMetrics?.sizeTrend || [],
+            fileCount: folderMetrics?.fileCount || 0
+          }"
+          title="📈 Folder Total Size Trend"
+          description="Combined lines of code from all files in this folder"
+          [height]="300"
+          [folderFileCount]="folderMetrics?.fileCount"
+        >
+        </app-trend-chart>
+
+        <!-- Files in Folder List -->
+        <div class="folder-files-section">
+          <h4>Files in Folder ({{ folderMetrics?.fileCount || 0 }})</h4>
+          <div class="folder-files-list">
+            @for (file of folderMetrics?.files || []; track file.filePath) {
+            <app-folder-file-item
+              [file]="file"
+              (fileClick)="selectFileFromPath($event)"
+            ></app-folder-file-item>
+            }
+          </div>
+        </div>
+      </div>
+      } @else if (fileTreeStore.hasSelectedFile()) { @let filePath =
+      fileTreeStore.selectedFile();
+      <div class="trend-details">
+        <div class="trend-header">
+          <div class="file-header">
+            <div class="file-info">
+              <h3>{{ filePath || '' | fileName }}</h3>
+              <p class="file-path">{{ filePath || '' }}</p>
+            </div>
+            <div class="file-actions">
+              <button
+                mat-icon-button
+                (click)="openXRayDialog()"
+                color="primary"
+                matTooltip="Open X-Ray Analysis in Popup"
+              >
+                <mat-icon>open_in_new</mat-icon>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        @let trend = fileTreeStore.selectedFileTrend(); @if (trend) {
+        <app-trend-metrics-card [fileTrend]="trend"></app-trend-metrics-card>
+
+        <!-- Complexity Trend Chart -->
+        <app-trend-chart
+          chartType="complexity"
+          [fileTrend]="trend"
+          title="Complexity Trend"
+          [height]="300"
+        >
+        </app-trend-chart>
+
+        <!-- Size Trend Chart -->
+        <app-trend-chart
+          chartType="size"
+          [fileTrend]="trend"
+          title="Size Trend"
+          [height]="300"
+        >
+        </app-trend-chart>
+
+        <!-- Recent Commits Table -->
+        @if (trend.commits && trend.commits.length > 0) {
+        <app-recent-commits-table
+          [commitMetrics]="trend.commits"
+        ></app-recent-commits-table>
+        } }
+
+        <!-- Inline X-Ray removed; use popup only -->
+      </div>
+      } @else {
+      <div class="empty-selection">
+        <mat-icon>insights</mat-icon>
+        <p>Select a file to view trend analysis</p>
+        <p class="hint">
+          Choose a file from the tree on the left to see its complexity and size
+          trends over time
+        </p>
+      </div>
+      }
+    </div>
+  </div>
+</div>
