@@ -27,6 +27,7 @@ export interface ClassMetrics {
   isGodClass: boolean;
   onlyGettersSetters: boolean;
   unusedMembers: number;
+  unusedMemberNames?: string[];
   duplicateBlocks: number;
   duplicateDetails?: Array<{
     location: string;

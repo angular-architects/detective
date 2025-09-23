@@ -105,27 +105,33 @@ export class HotspotCityComponent {
               score: f.score,
             },
           }));
+          mapped.sort((a, b) => a.label.localeCompare(b.label));
           this.items.set(mapped);
           this.boundaries.set(undefined);
         } else {
           const { aggregated, warningBoundary, hotspotBoundary, maxScore } =
             this.hotspotStore.aggregatedResult();
-          const mapped: City3DItem[] = aggregated.map((a) => ({
-            id: this.getModuleKey(a.parent, a.module),
-            label: this.getModuleKey(a.parent, a.module),
-            footprint: a.count,
-            height: a.count,
-            meta: {
-              kind: 'module',
-              moduleKey: this.getModuleKey(a.parent, a.module),
-              parent: a.parent,
-              module: a.module,
-              countHotspot: a.countHotspot,
-              countWarning: a.countWarning,
-              countOk: a.countOk,
-              total: a.count,
-            },
-          }));
+          const mapped: City3DItem[] = aggregated.map((a) => {
+            const total = a.countOk + a.countWarning + a.countHotspot;
+            const moduleKey = this.getModuleKey(a.parent, a.module);
+            return {
+              id: moduleKey,
+              label: moduleKey,
+              footprint: total,
+              height: total,
+              meta: {
+                kind: 'module',
+                moduleKey,
+                parent: a.parent,
+                module: a.module,
+                countHotspot: a.countHotspot,
+                countWarning: a.countWarning,
+                countOk: a.countOk,
+                total,
+              },
+            };
+          });
+          mapped.sort((a, b) => a.label.localeCompare(b.label));
           this.items.set(mapped);
           this.boundaries.set({ warningBoundary, hotspotBoundary, maxScore });
         }

@@ -53,6 +53,7 @@ export class ClassMetricsAnalyzer extends BaseMetricsAnalyzer {
     const allSections = [
       ...(reasonsMeta.ui.sections ?? []),
       ...(duplicateMeta.ui.sections ?? []),
+      ...(unusedMeta.ui.sections ?? []),
     ];
 
     return {
@@ -96,7 +97,7 @@ export class ClassMetricsAnalyzer extends BaseMetricsAnalyzer {
       complexity,
       dependencyAnalysis,
       reasonsMetric,
-      unusedMembers,
+      unusedMembersResult,
       duplicateAnalysis,
     ] = await Promise.all([
       this.complexityMetric.analyzeAsync({ ...this.context, scopeNode: node }),
@@ -143,7 +144,8 @@ export class ClassMetricsAnalyzer extends BaseMetricsAnalyzer {
       internalFiles: reasonsMetric.internalFiles,
 
       // Code quality metrics
-      unusedMembers: unusedMembers,
+      unusedMembers: unusedMembersResult.unusedMembers,
+      unusedMemberNames: unusedMembersResult.unusedMemberNames,
       duplicateBlocks,
       duplicateDetails,
     };
