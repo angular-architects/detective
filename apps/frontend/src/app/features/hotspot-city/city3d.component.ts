@@ -74,6 +74,7 @@ export class City3DComponent implements OnChanges, OnDestroy {
   private buildings: THREE.Mesh[] = [];
   private hoveredObject: THREE.Mesh | null = null;
   private skipNextClick = false;
+  private platform?: THREE.Mesh;
 
   // simple camera controls state
   private isLeftMouseDown = false;
@@ -93,7 +94,10 @@ export class City3DComponent implements OnChanges, OnDestroy {
         this.setupScene();
         this.startAnimation();
       }
-      this.buildCity();
+      const modeChanged =
+        !!changes['mode'] &&
+        changes['mode'].previousValue !== changes['mode'].currentValue;
+      this.buildCity(modeChanged || !changes['items']);
     }
   }
 
@@ -202,7 +206,7 @@ export class City3DComponent implements OnChanges, OnDestroy {
     camera.lookAt(this.targetPanX, 0, this.targetPanZ);
   }
 
-  private buildCity(): void {
+  private buildCity(fitCamera: boolean): void {
     const scene = this.scene;
     if (!scene) return;
 
@@ -210,7 +214,16 @@ export class City3DComponent implements OnChanges, OnDestroy {
     this.buildings.forEach((b) => scene.remove(b));
     this.buildings = [];
 
-    // platform
+    if (this.platform) {
+      scene.remove(this.platform);
+      const geom = this.platform.geometry as THREE.BufferGeometry | undefined;
+      const mat = this.platform.material as THREE.Material | THREE.Material[];
+      if (geom) geom.dispose();
+      if (Array.isArray(mat)) mat.forEach((m) => m.dispose());
+      else if (mat) mat.dispose();
+      this.platform = undefined;
+    }
+
     const total = this.items.length;
     const gridSize = Math.ceil(Math.sqrt(total));
     const maxSide = this.items.length
@@ -219,24 +232,6 @@ export class City3DComponent implements OnChanges, OnDestroy {
         )
       : 1;
     const cellSize = Math.max(4, Math.ceil(maxSide + 2));
-    const platformSize = Math.max(20, gridSize * cellSize + 6);
-
-    const platformGeometry = new THREE.BoxGeometry(
-      platformSize,
-      0.5,
-      platformSize
-    );
-    const platformMaterial = new THREE.MeshPhongMaterial({
-      color: 0xffffff,
-      emissive: 0x000000,
-      emissiveIntensity: 0.0,
-      shininess: 10,
-      specular: 0xdddddd,
-    });
-    const platform = new THREE.Mesh(platformGeometry, platformMaterial);
-    platform.position.set(0, 0, 0);
-    platform.receiveShadow = false;
-    scene.add(platform);
 
     const bbox = new THREE.Box3();
     this.items.forEach((item, index) => {
@@ -275,14 +270,44 @@ export class City3DComponent implements OnChanges, OnDestroy {
     });
 
     const size = bbox.getSize(new THREE.Vector3());
-    const maxDim = Math.max(size.x, size.y, size.z);
-    const camera = this.camera;
-    if (camera) {
-      const fov = (camera.fov * Math.PI) / 180;
-      const fitHeightDistance = maxDim / 2 / Math.tan(fov / 2);
-      const fitWidthDistance = fitHeightDistance / camera.aspect;
-      const distance = Math.max(fitHeightDistance, fitWidthDistance) * 1.15;
-      this.distance = Math.max(20, Math.min(4000, distance));
+    const center = bbox.getCenter(new THREE.Vector3());
+
+    const margin = Math.max(4, cellSize);
+    const cols = Math.min(total, gridSize);
+    const rows = Math.ceil(total / gridSize);
+    const platformWidth = Math.max(8, cols * cellSize + margin);
+    const platformDepth = Math.max(8, rows * cellSize + margin);
+    const platformGeometry = new THREE.BoxGeometry(
+      platformWidth,
+      0.5,
+      platformDepth
+    );
+    const platformMaterial = new THREE.MeshPhongMaterial({
+      color: 0xffffff,
+      emissive: 0x000000,
+      emissiveIntensity: 0.0,
+      shininess: 10,
+      specular: 0xdddddd,
+    });
+    const platform = new THREE.Mesh(platformGeometry, platformMaterial);
+    platform.position.set(center.x, 0, center.z);
+    platform.receiveShadow = false;
+    scene.add(platform);
+    this.platform = platform;
+
+    if (fitCamera) {
+      const maxDim = Math.max(size.x, size.y, size.z);
+      const camera = this.camera;
+      if (camera) {
+        const fov = (camera.fov * Math.PI) / 180;
+        const fitHeightDistance = maxDim / 2 / Math.tan(fov / 2);
+        const fitWidthDistance = fitHeightDistance / camera.aspect;
+        const distance = Math.max(fitHeightDistance, fitWidthDistance) * 1.15;
+        this.distance = Math.max(20, Math.min(4000, distance));
+
+        this.targetPanX = center.x;
+        this.targetPanZ = center.z;
+      }
     }
   }
 
