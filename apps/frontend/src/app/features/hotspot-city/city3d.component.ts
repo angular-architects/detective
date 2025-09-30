@@ -86,7 +86,7 @@ export class City3DComponent implements OnChanges, OnDestroy {
   private targetRotationY = 0;
   private targetPanX = 0;
   private targetPanZ = 0;
-  private distance = 100;
+  private distance = 20;
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['items'] || changes['mode']) {
@@ -443,7 +443,7 @@ export class City3DComponent implements OnChanges, OnDestroy {
     if (!this.renderer || !target || !this.renderer.domElement.contains(target))
       return;
     this.distance += event.deltaY * 0.05;
-    this.distance = Math.max(20, Math.min(4000, this.distance));
+    this.distance = Math.max(0, this.distance);
     event.preventDefault();
   }
 
