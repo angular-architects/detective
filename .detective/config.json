@@ -1,14 +1,6 @@
 {
-  "scopes": [
-    "apps/backend/src/infrastructure",
-    "apps/backend/src/mcp",
-    "apps/backend/src/model",
-    "apps/backend/src/options",
-    "apps/backend/src/services",
-    "apps/backend/src/utils",
-    "apps/frontend"
-  ],
-  "groups": ["apps/backend/src", "apps/backend", "apps"],
+  "scopes": ["apps"],
+  "groups": [],
   "entries": [],
   "filter": {
     "files": [],

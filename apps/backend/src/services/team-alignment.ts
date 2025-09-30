@@ -42,19 +42,18 @@ export async function calcTeamAlignment(
 
     if (options.demoMode) {
       count++;
-      if (count % 4 === 1) {
-        userName = 'Max Muster';
-      } else if (count % 4 === 2) {
-        userName = 'John Doe';
-      } else if (count % 4 == 3) {
-        userName = 'Jane Doe';
-      }
+      const demoUsers = ['Max Muster', 'John Doe', 'Jane Doe', 'Maria Muster'];
+      userName = demoUsers[(count - 1) % demoUsers.length];
     }
 
     userName = config.aliases?.[userName] || userName;
 
     const emailLower = (entry.header.email || '').toLowerCase();
-    const stableUserKey = byUser ? emailLower || userName : userName;
+    const stableUserKey = byUser
+      ? options.demoMode
+        ? userName
+        : emailLower || userName
+      : userName;
 
     if (!userKeyToDisplay[stableUserKey]) {
       userKeyToDisplay[stableUserKey] = userName;
