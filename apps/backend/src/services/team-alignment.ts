@@ -46,7 +46,7 @@ export async function calcTeamAlignment(
       userName = demoUsers[(count - 1) % demoUsers.length];
     }
 
-    userName = config.aliases?.[userName] || userName;
+    userName = (config.aliases?.[userName] || userName).normalize('NFC');
 
     const emailLower = (entry.header.email || '').toLowerCase();
     const stableUserKey = byUser

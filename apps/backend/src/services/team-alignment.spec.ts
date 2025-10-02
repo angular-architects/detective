@@ -19,6 +19,9 @@ jest.mock('../utils/count-lines', () => ({
 jest.mock('../infrastructure/config', () => ({
   loadConfig: jest.fn(() => ({
     ...emptyConfig,
+    aliases: {
+      'Mäster, Max': 'Max Mäster',
+    },
     teams: {
       alpha: ['John Doe'],
       beta: ['Jane Doe', 'Max Muster'],
@@ -54,6 +57,14 @@ jest.mock('../infrastructure/log', () => ({
 "Jane Doe <john.doe@acme.com>,${now.toISOString()}"
 20\t0\t/shell/my.component.ts
 0\t1\t/shell/my-other.component.ts
+
+"Mäster, Max <max.maester@acme.com>,${now.toISOString()}"
+10\t0\t/booking/feature-manage/my.component.ts
+0\t1\t/checkin/feature-checkin/my.component.ts
+
+"Max Ma\u0308ster <max.maester@acme.com>,${now.toISOString()}"
+0\t20\t/checkin/feature-checkin/my.component.ts
+0\t1\t/shared/feature-checkin/my.component.ts
 `
   ),
 }));
@@ -157,5 +168,49 @@ describe('team alignment service', () => {
         },
       },
     });
+  });
+
+  it('should treat usernames with composed and decomposed umlauts as identical', async () => {
+    const limits: Limits = {
+      limitCommits: 7,
+      limitMonths: 0,
+    };
+
+    const result = await calcTeamAlignment(true, limits, defaultOptions);
+
+    expect(result.modules).toEqual({
+      '/booking': {
+        changes: {
+          'Jane Doe': 10,
+          'John Doe': 2,
+          'Max Muster': 10,
+          'Max Mäster': 10,
+        },
+      },
+      '/checkin': {
+        changes: {
+          'Jane Doe': 1,
+          'John Doe': 20,
+          'Maria Muster': 20,
+          'Max Mäster': 21,
+        },
+      },
+      '/shared': {
+        changes: {
+          'John Doe': 1,
+          'Maria Muster': 1,
+          'Max Muster': 1,
+          'Max Mäster': 1,
+        },
+      },
+    });
+
+    expect(result.teams).toEqual([
+      'Jane Doe',
+      'John Doe',
+      'Maria Muster',
+      'Max Muster',
+      'Max Mäster',
+    ]);
   });
 });
