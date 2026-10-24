@@ -85,7 +85,7 @@ For the Team Alignment Analysis, you need to map team names to the names of your
 
 ## Defining Entrypoints
 
-Detective probes a set of default entry points by looking at files with the names `index.ts` and `main.ts` in several directories. If your project structure is different, you can add this entry with respective globs to your `.detectice/config.json`:
+Detective probes a set of default entry points by looking at files with the names `index.ts` and `main.ts` in several directories. If your project structure is different, you can add this entry with respective globs to your `.detective/config.json`:
 
 ```json5
 {
